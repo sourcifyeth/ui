@@ -69,3 +69,7 @@ A workaround could be running a custom find and replace on the files before runn
 ```bash
 find /usr/share/nginx/html/ -type f -exec sed -i 's#docs.sourcify.dev#yourcustomlink.com#g' {} \;;
 ```
+
+### Notes
+
+This repository was initially under [ethereum/sourcify](https://github.com/ethereum/sourcify) monorepo and spun out as it's own repo on 19.07.2024.
