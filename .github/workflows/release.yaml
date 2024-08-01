@@ -17,11 +17,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: "auth"
+      - name: "auth staging"
+        if: github.ref == 'refs/heads/staging'
         uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: "projects/1019539084286/locations/global/workloadIdentityPools/github/providers/sourcify"
           service_account: "sourcify-staging-ui-deployer@sourcify-project.iam.gserviceaccount.com"
+
+      - name: "auth main"
+        if: github.ref == 'refs/heads/main'
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: "projects/1019539084286/locations/global/workloadIdentityPools/github/providers/sourcify"
+          service_account: "sourcify-production-ui@sourcify-project.iam.gserviceaccount.com"
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -51,11 +59,11 @@ jobs:
           parent: false
           glob: "**/*"
 
-      - name: Upload files to Master bucket
+      - name: Upload files to Main bucket
         if: github.ref == 'refs/heads/main'
         uses: google-github-actions/upload-cloud-storage@v2
         with:
           path: "build"
-          destination: "sourcify-docs-bucket"
+          destination: "sourcify-ui-bucket"
           parent: false
           glob: "**/*"
