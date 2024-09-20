@@ -15,6 +15,8 @@ import { REPOSITORY_SERVER_URL } from "../../constants";
 import { Context } from "../../Context";
 import featured from "../../featured";
 
+const NUMBER_OF_TOP_CHAINS = 10;
+
 type statsType = {
   [key: string]: {
     full_match: number;
@@ -39,10 +41,20 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
       </div>
     );
   }
-  // Filter Ethereum networks only
-  const formattedData = Object.keys(stats)
-    .filter((key) => ["1", "17000", "4", "5", "11155111"].includes(key))
-    .map((key) => {
+
+  const formattedData = Object.entries(stats)
+    .sort(([aKey, aStats], [bKey, bStats]) => {
+      // Sort Ethereum to start of the list
+      if (aKey === "1" && bKey !== "1") return -1;
+      if (aKey !== "1" && bKey === "1") return 1;
+      return (
+        bStats.full_match +
+        bStats.partial_match -
+        (aStats.full_match + aStats.partial_match)
+      );
+    })
+    .slice(0, NUMBER_OF_TOP_CHAINS)
+    .map(([key, chainStats]) => {
       const keyInt = parseInt(key);
       return {
         name:
@@ -51,10 +63,12 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
           (sourcifyChainMap[keyInt]?.name || sourcifyChainMap[keyInt].title), // Shorter name takes precedence
         fullMatch: stats[key].full_match,
         partialMatch: stats[key].partial_match,
+        total: stats[key].full_match + stats[key].partial_match,
       };
     });
-  const total = formattedData.reduce((prev, curr, i) => {
-    return prev + curr.fullMatch + curr.partialMatch;
+
+  const total = Object.values(stats).reduce((prev, curr, i) => {
+    return prev + curr.full_match + curr.partial_match;
   }, 0);
 
   return (
@@ -64,7 +78,7 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
         <span className="text-lightCoral-500">
           {total.toLocaleString()}
         </span>{" "}
-        contracts verified on Ethereum networks so far!
+        contracts verified on Sourcify so far!
       </h2>
       <div className="h-72 md:h-96 lg:h-[30rem] w-11/12 max-w-2xl my-8">
         <ResponsiveContainer>
@@ -72,13 +86,21 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
             // width={700}
             // height={300}
             data={formattedData}
+            {...{
+              overflow: "visible",
+            }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <Tooltip cursor={{ fill: "rgba(232, 239, 255, 0.4)" }} />
-            <XAxis dataKey="name" />
+            <XAxis
+              dataKey="name"
+              angle={30}
+              textAnchor="start"
+              interval={0} // Display every label
+            />
             <YAxis
               width={70}
-              dataKey="fullMatch"
+              dataKey="total"
               domain={[
                 0,
                 (dataMax: number) => {
@@ -90,8 +112,7 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
               ]}
               tickFormatter={(tick) => tick.toLocaleString()}
             />
-            <Tooltip />
-            <Legend />
+            <Legend verticalAlign="top" align="right" />
             <Bar
               name="Full Matches"
               dataKey="fullMatch"
