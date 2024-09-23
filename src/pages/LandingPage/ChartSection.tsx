@@ -14,6 +14,7 @@ import LoadingOverlay from "../../components/LoadingOverlay";
 import { REPOSITORY_SERVER_URL } from "../../constants";
 import { Context } from "../../Context";
 import featured from "../../featured";
+import ChainSelect from "../../components/ChainSelect";
 
 const NUMBER_OF_TOP_CHAINS = 10;
 
@@ -25,7 +26,8 @@ type statsType = {
 };
 
 const Chart = ({ stats }: { stats: statsType | undefined }) => {
-  const { sourcifyChainMap } = useContext(Context);
+  const { sourcifyChainMap, sourcifyChains } = useContext(Context);
+  const [selectedChain, setSelectedChain] = useState<string>("1");
 
   if (!stats) {
     return (
@@ -42,11 +44,24 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
     );
   }
 
+  const getFormattedChainData = (key: string) => {
+    const keyInt = parseInt(key);
+    return {
+      name:
+        Object.keys(sourcifyChainMap).length > 0 &&
+        sourcifyChainMap[keyInt] &&
+        (sourcifyChainMap[keyInt]?.name || sourcifyChainMap[keyInt].title), // Shorter name takes precedence
+      fullMatch: stats[key]?.full_match ?? 0,
+      partialMatch: stats[key]?.partial_match ?? 0,
+      total: (stats[key]?.full_match ?? 0) + (stats[key]?.partial_match ?? 0),
+    };
+  };
+
   const formattedData = Object.entries(stats)
     .sort(([aKey, aStats], [bKey, bStats]) => {
-      // Sort Ethereum to start of the list
-      if (aKey === "1" && bKey !== "1") return -1;
-      if (aKey !== "1" && bKey === "1") return 1;
+      // Sort selected chain to start of the list
+      if (aKey === selectedChain && bKey !== selectedChain) return -1;
+      if (aKey !== selectedChain && bKey === selectedChain) return 1;
       return (
         bStats.full_match +
         bStats.partial_match -
@@ -54,25 +69,14 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
       );
     })
     .slice(0, NUMBER_OF_TOP_CHAINS)
-    .map(([key, chainStats]) => {
-      const keyInt = parseInt(key);
-      return {
-        name:
-          Object.keys(sourcifyChainMap).length > 0 &&
-          sourcifyChainMap[keyInt] &&
-          (sourcifyChainMap[keyInt]?.name || sourcifyChainMap[keyInt].title), // Shorter name takes precedence
-        fullMatch: stats[key].full_match,
-        partialMatch: stats[key].partial_match,
-        total: stats[key].full_match + stats[key].partial_match,
-      };
-    });
+    .map(([key, chainStats]) => getFormattedChainData(key));
 
   const total = Object.values(stats).reduce((prev, curr, i) => {
     return prev + curr.full_match + curr.partial_match;
   }, 0);
 
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center justify-center">
       <h2 className="my-4 text-2xl font-bold text-ceruleanBlue-500">
         {" "}
         <span className="text-lightCoral-500">
@@ -80,53 +84,68 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
         </span>{" "}
         contracts verified on Sourcify so far!
       </h2>
-      <div className="h-72 md:h-96 lg:h-[30rem] w-11/12 max-w-2xl my-8">
-        <ResponsiveContainer>
-          <BarChart
-            // width={700}
-            // height={300}
-            data={formattedData}
-            {...{
-              overflow: "visible",
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <Tooltip cursor={{ fill: "rgba(232, 239, 255, 0.4)" }} />
-            <XAxis
-              dataKey="name"
-              angle={30}
-              textAnchor="start"
-              interval={0} // Display every label
-            />
-            <YAxis
-              width={70}
-              dataKey="total"
-              domain={[
-                0,
-                (dataMax: number) => {
-                  const digits = dataMax.toString().length - 1;
-                  const roundedMax =
-                    Math.ceil(dataMax / 10 ** digits) * 10 ** digits;
-                  return roundedMax;
-                },
-              ]}
-              tickFormatter={(tick) => tick.toLocaleString()}
-            />
-            <Legend verticalAlign="top" align="right" />
-            <Bar
-              name="Full Matches"
-              dataKey="fullMatch"
-              fill="#2B50AA"
-              stackId="a"
-            />
-            <Bar
-              name="Partial Matches"
-              dataKey="partialMatch"
-              fill="#7693DA"
-              stackId="a"
-            />
-          </BarChart>
-        </ResponsiveContainer>
+      <div className="w-full my-8 flex lg:flex-row flex-col items-center lg:items-start justify-center">
+        <div className="lg:mr-14 lg:mt-8 w-64">
+          <ChainSelect
+            value={selectedChain}
+            handleChainIdChange={(newChainId) =>
+              setSelectedChain(newChainId.toString())
+            }
+            availableChains={sourcifyChains.map((chain) => chain.chainId)}
+          />
+          <div className="my-4">
+            <span className="text-lightCoral-500">
+              {formattedData[0].total.toLocaleString()}
+            </span>{" "}
+            contracts verified on {formattedData[0].name}
+          </div>
+        </div>
+        <div className="h-72 md:h-96 lg:h-[30rem] w-11/12 max-w-2xl mb-8 text-sm lg:text-base">
+          <ResponsiveContainer>
+            <BarChart
+              data={formattedData}
+              {...{
+                overflow: "visible",
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <Tooltip cursor={{ fill: "rgba(232, 239, 255, 0.4)" }} />
+              <XAxis
+                dataKey="name"
+                angle={30}
+                textAnchor="start"
+                interval={0} // Display every label
+              />
+              <YAxis
+                width={40}
+                dataKey="total"
+                domain={[
+                  0,
+                  (dataMax: number) => {
+                    const digits = dataMax.toString().length - 1;
+                    const roundedMax =
+                      Math.ceil(dataMax / 10 ** digits) * 10 ** digits;
+                    return roundedMax;
+                  },
+                ]}
+                tickFormatter={(tick) => tick.toLocaleString()}
+              />
+              <Legend verticalAlign="top" align="center" height={36} />
+              <Bar
+                name="Full Matches"
+                dataKey="fullMatch"
+                fill="#2B50AA"
+                stackId="a"
+              />
+              <Bar
+                name="Partial Matches"
+                dataKey="partialMatch"
+                fill="#7693DA"
+                stackId="a"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
