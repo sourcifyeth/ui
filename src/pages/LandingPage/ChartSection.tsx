@@ -66,12 +66,12 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
       // Sort Ethereum chains to start of the list
       const preferredChains = ["1", "11155111", "17000"];
       const aKeyPreferred = preferredChains.indexOf(aKey);
-      const bKeyPreffered = preferredChains.indexOf(bKey);
-      if (aKeyPreferred > -1 && bKeyPreffered > -1) {
-        return aKeyPreferred - bKeyPreffered;
+      const bKeyPreferred = preferredChains.indexOf(bKey);
+      if (aKeyPreferred > -1 && bKeyPreferred > -1) {
+        return aKeyPreferred - bKeyPreferred;
       }
       if (aKeyPreferred > -1) return -1;
-      if (bKeyPreffered > -1) return 1;
+      if (bKeyPreferred > -1) return 1;
 
       return (
         bStats.full_match +
