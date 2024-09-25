@@ -88,15 +88,11 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <h2 className="my-4 text-2xl font-bold text-ceruleanBlue-500">
-        {" "}
-        <span className="text-lightCoral-500">
-          {total.toLocaleString()}
-        </span>{" "}
-        contracts verified on Sourcify so far!
+      <h2 className="text-3xl font-semibold text-ceruleanBlue-500">
+        {total.toLocaleString()} contracts verified on Sourcify so far!
       </h2>
-      <div className="w-full my-8 flex lg:flex-row flex-col items-center lg:items-start justify-center">
-        <div className="lg:mr-14 lg:mt-8 w-64">
+      <div className="w-full mt-12 mb-8 flex flex-col items-center justify-center">
+        <div className="">
           <ChainSelect
             value={selectedChain}
             handleChainIdChange={(newChainId) =>
@@ -105,13 +101,11 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
             availableChains={sourcifyChains.map((chain) => chain.chainId)}
           />
           <div className="my-4">
-            <span className="text-lightCoral-500">
-              {formattedData[0].total.toLocaleString()}
-            </span>{" "}
-            contracts verified on {formattedData[0].name}
+            {formattedData[0].total.toLocaleString()} contracts verified on{" "}
+            {formattedData[0].name}
           </div>
         </div>
-        <div className="h-72 md:h-96 lg:h-[30rem] w-11/12 max-w-2xl mb-8 text-sm lg:text-base">
+        <div className="h-72 md:h-96 lg:h-[30rem] w-11/12 max-w-2xl mt-8 mb-12 text-sm lg:text-base">
           <ResponsiveContainer>
             <BarChart
               data={formattedData}
