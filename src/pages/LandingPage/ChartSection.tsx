@@ -92,7 +92,11 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
         {total.toLocaleString()} contracts verified on Sourcify so far!
       </h2>
       <div className="w-full mt-12 mb-8 flex flex-col items-center justify-center">
-        <div className="">
+        <div className="my-4 flex md:flex-row flex-col items-center">
+          <span className="text-nowrap md:mr-2">
+            {getFormattedChainData(selectedChain).total.toLocaleString()}{" "}
+            contracts verified on
+          </span>
           <ChainSelect
             value={selectedChain}
             handleChainIdChange={(newChainId) =>
@@ -100,10 +104,6 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
             }
             availableChains={sourcifyChains.map((chain) => chain.chainId)}
           />
-          <div className="my-4">
-            {formattedData[0].total.toLocaleString()} contracts verified on{" "}
-            {formattedData[0].name}
-          </div>
         </div>
         <div className="h-72 md:h-96 lg:h-[30rem] w-11/12 max-w-2xl mt-8 mb-12 text-sm lg:text-base">
           <ResponsiveContainer>
