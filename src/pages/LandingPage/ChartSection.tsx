@@ -89,7 +89,10 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
   return (
     <div className="w-full flex flex-col items-center justify-center">
       <h2 className="text-3xl font-semibold text-ceruleanBlue-500">
-        {total.toLocaleString()} contracts verified on Sourcify so far!
+        {total.toLocaleString()}
+      </h2>
+      <h2 className="text-2xl mt-3 font-semibold text-ceruleanBlue-500">
+        contracts verified on Sourcify so far!
       </h2>
       <div className="w-full mt-12 mb-8 flex flex-col items-center justify-center">
         <div className="my-4 flex md:flex-row flex-col items-center">
