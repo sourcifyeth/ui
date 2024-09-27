@@ -48,9 +48,9 @@ const Chart = ({ stats }: { stats: statsType | undefined }) => {
     const keyInt = parseInt(key);
     return {
       name:
-        Object.keys(sourcifyChainMap).length > 0 &&
-        sourcifyChainMap[keyInt] &&
-        (sourcifyChainMap[keyInt]?.name || sourcifyChainMap[keyInt].title), // Shorter name takes precedence
+        sourcifyChainMap?.[keyInt] &&
+        (sourcifyChainMap[keyInt]?.name || sourcifyChainMap[keyInt].title) +
+          ` (${keyInt})`, // Shorter name takes precedence
       fullMatch: stats[key]?.full_match ?? 0,
       partialMatch: stats[key]?.partial_match ?? 0,
       total: (stats[key]?.full_match ?? 0) + (stats[key]?.partial_match ?? 0),
