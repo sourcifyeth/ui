@@ -29,7 +29,6 @@ import Button from "../../components/Button";
 import Header from "../../components/Header";
 import {
   DOCS_URL,
-  IPFS_IPNS_GATEWAY_URL,
   REPOSITORY_SERVER_URL_FULL_MATCH,
 } from "../../constants";
 import ChartSection from "./ChartSection";
@@ -633,8 +632,8 @@ const LandingPage = () => {
               <FooterItem href="https://docs.sourcify.dev">
                 Documentation
               </FooterItem>
-              <FooterItem href={IPFS_IPNS_GATEWAY_URL}>
-                Contract Repository (IPFS)
+              <FooterItem href="https://docs.sourcify.dev/docs/repository/">
+                Contract Repository
               </FooterItem>
               <FooterItem href="https://github.com/sourcifyeth/assets">
                 Brand Resources
