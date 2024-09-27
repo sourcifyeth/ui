@@ -47,6 +47,13 @@
   padding-right: 1rem /* 16px */;
   height: 2.75rem;
 }
+
+.transparent-select .select-search__input {
+  border: none;
+  background-color: transparent;
+  outline: none;
+}
+
 .select-search__input:disabled {
   opacity: 0.3;
 }
@@ -89,7 +96,7 @@
 .select-search__option,
 .select-search__not-found {
   display: block;
-  height: 36px;
+  height: 42px !important;
   width: 100%;
   padding: 0 16px;
   --tw-bg-opacity: 1;
@@ -99,6 +106,7 @@
   font-size: 14px;
   text-align: left;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .select-search--multiple .select-search__option {

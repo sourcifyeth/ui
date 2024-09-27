@@ -9,6 +9,7 @@ type ChainSelectProps = {
   handleChainIdChange: SelectSearchProps["onChange"];
   id?: string;
   availableChains?: number[];
+  transparent?: boolean;
 };
 
 export default function ChainSelect({
@@ -16,6 +17,7 @@ export default function ChainSelect({
   handleChainIdChange,
   id,
   availableChains,
+  transparent,
 }: ChainSelectProps) {
   const { sourcifyChains } = useContext(Context);
 
@@ -34,7 +36,7 @@ export default function ChainSelect({
       onChange={handleChainIdChange}
       value={value}
       options={filteredChains.map((chain) => ({
-        name: `${chain.name || chain.title} (${chain.chainId}) `,
+        name: `${chain.title || chain.name} (${chain.chainId}) `,
         value: chain.chainId,
       }))}
       search
@@ -42,6 +44,7 @@ export default function ChainSelect({
       filterOptions={fuzzySearch}
       emptyMessage="Couldn't fetch Sourcify chains"
       placeholder="Choose chain"
+      className={`select-search ${transparent ? "transparent-select" : ""}`}
     />
   );
 }
