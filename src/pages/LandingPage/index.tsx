@@ -27,10 +27,7 @@ import discord from "../../assets/discord.svg";
 import matrix from "../../assets/matrix.svg";
 import Button from "../../components/Button";
 import Header from "../../components/Header";
-import {
-  DOCS_URL,
-  REPOSITORY_SERVER_URL_FULL_MATCH,
-} from "../../constants";
+import { DOCS_URL, REPOSITORY_SERVER_URL_FULL_MATCH } from "../../constants";
 import ChartSection from "./ChartSection";
 import sourceCode from "./Contract.sol";
 import CustomCarousel from "./CustomCarousel";
@@ -232,7 +229,11 @@ const LandingPage = () => {
               <p className="text-lg mt-4">
                 Sourcify's code is fully open-sourced. The repository of
                 verified contracts is completely public and decentralized by
-                being served over <A href={IPFS_IPNS_GATEWAY_URL}>IPFS</A>.
+                being served over{" "}
+                <A href="https://docs.sourcify.dev/docs/repository/file-repositories/#ipfs">
+                  IPFS
+                </A>
+                .
               </p>
             </div>
           </div>
