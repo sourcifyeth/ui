@@ -3,7 +3,8 @@ import { HiMenu } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import ReactTooltip from "react-tooltip";
 import { ReactComponent as Matrix } from "../../assets/icons/matrix.svg";
-import { ReactComponent as Twitter } from "../../assets/icons/twitter.svg";
+import { SiMatrix } from "react-icons/si";
+import { RiTwitterXFill } from "react-icons/ri";
 import logoText from "../../assets/logo-rounded.svg";
 import { DOCS_URL, PLAYGROUND_URL } from "../../constants";
 
@@ -23,9 +24,7 @@ const Header = () => {
       <div className="flex items-center">
         <Link to="/" className="flex items-center">
           <img src={logoText} alt="Sourcify logo" className="max-h-10" />
-          <span className="ml-3 text-gray-700 font-vt323 text-2xl">
-            sourcify.eth
-          </span>
+          <span className="ml-3 text-gray-700 font-vt323 text-2xl">sourcify.eth</span>
         </Link>
       </div>
       <button className="block md:hidden" onClick={toggleNav}>
@@ -43,28 +42,22 @@ const Header = () => {
             showNav || isDesktop ? "flex" : "hidden"
           } font-vt323 text-2xl text-gray-700 flex-col md:flex-row`}
         >
-          <Link
-            className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500"
-            to="/verifier"
-          >
+          <Link className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500" to="/verifier">
             Verify
           </Link>
-          <Link
-            className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500"
-            to="/lookup"
-          >
+          <Link className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500" to="/lookup">
             Lookup
           </Link>
-          <a
-            className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500"
-            href={DOCS_URL}
-          >
+          <a className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500" href={DOCS_URL}>
             Docs
           </a>
           <a
             className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500"
-            href={PLAYGROUND_URL}
+            href="https://docs.sourcify.dev/blog/"
           >
+            Blog
+          </a>
+          <a className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500" href={PLAYGROUND_URL}>
             Playground
           </a>
           <div className="flex items-center ml-2">
@@ -81,19 +74,17 @@ const Header = () => {
         </nav>
         {/* Icons */}
         <div className="flex items-center ml-2 mt-6 md:mt-0">
-          <a
-            className="px-2 hover-to-fill"
-            href="https://twitter.com/sourcifyeth"
-            data-tip="Twitter"
-          >
-            <Twitter className="h-[1.4rem] w-auto fill-gray-700 500" />
+          <a className="px-2 hover-to-fill" href="https://x.com/sourcifyeth" target="_blank" rel="noreferrer">
+            <RiTwitterXFill className="h-[1.4rem] w-auto fill-gray-700 500" />
           </a>
           <a
             className="pl-2 hover-to-fill"
             href="https://matrix.to/#/#ethereum_source-verify:gitter.im"
+            target="_blank"
+            rel="noreferrer"
             data-tip="Matrix chat"
           >
-            <Matrix className="h-6 w-auto fill-gray-700 hover:fill-ceruleanBlue-500" />
+            <SiMatrix className="h-6 w-auto fill-gray-700 hover:fill-ceruleanBlue-500" />
           </a>
         </div>
         {/* <Link
