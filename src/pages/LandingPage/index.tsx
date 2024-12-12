@@ -53,10 +53,7 @@ type ResourceListItemProps = {
 };
 const ResourceListItem = ({ children, href, date }: ResourceListItemProps) => (
   <li>
-    <a
-      href={href}
-      className="colored-bullet text-gray-600 hover:text-ceruleanBlue-500"
-    >
+    <a href={href} className="colored-bullet text-gray-600 hover:text-ceruleanBlue-500">
       <span className="link-underline">{children}</span>{" "}
       {date && <span className="text-gray-400 text-sm">{"- " + date}</span>}
     </a>
@@ -68,9 +65,7 @@ type FooterItemProps = {
 };
 const FooterItem = ({ href, children }: FooterItemProps) => (
   <a href={href}>
-    <li className="text-ceruleanBlue-300 hover:text-ceruleanBlue-100">
-      {children}
-    </li>
+    <li className="text-ceruleanBlue-300 hover:text-ceruleanBlue-100">{children}</li>
   </a>
 );
 
@@ -105,13 +100,11 @@ const LandingPage = () => {
           {/* Hero left */}
           <div className="flex flex-col justify-center">
             <h1 className="text-2xl md:text-3xl xl:text-4xl font-bold mb-4 leading-tight">
-              Source-verified smart contracts for transparency and better UX in
-              web3
+              Source-verified smart contracts for transparency and better UX in web3
             </h1>
             <h2 className="text-lg">
-              Sourcify enables transparent and human-readable smart contract
-              interactions through automated Solidity contract verification,
-              contract metadata, and NatSpec comments.
+              Sourcify enables transparent and human-readable smart contract interactions through automated Solidity
+              contract verification, contract metadata, and NatSpec comments.
             </h2>
             <div className="flex flex-col items-center sm:flex-row justify-evenly mt-4">
               <Link to="/verifier">
@@ -126,14 +119,8 @@ const LandingPage = () => {
           </div>
 
           {/* Hero right */}
-          <div
-            className="hidden md:flex items-center justify-center overflow-hidden"
-            id=""
-          >
-            <div
-              className="flex items-center justify-center relative w-full h-full"
-              id="hero-image"
-            >
+          <div className="hidden md:flex items-center justify-center overflow-hidden" id="">
+            <div className="flex items-center justify-center relative w-full h-full" id="hero-image">
               {/* Source code visual */}
               <div
                 className="absolute mt-16 mr-16 xl:mt-32 xl:mr-32 z-10 transition-all duration-300 ease-in-out md:text-[0.6rem] lg:text-[0.7rem]"
@@ -166,11 +153,7 @@ const LandingPage = () => {
                   </div>
                 </div>
                 <div className="">
-                  <img
-                    src={ethereum}
-                    className="h-6 inline mb-1 -ml-1"
-                    alt="eth icon"
-                  />
+                  <img src={ethereum} className="h-6 inline mb-1 -ml-1" alt="eth icon" />
                   <a
                     href={`${REPOSITORY_SERVER_URL_FULL_MATCH}/5/0x00878Ac0D6B8d981ae72BA7cDC967eA0Fae69df4`}
                     className="link-underline break-all"
@@ -199,20 +182,13 @@ const LandingPage = () => {
             </div>
           </div>
         </section>
-        <button
-          className="my-4 flex justify-center"
-          onClick={() => scrollIntoView(aboutRef)}
-        >
+        <button className="my-4 flex justify-center" onClick={() => scrollIntoView(aboutRef)}>
           <BsChevronCompactDown className="inline text-4xl animate-bounce text-gray-500" />
         </button>
       </div>
 
       {/* About section */}
-      <section
-        className="px-8 md:px-12 lg:px-48 bg-white py-16"
-        ref={aboutRef}
-        id="about"
-      >
+      <section className="px-8 md:px-12 lg:px-48 bg-white py-16" ref={aboutRef} id="about">
         <div className="mt-12">
           <div className="flex items-center flex-col md:flex-row">
             <div className="flex-1" data-aos="fade-right">
@@ -223,17 +199,11 @@ const LandingPage = () => {
               />
             </div>
             <div className="flex-1 mt-4 md:mt-0" data-aos="fade-left">
-              <h1 className="text-2xl text-ceruleanBlue-500 font-bold">
-                Fully open-source and decentralized
-              </h1>{" "}
+              <h1 className="text-2xl text-ceruleanBlue-500 font-bold">Fully open-source and decentralized</h1>{" "}
               <p className="text-lg mt-4">
-                Sourcify's code is fully open-sourced. The repository of
-                verified contracts is completely public and decentralized by
-                being served over{" "}
-                <A href="https://docs.sourcify.dev/docs/repository/file-repositories/#ipfs">
-                  IPFS
-                </A>
-                .
+                Sourcify's code is fully open-sourced. The repository of verified contracts is completely public and
+                decentralized by being served over{" "}
+                <A href="https://docs.sourcify.dev/docs/repository/file-repositories/#ipfs">IPFS</A>.
               </p>
             </div>
           </div>
@@ -241,17 +211,12 @@ const LandingPage = () => {
         <div className="my-24 md:text-right">
           <div className="flex items-center flex-col-reverse md:flex-row">
             <div className="flex-1  mt-4 md:mt-0" data-aos="fade-right">
-              <h1 className="text-2xl text-ceruleanBlue-500 font-bold">
-                Next-level smart contract verification
-              </h1>{" "}
+              <h1 className="text-2xl text-ceruleanBlue-500 font-bold">Next-level smart contract verification</h1>{" "}
               <p className="text-lg mt-4">
-                <A href="https://docs.sourcify.dev/docs/full-vs-partial-match/">
-                  Full matches
-                </A>{" "}
-                on Sourcify cryptographically guarantee the verified source code
-                is identical to the original deployed contract. Our monitoring
-                service observes contract creations and verifies the source
-                codes automatically if published to IPFS.
+                <A href="https://docs.sourcify.dev/docs/full-vs-partial-match/">Full matches</A> on Sourcify
+                cryptographically guarantee the verified source code is identical to the original deployed contract. Our
+                monitoring service observes contract creations and verifies the source codes automatically if published
+                to IPFS.
               </p>
             </div>
             <div className="flex-1" data-aos="fade-left">
@@ -265,28 +230,15 @@ const LandingPage = () => {
         </div>
         <div className="mb-12" data-aos="fade-left">
           <div className="flex items-center flex-col md:flex-row">
-            <div
-              className="flex-1 flex md:justify-end  mt-4 md:mt-0"
-              data-aos="fade-right"
-            >
-              <img
-                src={decode}
-                alt="Decoding contract interaction with Sourcify"
-                className="md:pl-48 md:pr-8"
-              />
+            <div className="flex-1 flex md:justify-end  mt-4 md:mt-0" data-aos="fade-right">
+              <img src={decode} alt="Decoding contract interaction with Sourcify" className="md:pl-48 md:pr-8" />
             </div>
             <div className="flex-1 mt-4 md:mt-0" data-aos="fade-left">
-              <h1 className="text-2xl text-ceruleanBlue-500 font-bold">
-                Human-readable contract interactions
-              </h1>
+              <h1 className="text-2xl text-ceruleanBlue-500 font-bold">Human-readable contract interactions</h1>
               <p className="text-lg">
-                Goodbye <i>YOLO signing</i> 👋. Decode contract interactions
-                with the verified contract's ABI and{" "}
-                <A href="https://docs.soliditylang.org/en/develop/natspec-format.html">
-                  NatSpec comments
-                </A>{" "}
-                . Show wallet users meaningful information instead of hex
-                strings.
+                Goodbye <i>YOLO signing</i> 👋. Decode contract interactions with the verified contract's ABI and{" "}
+                <A href="https://docs.soliditylang.org/en/develop/natspec-format.html">NatSpec comments</A> . Show
+                wallet users meaningful information instead of hex strings.
               </p>
             </div>
           </div>
@@ -295,32 +247,19 @@ const LandingPage = () => {
 
       <section className="px-8 md:px-12 lg:px-24 bg-ceruleanBlue-500 py-16">
         <div className="mt-4 flex flex-col md:flex-row items-center justify-center">
-          <div
-            className="flex-1 mb-8 md:mb-0 md:pr-8 text-center md:text-left"
-            data-aos="fade-right"
-          >
+          <div className="flex-1 mb-8 md:mb-0 md:pr-8 text-center md:text-left" data-aos="fade-right">
             <h1 className="text-3xl text-white font-bold">Get in touch</h1>
-            <p className="text-lg text-white mt-4">
-              Join our community using the platform you prefer
-            </p>
+            <p className="text-lg text-white mt-4">Join our community using the platform you prefer</p>
           </div>
 
-          <div
-            className="flex-1 flex flex-col items-center"
-            data-aos="fade-left"
-          >
+          <div className="flex-1 flex flex-col items-center" data-aos="fade-left">
             <a
               href="https://matrix.to/#/#ethereum_source-verify:gitter.im"
               rel="noreferrer"
               target="_blank"
               className="bg-white rounded-xl p-4 w-64 mb-4 text-center"
             >
-              <img
-                src={matrix}
-                alt="Matrix logo"
-                className="w-28 m-auto"
-                style={{ height: "35px" }}
-              />
+              <img src={matrix} alt="Matrix logo" className="w-28 m-auto" style={{ height: "35px" }} />
             </a>
 
             <a
@@ -329,12 +268,7 @@ const LandingPage = () => {
               target="_blank"
               className="bg-white rounded-xl p-4 w-64 mb-4 text-center"
             >
-              <img
-                src={discord}
-                alt="Discord logo"
-                className="w-28 m-auto"
-                style={{ height: "35px" }}
-              />
+              <img src={discord} alt="Discord logo" className="w-28 m-auto" style={{ height: "35px" }} />
             </a>
 
             <a
@@ -345,10 +279,7 @@ const LandingPage = () => {
               #IRC
             </a>
 
-            <a
-              className="bg-white rounded-xl font-bold p-4 w-64 text-center"
-              href="mailto:hello@sourcify.dev"
-            >
+            <a className="bg-white rounded-xl font-bold p-4 w-64 text-center" href="mailto:hello@sourcify.dev">
               hello@sourcify.dev
             </a>
           </div>
@@ -356,22 +287,12 @@ const LandingPage = () => {
       </section>
 
       {/* Supported Networks */}
-      <section
-        className="px-8 md:px-12 lg:px-24 bg-gray-100 py-16"
-        data-aos="fade"
-      >
-        <h1 className="text-3xl text-ceruleanBlue-500 font-bold">
-          Supported Chains
-        </h1>
+      <section className="px-8 md:px-12 lg:px-24 bg-gray-100 py-16" data-aos="fade">
+        <h1 className="text-3xl text-ceruleanBlue-500 font-bold">Supported Chains</h1>
         <div className="mt-8 text-lg">
           <p>Sourcify is multi-chain and works on all EVM based networks.</p>
           {sourcifyChains.length > 0 && (
-            <p>
-              {" "}
-              Currently we support{" "}
-              {sourcifyChains.filter((c) => c.supported).length} different
-              chains{" "}
-            </p>
+            <p> Currently we support {sourcifyChains.filter((c) => c.supported).length} different chains </p>
           )}
         </div>
         <ReactTooltip effect="solid" />
@@ -406,12 +327,7 @@ const LandingPage = () => {
             className="rounded-full h-12 md:h-24 transition-opacity mx-4 my-4"
             alt="Boba network logo"
           />
-          <img
-            src={celo}
-            data-tip="Celo"
-            className="h-12 md:h-24 transition-opacity mx-4 my-4"
-            alt="Celo logo"
-          />
+          <img src={celo} data-tip="Celo" className="h-12 md:h-24 transition-opacity mx-4 my-4" alt="Celo logo" />
           <img
             src={xdai}
             data-tip="Gnosis Chain (xDai)"
@@ -446,13 +362,8 @@ const LandingPage = () => {
       </section>
 
       {/* Integrations & Tools */}
-      <section
-        className="px-8 md:px-12 lg:px-24 bg-white py-16"
-        data-aos="fade"
-      >
-        <h1 className="text-3xl text-ceruleanBlue-500 font-bold">
-          Integrations
-        </h1>
+      <section className="px-8 md:px-12 lg:px-24 bg-white py-16" data-aos="fade">
+        <h1 className="text-3xl text-ceruleanBlue-500 font-bold">Integrations</h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12 text-center md:text-left">
           <div className="w-full">
             <PoweredBySourcify />
@@ -480,145 +391,15 @@ const LandingPage = () => {
       </section>
 
       {/* Verified contract stats */}
-      <section
-        className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-16"
-        data-aos="fade"
-      >
+      <section className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-16" data-aos="fade">
         <ChartSection />
       </section>
 
-      {/* Talks & Articles */}
-      <section
-        className="px-8 md:px-12 lg:px-24 bg-white py-16"
-        data-aos="fade"
-      >
-        <h1 className="text-3xl text-ceruleanBlue-500 font-bold">Resources</h1>
-        <div className="flex flex-col items-center mt-8">
-          <iframe
-            className="sm:w-[560px] sm:h-[315px] w-[280px] h-[157.5px]"
-            src="https://www.youtube.com/embed/Ggm82pnalCI"
-            title="YouTube video player"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          ></iframe>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-8 lg:mx-32">
-            <ul>
-              <h3 className="text-ceruleanBlue-500 uppercase text-lg font-semibold">
-                📖 Read
-              </h3>
-              <ResourceListItem
-                href="https://docs.sourcify.dev/blog/verify-contracts-perfectly/"
-                date="18 Aug 2022"
-              >
-                Sourcify Blog - Verify Contracts Perrrrrfectly
-              </ResourceListItem>
-              <ResourceListItem
-                href="https://blog.soliditylang.org/2020/06/25/sourcify-faq/"
-                date="25 Jun 2020"
-              >
-                All you need to know about Sourcify
-              </ResourceListItem>
-              <ResourceListItem
-                href="https://blog.soliditylang.org/2020/06/02/Sourcify-Towards-Safer-Contract-Interaction-for-Humans/"
-                date="02 June 2020"
-              >
-                Sourcify: Towards Safer Contract Interactions for Humans
-              </ResourceListItem>
-              <ResourceListItem
-                href="https://news.shardlabs.io/how-smart-contracts-can-be-automatically-verified-28ee1c5cf941"
-                date="29 Jan 2021"
-              >
-                How Smart Contracts Can Be Automatically Verified
-              </ResourceListItem>
-              {showMoreReadResources ? (
-                <>
-                  <ResourceListItem
-                    href="https://medium.com/remix-ide/verify-contracts-on-remix-with-sourcify-2912004d9c84"
-                    date="26 Jun 2020"
-                  >
-                    Verify Contracts on Remix with Sourcify
-                  </ResourceListItem>
-                  <ResourceListItem
-                    href="https://soliditydeveloper.com/decentralized-etherscan/"
-                    date="21 Nov 2020"
-                  >
-                    The future of a Decentralized Etherscan
-                  </ResourceListItem>
-                </>
-              ) : (
-                <button
-                  className="text-ceruleanBlue-500"
-                  onClick={() => setShowMoreReadResources(true)}
-                >
-                  Show more
-                </button>
-              )}
-            </ul>
-            <ul>
-              <h3 className="text-ceruleanBlue-500 uppercase text-lg font-semibold">
-                📽 Watch
-              </h3>
-
-              <ResourceListItem
-                href="https://www.youtube.com/watch?v=HOATnus4oL0"
-                date="10 Jun 2022"
-              >
-                Franziska Heintel - Towards Trust-Minimized Transactions and a
-                Transparent Web3
-              </ResourceListItem>
-              <ResourceListItem
-                href="https://www.youtube.com/watch?v=z5D613Qt7Kc"
-                date="10 Oct 2021"
-              >
-                Next Level Source Code Verification w: Sourcify
-              </ResourceListItem>
-              <ResourceListItem
-                href="https://vimeo.com/639594632"
-                date="21 Oct 2021"
-              >
-                Goodbye YOLO-Signing
-              </ResourceListItem>
-              {showMoreWatchResources ? (
-                <>
-                  <ResourceListItem
-                    href="https://www.youtube.com/watch?v=Zc_fJElIooQ"
-                    date="22 Jul 2021"
-                  >
-                    Franziska Heintel : Sourcify: Towards Safer Contract
-                    Interactions for Humans
-                  </ResourceListItem>
-                  <ResourceListItem
-                    href="https://www.youtube.com/watch?v=uYvbBP3GEFk&list=PLaM7G4Llrb7xlGxwlYGTy1T-GHpytE3RC&index=23"
-                    date="13 May 2020"
-                  >
-                    Verify all the sources by Ligi
-                  </ResourceListItem>
-                  <ResourceListItem
-                    href="https://www.youtube.com/watch?v=_73OrDbpxoY&list=PLrtFm7U0BIfUH7g1-blb-eYFgzOYWhvqm&index=13"
-                    date="04 Mar 2020"
-                  >
-                    Christian Reitwiessner: Improving Wallet UX and Security
-                    through a Decentralized Metadata and Source Code Repository
-                  </ResourceListItem>
-                </>
-              ) : (
-                <button
-                  className="text-ceruleanBlue-500"
-                  onClick={() => setShowMoreWatchResources(true)}
-                >
-                  Show more
-                </button>
-              )}
-            </ul>
-          </div>
-        </div>
-      </section>
-
+      {/* Footer */}
       <footer className="text-center md:text-left px-8 py-8 md:px-48 md:py-16 bg-ceruleanBlue-500 text-white text-xl">
         <nav className="font-vt323 grid md:grid-cols-3 gap-8">
           <div>
-            <h3 className="uppercase font-bold text-ceruleanBlue-100">
-              Internal Links
-            </h3>
+            <h3 className="uppercase font-bold text-ceruleanBlue-100">Internal Links</h3>
             <ul>
               <FooterItem href="/verifier">Contract Verifier</FooterItem>
               <FooterItem href="/lookup">Contract Lookup</FooterItem>
@@ -626,41 +407,21 @@ const LandingPage = () => {
             </ul>
           </div>
           <div>
-            <h3 className="uppercase font-bold text-ceruleanBlue-100">
-              External Links
-            </h3>
+            <h3 className="uppercase font-bold text-ceruleanBlue-100">External Links</h3>
             <ul>
-              <FooterItem href="https://docs.sourcify.dev">
-                Documentation
-              </FooterItem>
-              <FooterItem href="https://docs.sourcify.dev/docs/repository/">
-                Contract Repository
-              </FooterItem>
-              <FooterItem href="https://github.com/sourcifyeth/assets">
-                Brand Resources
-              </FooterItem>
+              <FooterItem href="https://docs.sourcify.dev">Documentation</FooterItem>
+              <FooterItem href="https://docs.sourcify.dev/docs/repository/">Contract Repository</FooterItem>
+              <FooterItem href="https://github.com/sourcifyeth/assets">Brand Resources</FooterItem>
             </ul>
           </div>
           <div>
-            <h3 className="uppercase font-bold text-ceruleanBlue-100">
-              Socials
-            </h3>
+            <h3 className="uppercase font-bold text-ceruleanBlue-100">Socials</h3>
             <ul>
-              <FooterItem href="https://twitter.com/sourcifyeth">
-                Twitter
-              </FooterItem>
-              <FooterItem href="https://discord.gg/6aqd9cfZ9s">
-                Discord
-              </FooterItem>
-              <FooterItem href="https://matrix.to/#/#ethereum_source-verify:gitter.im">
-                Matrix
-              </FooterItem>
-              <FooterItem href="https://github.com/ethereum/sourcify">
-                GitHub (main)
-              </FooterItem>
-              <FooterItem href="https://github.com/sourcifyeth">
-                GitHub (organization)
-              </FooterItem>
+              <FooterItem href="https://twitter.com/sourcifyeth">Twitter</FooterItem>
+              <FooterItem href="https://discord.gg/6aqd9cfZ9s">Discord</FooterItem>
+              <FooterItem href="https://matrix.to/#/#ethereum_source-verify:gitter.im">Matrix</FooterItem>
+              <FooterItem href="https://github.com/ethereum/sourcify">GitHub (main)</FooterItem>
+              <FooterItem href="https://github.com/sourcifyeth">GitHub (organization)</FooterItem>
               <FooterItem href="mailto:hello@sourcify.dev">E-Mail</FooterItem>
             </ul>
           </div>
