@@ -1,15 +1,14 @@
 // AnimateOnScroll
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { useContext, useRef, useState, RefObject } from "react";
-import { BsChevronCompactDown } from "react-icons/bs";
+import { useContext, useRef, useState, RefObject, useEffect } from "react";
+import { BsCheckCircleFill, BsChevronCompactDown } from "react-icons/bs";
 import { HiCheckCircle } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
 import solidityLang from "react-syntax-highlighter/dist/esm/languages/prism/solidity";
-import lightStyle from "react-syntax-highlighter/dist/esm/styles/prism/ghcolors";
-import codeStyle from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
+import codeStyle from "react-syntax-highlighter/dist/esm/styles/prism/dracula";
 import ReactTooltip from "react-tooltip";
 import arbitrum from "../../assets/chains/arbitrum.svg";
 import avalanche from "../../assets/chains/avalanche.png";
@@ -35,6 +34,9 @@ import metadata from "./metadata.json";
 import PoweredBySourcify from "./PoweredBySourcify";
 import ToolsPlugin from "./ToolsPlugin";
 import { Context } from "../../Context";
+import { bytecode, solidityCode } from "./example";
+import ethereumLogo from "../../assets/chains/ethereum.png";
+import { FaEthereum } from "react-icons/fa";
 
 AOS.init({
   duration: 800,
@@ -82,8 +84,59 @@ const LandingPage = () => {
   const [showMoreReadResources, setShowMoreReadResources] = useState(false);
   const [showMoreWatchResources, setShowMoreWatchResources] = useState(false);
   const { sourcifyChains } = useContext(Context);
+  const [isHovering, setIsHovering] = useState(false);
+  const animationRef = useRef<number>();
+  const MAX_VELOCITY = 0.3;
+  const MIN_VELOCITY = 0.1;
+  const velocityRef = useRef({ x: MAX_VELOCITY, y: MAX_VELOCITY }); // Store velocity
+  const positionRef = useRef({ x: 50, y: 50 }); // Store position
 
   const aboutRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const element = document.querySelector(".spotlight-effect") as HTMLElement;
+    if (!element) return;
+
+    const animate = () => {
+      if (isHovering) return;
+
+      // Update position based on velocity
+      positionRef.current.x += velocityRef.current.x;
+      positionRef.current.y += velocityRef.current.y;
+
+      // Bounce off edges
+      if (positionRef.current.x <= 20 || positionRef.current.x >= 80) {
+        velocityRef.current.x *= -1;
+        // Add some randomness to the bounce
+        velocityRef.current.x =
+          (Math.random() * (MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY) * Math.sign(velocityRef.current.x);
+      }
+      if (positionRef.current.y <= 20 || positionRef.current.y >= 80) {
+        velocityRef.current.y *= -1;
+        // Add some randomness to the bounce
+        velocityRef.current.y =
+          (Math.random() * (MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY) * Math.sign(velocityRef.current.y);
+      }
+
+      // Keep velocity within bounds
+      velocityRef.current.x = Math.max(Math.min(velocityRef.current.x, 3), -3);
+      velocityRef.current.y = Math.max(Math.min(velocityRef.current.y, 3), -3);
+
+      // Apply position
+      element.style.setProperty("--x", `${positionRef.current.x}%`);
+      element.style.setProperty("--y", `${positionRef.current.y}%`);
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isHovering]);
 
   const scrollIntoView = (ref: RefObject<HTMLElement>) => {
     const el = ref?.current;
@@ -93,99 +146,97 @@ const LandingPage = () => {
     el.scrollIntoView({ behavior: "smooth" });
   };
   return (
-    <div>
-      <div className="h-screen flex flex-col  px-8 md:px-12 lg:px-24 bg-gray-100 ">
-        <Header />
-        <section className="grid md:grid-cols-2 gap-8 flex-1">
-          {/* Hero left */}
-          <div className="flex flex-col justify-center">
-            <h1 className="text-2xl md:text-3xl xl:text-4xl font-bold mb-4 leading-tight">
-              Source-verified smart contracts for transparency and better UX in web3
-            </h1>
-            <h2 className="text-lg">
-              Sourcify enables transparent and human-readable smart contract interactions through automated Solidity
-              contract verification, contract metadata, and NatSpec comments.
-            </h2>
-            <div className="flex flex-col items-center sm:flex-row justify-evenly mt-4">
-              <Link to="/verifier">
-                <Button className="uppercase mt-4">Verify Contract</Button>
-              </Link>
-              <Link to="/lookup">
-                <Button className="uppercase mt-4" type="secondary">
-                  Lookup Contract
-                </Button>
-              </Link>
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <Header className="px-24 h-24" />
+      <section className="min-h-screen flex flex-col justify-center px-8 md:px-12 -mt-20 pt-20">
+        <div className="flex flex-col justify-center items-center">
+          {/* Hero section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 flex-1">
+            {/* Hero left */}
+            <div className="flex flex-col justify-center">
+              <h1 className="text-2xl md:text-7xl font-bold mb-4">
+                <div className="opacity-0 animate-fade-up" style={{ animationDelay: "400ms" }}>
+                  <div>Source Code</div>
+                  <span className="relative">
+                    Verification
+                    <div
+                      className="absolute bottom-1 -right-4 bg-gray-100 rounded-full opacity-0 animate-fade-up"
+                      style={{ animationDelay: "700ms" }}
+                    >
+                      <BsCheckCircleFill className="text-green-500 rotate-12" size={30} />
+                    </div>
+                  </span>
+                </div>
+                <div className="text-4xl my-2 opacity-0 animate-fade-up" style={{ animationDelay: "800ms" }}>
+                  for
+                </div>
+                <div className="flex flex-col gap-2 opacity-0 animate-fade-up" style={{ animationDelay: "1000ms" }}>
+                  <div className="flex flex-row items-center gap-2">
+                    <span>Ethereum</span>
+                    <FaEthereum className="" />
+                  </div>
+                  <div>Smart Contracts</div>
+                </div>
+              </h1>
+              <h2 className="text-lg opacity-0 animate-fade-up" style={{ animationDelay: "1500ms" }}>
+                Open-source, open-data, decentralized
+              </h2>
             </div>
-          </div>
 
-          {/* Hero right */}
-          <div className="hidden md:flex items-center justify-center overflow-hidden" id="">
-            <div className="flex items-center justify-center relative w-full h-full" id="hero-image">
-              {/* Source code visual */}
+            {/* Hero right */}
+            <div
+              className="relative h-96 w-[30rem] flex items-center justify-center opacity-0 animate-fade-up"
+              style={{ animationDelay: "100ms" }}
+            >
               <div
-                className="absolute mt-16 mr-16 xl:mt-32 xl:mr-32 z-10 transition-all duration-300 ease-in-out md:text-[0.6rem] lg:text-[0.7rem]"
-                id="hero-source-code"
+                className="absolute h-96 w-[30rem] z-10 spotlight-effect rounded-xl overflow-hidden "
+                style={{
+                  maskImage: "radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent 64px, black 128px)",
+                  WebkitMaskImage:
+                    "radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent 64px, black 128px)",
+                  background: "var(--code-bg, #1E1E1E)",
+                }}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                onMouseMove={(e) => {
+                  if (!isHovering) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.clientX - rect.left) / rect.width) * 100;
+                  const y = ((e.clientY - rect.top) / rect.height) * 100;
+                  e.currentTarget.style.setProperty("--x", `${x}%`);
+                  e.currentTarget.style.setProperty("--y", `${y}%`);
+                }}
               >
+                <div className="p-4 text-xs md:text-sm text-gray-100 break-all bg-[rgb(40,42,54)]">{bytecode}</div>
+              </div>
+              <div className="absolute h-96 w-[30rem] rounded-xl overflow-hidden shadow-xl">
                 <SyntaxHighlighter
                   language="solidity"
+                  customStyle={{ margin: 0 }}
                   style={codeStyle}
-                  className="rounded-md"
-                  customStyle={{
-                    fontSize: "inherit",
-                    lineHeight: "1.2",
-                    padding: "1rem",
-                  }}
-                  wrapLongLines
-                  codeTagProps={{ style: { display: "block" } }}
+                  className="h-full w-full p-0 m-0 text-xs md:text-sm"
                 >
-                  {sourceCode}
+                  {solidityCode}
                 </SyntaxHighlighter>
-              </div>
-              {/* Verification visual */}
-              <div
-                className="absolute mb-16 ml-16 lg:ml-32 z-0 transition-all duration-300 ease-in-out bg-ceruleanBlue-100 px-4 py-2 rounded-md border-2 border-ceruleanBlue-400 text-xs lg:text-sm"
-                id="hero-bytecode"
-              >
-                <div className="py-4">
-                  <div className=" text-green-600 flex items-center">
-                    <HiCheckCircle className="text-green-600 inline mr-1 align-middle text-xl" />
-                    Contract fully verified
-                  </div>
-                </div>
-                <div className="">
-                  <img src={ethereum} className="h-6 inline mb-1 -ml-1" alt="eth icon" />
-                  <a
-                    href={`${REPOSITORY_SERVER_URL_FULL_MATCH}/5/0x00878Ac0D6B8d981ae72BA7cDC967eA0Fae69df4`}
-                    className="link-underline break-all"
-                  >
-                    <b>Ethereum Görli</b> <br />
-                    0x00878Ac0D6B8d981ae72BA7cDC967eA0Fae69df4
-                  </a>
-                </div>
-                <div className="mt-4 text-[0.6rem]">
-                  <p className="text-sm">metadata.json</p>
-                  <SyntaxHighlighter
-                    language="json"
-                    style={lightStyle}
-                    className="rounded-md h-48 xl:h-64 p-3 m-3"
-                    customStyle={{
-                      fontSize: "inherit",
-                      lineHeight: "1.2",
-                    }}
-                    wrapLongLines
-                    codeTagProps={{ style: { display: "block" } }}
-                  >
-                    {metadata}
-                  </SyntaxHighlighter>
-                </div>
               </div>
             </div>
           </div>
-        </section>
-        <button className="my-4 flex justify-center" onClick={() => scrollIntoView(aboutRef)}>
-          <BsChevronCompactDown className="inline text-4xl animate-bounce text-gray-500" />
-        </button>
-      </div>
+          {/* Buttons */}
+          <div
+            className="flex flex-col justify-center sm:flex-row gap-4 mt-12 opacity-0 animate-fade-up"
+            style={{ animationDelay: "1700ms" }}
+          >
+            <Link to="/verifier">
+              <Button className="uppercase mt-4">Verify Contract</Button>
+            </Link>
+            <a href={DOCS_URL}>
+              <Button className="uppercase mt-4" type="secondary">
+                Documentation
+              </Button>
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* About section */}
       <section className="px-8 md:px-12 lg:px-48 bg-white py-16" ref={aboutRef} id="about">

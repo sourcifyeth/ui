@@ -36,7 +36,7 @@ const Header = ({ className }: { className?: string }) => {
   };
   return (
     <nav
-      className={`flex justify-between py-4 md:py-6 w-full flex-wrap md:flex-nowrap sticky top-0 backdrop-filter backdrop-blur-sm bg-gray-100 bg-opacity-70 ${
+      className={`flex items-centerjustify-between w-full flex-wrap md:flex-nowrap sticky top-0 backdrop-filter backdrop-blur-sm bg-gray-100 bg-opacity-70 ${
         isScrolled ? "shadow-md" : ""
       } z-50 ${className}`}
     >
