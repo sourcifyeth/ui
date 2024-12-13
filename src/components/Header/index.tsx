@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HiMenu } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import ReactTooltip from "react-tooltip";
@@ -8,18 +8,38 @@ import { RiTwitterXFill } from "react-icons/ri";
 import logoText from "../../assets/logo-rounded.svg";
 import { DOCS_URL, PLAYGROUND_URL } from "../../constants";
 
-const Header = () => {
+const Header = ({ className }: { className?: string }) => {
   const [showNav, setShowNav] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768); // tailwind md=768px
-  window.addEventListener("resize", () => {
-    setIsDesktop(window.innerWidth > 768);
-  });
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth > 768);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const toggleNav = () => {
     setShowNav((prev) => !prev);
   };
   return (
-    <header className="flex justify-between py-4 md:py-6 w-auto flex-wrap md:flex-nowrap">
+    <nav
+      className={`flex justify-between py-4 md:py-6 w-full flex-wrap md:flex-nowrap sticky top-0 backdrop-filter backdrop-blur-sm bg-gray-100 bg-opacity-70 ${
+        isScrolled ? "shadow-md" : ""
+      } z-50 ${className}`}
+    >
       <ReactTooltip effect="solid" />
       <div className="flex items-center">
         <Link to="/" className="flex items-center">
@@ -95,7 +115,7 @@ const Header = () => {
           <span className="inline md:hidden">Server status: </span> ✅
         </Link> */}
       </div>
-    </header>
+    </nav>
   );
 };
 
