@@ -49,14 +49,7 @@ type ResourceListItemProps = {
   href: string;
   date?: string;
 };
-const ResourceListItem = ({ children, href, date }: ResourceListItemProps) => (
-  <li>
-    <a href={href} className="colored-bullet text-gray-600 hover:text-ceruleanBlue-500">
-      <span className="link-underline">{children}</span>{" "}
-      {date && <span className="text-gray-400 text-sm">{"- " + date}</span>}
-    </a>
-  </li>
-);
+
 type FooterItemProps = {
   href?: string;
   children: string;
@@ -77,8 +70,6 @@ const A = ({ href, children }: FooterItemProps) => (
 //////////////////////////////////
 
 const LandingPage = () => {
-  const [showMoreReadResources, setShowMoreReadResources] = useState(false);
-  const [showMoreWatchResources, setShowMoreWatchResources] = useState(false);
   const { sourcifyChains } = useContext(Context);
   const [isHovering, setIsHovering] = useState(false);
   const animationRef = useRef<number>();
