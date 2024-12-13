@@ -191,9 +191,9 @@ const LandingPage = () => {
               <div
                 className="absolute h-96 w-[30rem] z-10 spotlight-effect rounded-xl overflow-hidden "
                 style={{
-                  maskImage: "radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent 64px, black 128px)",
+                  maskImage: "radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent 80px, black 128px)",
                   WebkitMaskImage:
-                    "radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent 64px, black 128px)",
+                    "radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent 80px, black 128px)",
                   background: "var(--code-bg, #1E1E1E)",
                 }}
                 onMouseEnter={() => setIsHovering(true)}
@@ -207,14 +207,14 @@ const LandingPage = () => {
                   e.currentTarget.style.setProperty("--y", `${y}%`);
                 }}
               >
-                <div className="p-4 text-xs md:text-sm text-gray-100 break-all bg-[rgb(40,42,54)]">{bytecode}</div>
+                <div className="p-4 text-xs text-gray-100 break-all bg-[rgb(40,42,54)]">{bytecode}</div>
               </div>
               <div className="absolute h-96 w-[30rem] rounded-xl overflow-hidden shadow-xl">
                 <SyntaxHighlighter
                   language="solidity"
                   customStyle={{ margin: 0 }}
                   style={codeStyle}
-                  className="h-full w-full p-0 m-0 text-xs md:text-sm"
+                  className="h-full w-full p-0 m-0 text-xs"
                 >
                   {solidityCode}
                 </SyntaxHighlighter>
