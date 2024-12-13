@@ -2,8 +2,7 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useContext, useRef, useState, RefObject, useEffect } from "react";
-import { BsCheckCircleFill, BsChevronCompactDown } from "react-icons/bs";
-import { HiCheckCircle } from "react-icons/hi";
+import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
@@ -26,16 +25,13 @@ import discord from "../../assets/discord.svg";
 import matrix from "../../assets/matrix.svg";
 import Button from "../../components/Button";
 import Header from "../../components/Header";
-import { DOCS_URL, REPOSITORY_SERVER_URL_FULL_MATCH } from "../../constants";
+import { DOCS_URL } from "../../constants";
 import ChartSection from "./ChartSection";
-import sourceCode from "./Contract.sol";
 import CustomCarousel from "./CustomCarousel";
-import metadata from "./metadata.json";
 import PoweredBySourcify from "./PoweredBySourcify";
 import ToolsPlugin from "./ToolsPlugin";
 import { Context } from "../../Context";
 import { bytecode, solidityCode } from "./example";
-import ethereumLogo from "../../assets/chains/ethereum.png";
 import { FaEthereum } from "react-icons/fa";
 
 AOS.init({
