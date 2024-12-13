@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { HiMenu } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import ReactTooltip from "react-tooltip";
-import { ReactComponent as Matrix } from "../../assets/icons/matrix.svg";
 import { SiMatrix } from "react-icons/si";
 import { RiTwitterXFill } from "react-icons/ri";
 import logoText from "../../assets/logo-rounded.svg";

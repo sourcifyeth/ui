@@ -1,7 +1,7 @@
 // AnimateOnScroll
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { useContext, useRef, useState, RefObject, useEffect } from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -41,14 +41,6 @@ AOS.init({
 
 SyntaxHighlighter.registerLanguage("solidity", solidityLang);
 SyntaxHighlighter.registerLanguage("json", jsonLang);
-
-// Helper components
-
-type ResourceListItemProps = {
-  children: string;
-  href: string;
-  date?: string;
-};
 
 type FooterItemProps = {
   href?: string;
@@ -125,13 +117,6 @@ const LandingPage = () => {
     };
   }, [isHovering]);
 
-  const scrollIntoView = (ref: RefObject<HTMLElement>) => {
-    const el = ref?.current;
-    if (!el) {
-      return;
-    }
-    el.scrollIntoView({ behavior: "smooth" });
-  };
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header className="px-24 h-24" />
