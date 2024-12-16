@@ -205,18 +205,15 @@ const LandingPage = () => {
       <AboutSection />
 
       <section className="px-8 md:px-12 lg:px-24 bg-ceruleanBlue-500 py-16">
-        <div className="mt-4 flex flex-col md:flex-row items-center justify-center">
-          <div className="flex-1 mb-8 md:mb-0 md:pr-8 text-center md:text-left">
-            <h1 className="text-3xl text-white font-bold">Get in touch</h1>
-            <p className="text-lg text-white mt-4">Join our community using the platform you prefer</p>
-          </div>
+        <div className="mt-4 flex flex-col items-center justify-center">
+          <h1 className="text-5xl text-ceruleanBlue-100 font-bold mb-12">Get in touch</h1>
 
-          <div className="flex-1 flex flex-col items-center">
+          <div className="flex flex-wrap justify-center gap-4">
             <a
               href="https://matrix.to/#/#ethereum_source-verify:gitter.im"
               rel="noreferrer"
               target="_blank"
-              className="bg-white rounded-xl p-4 w-64 mb-4 text-center"
+              className="bg-ceruleanBlue-100 rounded-xl p-4 w-64 text-center"
             >
               <img src={matrix} alt="Matrix logo" className="w-28 m-auto" style={{ height: "35px" }} />
             </a>
@@ -225,20 +222,23 @@ const LandingPage = () => {
               href="https://discord.gg/6aqd9cfZ9s"
               rel="noreferrer"
               target="_blank"
-              className="bg-white rounded-xl p-4 w-64 mb-4 text-center"
+              className="bg-ceruleanBlue-100 rounded-xl p-4 w-64 text-center"
             >
               <img src={discord} alt="Discord logo" className="w-28 m-auto" style={{ height: "35px" }} />
             </a>
 
             <a
               href="irc://irc.w3.org:6667/#sourcify"
-              className="bg-white rounded-xl font-bold p-4 w-64 mb-4 text-center"
+              className="bg-ceruleanBlue-100 rounded-xl font-bold p-4 w-64 text-center"
               style={{ fontSize: "1.2rem" }}
             >
               #IRC
             </a>
 
-            <a className="bg-white rounded-xl font-bold p-4 w-64 text-center" href="mailto:hello@sourcify.dev">
+            <a
+              className="bg-ceruleanBlue-100 rounded-xl font-bold p-4 w-64 text-center"
+              href="mailto:hello@sourcify.dev"
+            >
               hello@sourcify.dev
             </a>
           </div>
