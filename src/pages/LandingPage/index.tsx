@@ -1,6 +1,4 @@
 // AnimateOnScroll
-import AOS from "aos";
-import "aos/dist/aos.css";
 import { useContext, useRef, useState, useEffect } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
@@ -33,11 +31,7 @@ import ToolsPlugin from "./ToolsPlugin";
 import { Context } from "../../Context";
 import { bytecode, solidityCode } from "./example";
 import { FaEthereum } from "react-icons/fa";
-
-AOS.init({
-  duration: 800,
-  once: true,
-});
+import AboutSection from "./AboutSection";
 
 SyntaxHighlighter.registerLanguage("solidity", solidityLang);
 SyntaxHighlighter.registerLanguage("json", jsonLang);
@@ -64,13 +58,11 @@ const A = ({ href, children }: FooterItemProps) => (
 const LandingPage = () => {
   const { sourcifyChains } = useContext(Context);
   const [isHovering, setIsHovering] = useState(false);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number>(null);
   const MAX_VELOCITY = 0.3;
   const MIN_VELOCITY = 0.1;
   const velocityRef = useRef({ x: MAX_VELOCITY, y: MAX_VELOCITY }); // Store velocity
   const positionRef = useRef({ x: 50, y: 50 }); // Store position
-
-  const aboutRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const element = document.querySelector(".spotlight-effect") as HTMLElement;
@@ -210,72 +202,16 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* About section */}
-      <section className="px-8 md:px-12 lg:px-48 bg-white py-16" ref={aboutRef} id="about">
-        <div className="mt-12">
-          <div className="flex items-center flex-col md:flex-row">
-            <div className="flex-1" data-aos="fade-right">
-              <img
-                src={openSourceDecentralized}
-                alt="Illustration depicting open source and decentralized development"
-                className="w-64 md:w-auto md:pr-48 md:pl-8 -scale-x-100"
-              />
-            </div>
-            <div className="flex-1 mt-4 md:mt-0" data-aos="fade-left">
-              <h1 className="text-2xl text-ceruleanBlue-500 font-bold">Fully open-source and decentralized</h1>{" "}
-              <p className="text-lg mt-4">
-                Sourcify's code is fully open-sourced. The repository of verified contracts is completely public and
-                decentralized by being served over{" "}
-                <A href="https://docs.sourcify.dev/docs/repository/file-repositories/#ipfs">IPFS</A>.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="my-24 md:text-right">
-          <div className="flex items-center flex-col-reverse md:flex-row">
-            <div className="flex-1  mt-4 md:mt-0" data-aos="fade-right">
-              <h1 className="text-2xl text-ceruleanBlue-500 font-bold">Next-level smart contract verification</h1>{" "}
-              <p className="text-lg mt-4">
-                <A href="https://docs.sourcify.dev/docs/full-vs-partial-match/">Full matches</A> on Sourcify
-                cryptographically guarantee the verified source code is identical to the original deployed contract. Our
-                monitoring service observes contract creations and verifies the source codes automatically if published
-                to IPFS.
-              </p>
-            </div>
-            <div className="flex-1" data-aos="fade-left">
-              <img
-                src={verification}
-                alt="Illustration of contract verification"
-                className="w-48 md:w-auto md:pr-48 md:pl-8 max-h-80"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="mb-12" data-aos="fade-left">
-          <div className="flex items-center flex-col md:flex-row">
-            <div className="flex-1 flex md:justify-end  mt-4 md:mt-0" data-aos="fade-right">
-              <img src={decode} alt="Decoding contract interaction with Sourcify" className="md:pl-48 md:pr-8" />
-            </div>
-            <div className="flex-1 mt-4 md:mt-0" data-aos="fade-left">
-              <h1 className="text-2xl text-ceruleanBlue-500 font-bold">Human-readable contract interactions</h1>
-              <p className="text-lg">
-                Goodbye <i>YOLO signing</i> 👋. Decode contract interactions with the verified contract's ABI and{" "}
-                <A href="https://docs.soliditylang.org/en/develop/natspec-format.html">NatSpec comments</A> . Show
-                wallet users meaningful information instead of hex strings.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <AboutSection />
 
       <section className="px-8 md:px-12 lg:px-24 bg-ceruleanBlue-500 py-16">
         <div className="mt-4 flex flex-col md:flex-row items-center justify-center">
-          <div className="flex-1 mb-8 md:mb-0 md:pr-8 text-center md:text-left" data-aos="fade-right">
+          <div className="flex-1 mb-8 md:mb-0 md:pr-8 text-center md:text-left">
             <h1 className="text-3xl text-white font-bold">Get in touch</h1>
             <p className="text-lg text-white mt-4">Join our community using the platform you prefer</p>
           </div>
 
-          <div className="flex-1 flex flex-col items-center" data-aos="fade-left">
+          <div className="flex-1 flex flex-col items-center">
             <a
               href="https://matrix.to/#/#ethereum_source-verify:gitter.im"
               rel="noreferrer"
@@ -310,7 +246,7 @@ const LandingPage = () => {
       </section>
 
       {/* Supported Networks */}
-      <section className="px-8 md:px-12 lg:px-24 bg-gray-100 py-16" data-aos="fade">
+      <section className="px-8 md:px-12 lg:px-24 bg-gray-100 py-16">
         <h1 className="text-3xl text-ceruleanBlue-500 font-bold">Supported Chains</h1>
         <div className="mt-8 text-lg">
           <p>Sourcify is multi-chain and works on all EVM based networks.</p>
@@ -385,7 +321,7 @@ const LandingPage = () => {
       </section>
 
       {/* Integrations & Tools */}
-      <section className="px-8 md:px-12 lg:px-24 bg-white py-16" data-aos="fade">
+      <section className="px-8 md:px-12 lg:px-24 bg-white py-16">
         <h1 className="text-3xl text-ceruleanBlue-500 font-bold">Integrations</h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12 text-center md:text-left">
           <div className="w-full">
@@ -414,7 +350,7 @@ const LandingPage = () => {
       </section>
 
       {/* Verified contract stats */}
-      <section className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-16" data-aos="fade">
+      <section className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-16">
         <ChartSection />
       </section>
 

@@ -11,7 +11,6 @@
     "@headlessui/react": "^2.2.0",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "13.5.0",
-    "aos": "2.3.4",
     "bytes": "3.1.2",
     "framer-motion": "^11.14.4",
     "fuse.js": "6.6.2",
