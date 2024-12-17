@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { HiMenu } from "react-icons/hi";
 import { Link } from "react-router-dom";
-import ReactTooltip from "react-tooltip";
+import { Tooltip } from "react-tooltip";
 import { SiMatrix } from "react-icons/si";
 import { RiTwitterXFill } from "react-icons/ri";
 import logoText from "../../assets/logo-rounded.svg";
@@ -39,7 +39,7 @@ const Header = ({ className }: { className?: string }) => {
         isScrolled ? "shadow-md" : ""
       } z-50 ${className}`}
     >
-      <ReactTooltip effect="solid" />
+      <Tooltip id="social-tooltip" />
       <div className="flex items-center">
         <Link to="/" className="flex items-center">
           <img src={logoText} alt="Sourcify logo" className="max-h-10" />
@@ -101,18 +101,12 @@ const Header = ({ className }: { className?: string }) => {
             href="https://matrix.to/#/#ethereum_source-verify:gitter.im"
             target="_blank"
             rel="noreferrer"
-            data-tip="Matrix chat"
+            data-tooltip-id="matrix-chat-tooltip"
+            data-tooltip-content="Matrix chat"
           >
             <SiMatrix className="h-6 w-auto fill-gray-700 hover:fill-ceruleanBlue-500" />
           </a>
         </div>
-        {/* <Link
-          className="link-underline ml-2 mb-2 mt-6 md:mt-2 md:ml-6 hover:text-ceruleanBlue-500"
-          to="/status"
-          data-tip="Server status: working"
-        >
-          <span className="inline md:hidden">Server status: </span> ✅
-        </Link> */}
       </div>
     </nav>
   );

@@ -9,13 +9,8 @@ import AppIconName from "../../components/AppIconName";
 export default function PoweredBySourcify() {
   return (
     <div className="w-full">
-      <h2 className="text-2xl text-ceruleanBlue-500 font-semibold">
-        Powered by Sourcify
-      </h2>
-      <div
-        className="flex justify-center md:justify-start flex-row mt-8 flex-wrap logos-container"
-        id="networks-container"
-      >
+      <h2 className="text-2xl text-ceruleanBlue-500 font-semibold">Powered by Sourcify</h2>
+      <div className="flex justify-center md:justify-start flex-row mt-8 flex-wrap" id="networks-container">
         <AppIconName img={walleth} name="Walleth" href="https://walleth.org/" />
         <AppIconName
           img={otter}
@@ -28,21 +23,9 @@ export default function PoweredBySourcify() {
           name="Blockscout"
           href="https://docs.blockscout.com/for-users/smart-contract-interaction/verifying-a-smart-contract/contracts-verification-via-sourcify"
         />
-        <AppIconName
-          img={keystone}
-          name="Keystone"
-          href="https://twitter.com/SourcifyEth/status/1415319812801183753"
-        />
-        <AppIconName
-          img={ethSdk}
-          name="eth-sdk"
-          href="https://github.com/dethcrypto/eth-sdk/pull/42"
-        />
-        <AppIconName
-          img={dexGuru}
-          name="DexGuru Block Explorer"
-          href="https://b2b.dex.guru/explorer"
-        />
+        <AppIconName img={keystone} name="Keystone" href="https://twitter.com/SourcifyEth/status/1415319812801183753" />
+        <AppIconName img={ethSdk} name="eth-sdk" href="https://github.com/dethcrypto/eth-sdk/pull/42" />
+        <AppIconName img={dexGuru} name="DexGuru Block Explorer" href="https://b2b.dex.guru/explorer" />
       </div>
     </div>
   );

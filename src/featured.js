@@ -1,4 +1,3 @@
-import optimism from "./assets/chains/optimism.svg";
 import gnosisSafe from "./assets/contracts/gnosisSafe.svg";
 import synthetix from "./assets/contracts/synthetix.png";
 import uniswap from "./assets/contracts/uniswap.png";
@@ -15,12 +14,6 @@ const featured = [
     name: "Synthetix",
     href: "https://repo.sourcify.dev/contracts/full_match/10/0x06C6D063896ac733673c4474E44d9268f2402A55/",
     logo: synthetix,
-    displayed: true,
-  },
-  {
-    name: "Optimism",
-    href: "https://repo.sourcify.dev/contracts/full_match/1/0x5e4e65926ba27467555eb562121fac00d24e9dd2/",
-    logo: optimism,
     displayed: true,
   },
   {

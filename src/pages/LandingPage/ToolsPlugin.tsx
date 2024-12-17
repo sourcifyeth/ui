@@ -10,10 +10,8 @@ export default function ToolsPlugin() {
   return (
     <div className="w-full mt-16">
       {/* Right col: Tools */}
-      <h2 className="text-2xl text-ceruleanBlue-500 font-semibold">
-        Frameworks & Plugins
-      </h2>
-      <div className="flex justify-center md:justify-start flex-row mt-8 flex-wrap logos-container">
+      <h2 className="text-2xl text-ceruleanBlue-500 font-semibold">Frameworks & Plugins</h2>
+      <div className="flex justify-center md:justify-start flex-row mt-8 flex-wrap">
         <AppIconName
           img={foundry}
           name="Foundry"
@@ -39,11 +37,7 @@ export default function ToolsPlugin() {
           name="truflle-plugin-verify"
           href="https://github.com/rkalis/truffle-plugin-verify"
         />
-        <AppIconName
-          img={wagmi}
-          name="Wagmi"
-          href="https://wagmi.sh/cli/plugins/sourcify"
-        />
+        <AppIconName img={wagmi} name="Wagmi" href="https://wagmi.sh/cli/plugins/sourcify" />
       </div>
     </div>
   );

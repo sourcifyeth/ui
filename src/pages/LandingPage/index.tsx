@@ -6,19 +6,6 @@ import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
 import solidityLang from "react-syntax-highlighter/dist/esm/languages/prism/solidity";
 import codeStyle from "react-syntax-highlighter/dist/esm/styles/prism/dracula";
-import ReactTooltip from "react-tooltip";
-import arbitrum from "../../assets/chains/arbitrum.svg";
-import avalanche from "../../assets/chains/avalanche.png";
-import bsc from "../../assets/chains/binance.png";
-import boba from "../../assets/chains/boba.png";
-import celo from "../../assets/chains/celo.png";
-import ethereum from "../../assets/chains/ethereum.png";
-import optimism from "../../assets/chains/optimism.svg";
-import polygon from "../../assets/chains/polygon.webp";
-import xdai from "../../assets/chains/xdai.png";
-import decode from "../../assets/decode.gif";
-import openSourceDecentralized from "../../assets/openSourceDecentralized.svg";
-import verification from "../../assets/verification.svg";
 import discord from "../../assets/discord.svg";
 import matrix from "../../assets/matrix.svg";
 import Button from "../../components/Button";
@@ -32,6 +19,7 @@ import { Context } from "../../Context";
 import { bytecode, solidityCode } from "./example";
 import { FaEthereum } from "react-icons/fa";
 import AboutSection from "./AboutSection";
+import SupportedChains from "./SupportedChains";
 
 SyntaxHighlighter.registerLanguage("solidity", solidityLang);
 SyntaxHighlighter.registerLanguage("json", jsonLang);
@@ -245,80 +233,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Supported Networks */}
-      <section className="px-8 md:px-12 lg:px-24 bg-gray-100 py-16">
-        <h1 className="text-3xl text-ceruleanBlue-500 font-bold">Supported Chains</h1>
-        <div className="mt-8 text-lg">
-          <p>Sourcify is multi-chain and works on all EVM based networks.</p>
-          {sourcifyChains.length > 0 && (
-            <p> Currently we support {sourcifyChains.filter((c) => c.supported).length} different chains </p>
-          )}
-        </div>
-        <ReactTooltip effect="solid" />
-        <div className="flex flex-row w-full justify-center py-16 logos-container flex-wrap">
-          <img
-            src={ethereum}
-            data-tip="Ethereum"
-            className="h-12 md:h-24 transition-opacity mx-4 my-4 "
-            alt="Ethereum logo"
-          />
-          <img
-            src={arbitrum}
-            data-tip="Arbitrum"
-            className="h-12 md:h-24 transition-opacity mx-4 my-4"
-            alt="Arbitrum logo"
-          />
-          <img
-            src={avalanche}
-            data-tip="Avalanche"
-            className="h-12 md:h-24 transition-opacity mx-4 my-4"
-            alt="Avalanche logo"
-          />
-          <img
-            src={bsc}
-            data-tip="Binance Smart Chain"
-            className="h-12 md:h-24 transition-opacity mx-4 my-4 rounded-full"
-            alt="Binance Smart Chain logo"
-          />
-          <img
-            src={boba}
-            data-tip="Boba Network"
-            className="rounded-full h-12 md:h-24 transition-opacity mx-4 my-4"
-            alt="Boba network logo"
-          />
-          <img src={celo} data-tip="Celo" className="h-12 md:h-24 transition-opacity mx-4 my-4" alt="Celo logo" />
-          <img
-            src={xdai}
-            data-tip="Gnosis Chain (xDai)"
-            className="h-12 md:h-24 transition-opacity mx-4 my-4 rounded-full"
-            alt="Gnosis chain (xDai) logo"
-          />
-          <img
-            src={polygon}
-            data-tip="Polygon"
-            className="h-12 md:h-24 transition-opacity mx-4 my-4"
-            alt="Polygon logo"
-          />
-          <img
-            src={optimism}
-            data-tip="Optimism"
-            className="h-12 md:h-24 transition-opacity mx-4 my-4"
-            alt="Optimism logo"
-          />
-          <div className="p-1 h-14 w-14 text-xs md:text-base md:h-24 md:w-24 transition-opacity rounded-full mx-4 my-4 text-ceruleanBlue-400 flex justify-center items-center text-center">
-            <a href={`${DOCS_URL}/docs/chains`}>And many more!</a>
-          </div>
-        </div>
-        <div className="flex justify-center">
-          <a
-            href={`${DOCS_URL}/docs/chains`}
-            // className="underline decoration-lightCoral-500 decoration-2 font-semibold text-ceruleanBlue-500"
-            className="link-underline font-semibold text-ceruleanBlue-500"
-          >
-            See all {sourcifyChains.length > 0 && sourcifyChains.length} chains
-          </a>
-        </div>
-      </section>
+      <SupportedChains />
 
       {/* Integrations & Tools */}
       <section className="px-8 md:px-12 lg:px-24 bg-white py-16">
