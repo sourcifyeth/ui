@@ -5,11 +5,12 @@ import baseLogo from "./logos/base.svg";
 import scrollLogo from "./logos/scroll.svg";
 import lineaLogo from "./logos/linea.svg";
 import hederaLogo from "./logos/hedera.svg";
+import ethereumLogo from "./logos/ethereum.svg";
 
 export const chains = [
   {
     name: "Ethereum",
-    logo: new URL("./logos/ethereum.png", import.meta.url).href,
+    logo: ethereumLogo,
   },
   {
     name: "Arbitrum",
