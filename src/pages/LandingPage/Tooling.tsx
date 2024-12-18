@@ -1,0 +1,283 @@
+import { useState, useRef, useEffect } from "react";
+import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
+import bashLang from "react-syntax-highlighter/dist/esm/languages/prism/bash";
+import javascriptLang from "react-syntax-highlighter/dist/esm/languages/prism/javascript";
+import codeStyle from "react-syntax-highlighter/dist/esm/styles/prism/dracula";
+import { motion, useInView } from "framer-motion";
+
+// Register languages
+SyntaxHighlighter.registerLanguage("bash", bashLang);
+SyntaxHighlighter.registerLanguage("javascript", javascriptLang);
+
+export default function Tooling() {
+  const [activeTab, setActiveTab] = useState("foundry");
+  const integrationsRef = useRef(null);
+  const areIntegrationsInView = useInView(integrationsRef, { once: true });
+  const [displayedCode, setDisplayedCode] = useState("");
+  const codeRef = useRef(null);
+  const isCodeInView = useInView(codeRef, { once: true });
+  const titleRef = useRef(null);
+  const tabsRef = useRef(null);
+  const isTitleInView = useInView(titleRef, { once: true });
+  const areTabsInView = useInView(tabsRef, { once: true });
+
+  const tabs = ["foundry", "hardhat", "remix"];
+  const integrations = [
+    {
+      name: "Blockscout",
+      url: "https://docs.blockscout.com/devs/verification/contracts-verification-via-sourcify",
+      logo: "/blockscout.png",
+    },
+    {
+      name: "Otterscan",
+      url: "https://docs.otterscan.io/contract-verification/sourcify/",
+      logo: "/otterscan.jpg",
+    },
+    {
+      name: "Wagmi",
+      url: "https://wagmi.sh/cli/api/plugins/sourcify#sourcify",
+      logo: "/wagmi.png",
+    },
+    {
+      name: "DexGuru Explorer",
+      url: "https://ethereum.dex.guru/verifyContract",
+      logo: "/dexguru.svg",
+    },
+    {
+      name: "Chainlens",
+      url: "https://www.chainlens.com/documentation-articles/source-code-verification",
+      logo: "/chainlens.png",
+    },
+    {
+      name: "Hedera Hashscan",
+      url: "https://hedera.com/blog/smart-contract-verification-on-hedera",
+      logo: "/hashscan.webp",
+    },
+    {
+      name: "BuildBear",
+      url: "https://www.buildbear.io/blogs/sourcify_plugin",
+      logo: "/buildbear.jpg",
+    },
+    {
+      name: "Avalanche Explorer",
+      url: "https://support.avax.network/en/articles/6333375-explorer-how-do-i-manage-smart-contracts",
+      logo: "/avalanche.svg",
+    },
+  ];
+
+  const foundryExample = `# Deploy and verify
+$ forge create --rpc-url <rpc-url> --private-key <private-key> src/MyContract.sol:MyContract --verify --verifier sourcify
+
+# Verify an already deployed contract
+$ forge verify-contract --verifier sourcify --chain <chain-id> 0xB4239c86440d6C39d518D6457038cB404451529b MyContract 
+
+# Check if a contract is verified
+$ forge verify-check 0x1F98431c8aD98523631AE4a59f267346ea31F984 --verifier sourcify
+  `;
+
+  const hardhatExampleJS = `// Enable Sourcify in your hardhat.config.js
+module.exports = {
+  sourcify: {
+    // Doesn't need an API key
+    enabled: true
+  }
+};`;
+
+  const hardhatExampleBash = `# Verify a contract
+$ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F984
+`;
+
+  const customStyle = {
+    ...codeStyle,
+    comment: {
+      color: "#4C6FC4",
+    },
+    operator: {
+      color: "#ff79c6",
+    },
+  };
+
+  // Add typing effect when code is in view
+  useEffect(() => {
+    if (isCodeInView) {
+      const codeToType =
+        activeTab === "foundry"
+          ? foundryExample
+          : activeTab === "hardhat"
+          ? hardhatExampleJS + hardhatExampleBash // Combined JS and Bash examples. We'll split the string in the code component.
+          : "";
+
+      let i = -1;
+      setDisplayedCode("");
+
+      const typingInterval = setInterval(() => {
+        if (i < codeToType.length) {
+          i++; // If i++ is not before the state update, it skips the second character.
+          setDisplayedCode((prev) => prev + codeToType.charAt(i));
+        } else {
+          clearInterval(typingInterval);
+        }
+      }, 3);
+
+      return () => clearInterval(typingInterval);
+    }
+  }, [isCodeInView, activeTab, foundryExample, hardhatExampleJS, hardhatExampleBash]);
+
+  return (
+    <section className="w-full mt-16 flex flex-col items-center text-gray-700">
+      <motion.h1
+        ref={titleRef}
+        initial={{ opacity: 0, y: 20 }}
+        animate={isTitleInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.6 }}
+        className="text-6xl text-ceruleanBlue-500 font-bold text-center mb-10"
+      >
+        Tooling
+      </motion.h1>
+
+      <motion.div
+        ref={tabsRef}
+        initial={{ opacity: 0, y: 20 }}
+        animate={areTabsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.6 }}
+        className="inline-flex rounded-full"
+      >
+        {tabs.map((tab, index) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-6 py-2 text-lg transition-colors flex items-center gap-2
+              ${index === 0 ? "rounded-l-full" : ""}
+              ${index === tabs.length - 1 ? "rounded-r-full" : ""}
+              ${activeTab === tab ? "font-bold shadow-sm" : "font-medium text-gray-500 hover:text-gray-700"}`}
+          >
+            <img
+              src={`/${tab}.png`}
+              alt={`${tab} logo`}
+              className={`w-10 h-10 ${activeTab === tab ? "" : "opacity-50"}`}
+            />
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </button>
+        ))}
+      </motion.div>
+
+      <motion.div
+        className="my-6 rounded-lg w-[60rem]"
+        ref={codeRef}
+        initial={{ opacity: 0, y: 20 }}
+        animate={isCodeInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.6 }}
+      >
+        {activeTab === "foundry" && (
+          <>
+            <div className="mb-4 text-center">
+              <a
+                href="https://book.getfoundry.sh/reference/forge/forge-verify-contract"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline"
+              >
+                Foundry Documentation →
+              </a>
+            </div>
+            <SyntaxHighlighter
+              language="bash"
+              style={customStyle}
+              customStyle={{ background: "#111827" }}
+              className="min-h-80"
+              wrapLongLines
+            >
+              {isCodeInView ? displayedCode : foundryExample}
+            </SyntaxHighlighter>
+          </>
+        )}
+        {activeTab === "hardhat" && (
+          <>
+            <div className="mb-4 text-center">
+              <a
+                href="https://hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-verify#verifying-on-sourcify"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline"
+              >
+                Hardhat Documentation →
+              </a>
+            </div>
+            <SyntaxHighlighter
+              language="javascript"
+              style={codeStyle}
+              customStyle={{ background: "#111827" }}
+              className="w-full min-h-48"
+            >
+              {isCodeInView ? displayedCode.slice(0, hardhatExampleJS.length) : hardhatExampleJS}
+            </SyntaxHighlighter>
+          </>
+        )}
+        {activeTab === "hardhat" && (
+          <SyntaxHighlighter
+            language="bash"
+            style={codeStyle}
+            customStyle={{ background: "#111827" }}
+            className="w-full min-h-24"
+          >
+            {isCodeInView ? displayedCode.slice(hardhatExampleJS.length) : hardhatExampleBash}
+          </SyntaxHighlighter>
+        )}
+        {activeTab === "remix" && (
+          <div className="flex flex-col justify-center">
+            <div className="my-2 text-lg text-center">
+              You can verify contracts on Sourcify and other verifiers using the Remix's new unified "Verification
+              Plugin"
+            </div>
+            <div className="mb-4 text-center">
+              <a
+                href="https://remix.ethereum.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline"
+              >
+                Try it in Remix →
+              </a>
+            </div>
+            <video src="/remix-plugin.mp4" autoPlay loop muted playsInline className="" />
+          </div>
+        )}
+      </motion.div>
+
+      <div className="my-10 text-center">
+        <h2 className="text-6xl font-bold text-ceruleanBlue-500">Who's using</h2>
+        <div className="flex flex-wrap justify-center gap-8 mt-12" ref={integrationsRef}>
+          {integrations
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((integration, index) => (
+              <motion.a
+                initial={{ opacity: 0 }}
+                animate={
+                  areIntegrationsInView
+                    ? {
+                        opacity: 1,
+                        y: [0, 0, -20],
+                        transition: { duration: 0.6, delay: index * 0.1 },
+                      }
+                    : { opacity: 0 }
+                }
+                whileHover={{ scale: 1.1, transition: { duration: 0.1, delay: 0 } }}
+                href={integration.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                key={integration.name}
+                className="w-16 flex flex-col items-center text-center"
+              >
+                <img
+                  src={integration.logo}
+                  alt={integration.name}
+                  className={`w-14 ${integration.name !== "Blockscout" ? "rounded-full" : ""}`}
+                />
+                <div className="text-gray-700 text-sm mt-1 text-wrap">{integration.name}</div>
+              </motion.a>
+            ))}
+        </div>
+      </div>
+    </section>
+  );
+}

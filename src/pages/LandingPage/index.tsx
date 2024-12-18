@@ -12,14 +12,12 @@ import Button from "../../components/Button";
 import Header from "../../components/Header";
 import { DOCS_URL } from "../../constants";
 import ChartSection from "./ChartSection";
-import CustomCarousel from "./CustomCarousel";
-import PoweredBySourcify from "./PoweredBySourcify";
-import ToolsPlugin from "./ToolsPlugin";
 import { Context } from "../../Context";
 import { bytecode, solidityCode } from "./example";
 import { FaEthereum } from "react-icons/fa";
 import AboutSection from "./AboutSection";
 import SupportedChains from "./SupportedChains";
+import Tooling from "./Tooling";
 
 SyntaxHighlighter.registerLanguage("solidity", solidityLang);
 SyntaxHighlighter.registerLanguage("json", jsonLang);
@@ -98,7 +96,7 @@ const LandingPage = () => {
   }, [isHovering]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-gray-100 w-full">
       <Header className="px-24 h-24" />
       <section className="min-h-screen flex flex-col justify-center px-8 md:px-12 -mt-20 pt-20">
         <div className="flex flex-col justify-center items-center">
@@ -159,12 +157,12 @@ const LandingPage = () => {
                   e.currentTarget.style.setProperty("--y", `${y}%`);
                 }}
               >
-                <div className="p-4 text-xs text-gray-100 break-all bg-[rgb(40,42,54)]">{bytecode}</div>
+                <div className="p-4 text-xs text-gray-100 break-all bg-[#111827]">{bytecode}</div>
               </div>
               <div className="absolute h-96 w-[30rem] rounded-xl overflow-hidden shadow-xl">
                 <SyntaxHighlighter
                   language="solidity"
-                  customStyle={{ margin: 0 }}
+                  customStyle={{ margin: 0, background: "#111827" }}
                   style={codeStyle}
                   className="h-full w-full p-0 m-0 text-xs"
                 >
@@ -191,6 +189,9 @@ const LandingPage = () => {
       </section>
 
       <AboutSection />
+      <SupportedChains />
+
+      <Tooling />
 
       <section className="px-8 md:px-12 lg:px-24 bg-ceruleanBlue-500 py-16">
         <div className="mt-4 flex flex-col items-center justify-center">
@@ -220,37 +221,6 @@ const LandingPage = () => {
               href="mailto:hello@sourcify.dev"
             >
               hello@sourcify.dev
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <SupportedChains />
-
-      {/* Integrations & Tools */}
-      <section className="px-8 md:px-12 lg:px-24 bg-white py-16">
-        <h1 className="text-3xl text-ceruleanBlue-500 font-bold">Integrations</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12 text-center md:text-left">
-          <div className="w-full">
-            <PoweredBySourcify />
-            <ToolsPlugin />
-          </div>
-          <div className="flex mt-12">
-            <CustomCarousel />
-          </div>
-        </div>
-        <div className="mt-12">
-          <h3 className="text-center text-xl font-semibold text-ceruleanBlue-800">
-            Want to integrate Sourcify into your project?
-          </h3>
-          <div className="flex justify-center">
-            <a href={DOCS_URL}>
-              <Button className="uppercase mt-4">Check Docs</Button>
-            </a>
-            <a href="https://gitter.im/ethereum/source-verify">
-              <Button type="secondary" className="ml-4 uppercase mt-4">
-                Get in touch
-              </Button>
             </a>
           </div>
         </div>
