@@ -98,22 +98,23 @@ const Chart = () => {
         animate={isSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="text-7xl font-semibold text-ceruleanBlue-500">{displayTotal.toLocaleString()}</h2>
-        <h2 className="text-3xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
+        <h2 className="text-8xl font-bold text-ceruleanBlue-500">{displayTotal.toLocaleString()}</h2>
+        <h2 className="text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
       </motion.div>
-      <div className="w-full mt-12 mb-8 flex flex-col items-center justify-center">
-        <div className="my-4 flex md:flex-row flex-col items-center">
-          <span className="text-nowrap">
-            {getFormattedChainData(selectedChain).total.toLocaleString()} contracts verified on
+      <div className="w-full flex flex-col items-center justify-center">
+        <div className="my-4 flex md:flex-row flex-col items-center text-gray-700">
+          <span className="text-nowrap ml-2">
+            {getFormattedChainData(selectedChain).total.toLocaleString()} contracts on
           </span>
           <ChainSelect
             value={selectedChain}
             handleChainIdChange={(newChainId) => setSelectedChain(newChainId.toString())}
             availableChains={sourcifyChains.map((chain) => chain.chainId)}
+            className="font-medium"
             transparent
           />
         </div>
-        <div className="h-72 md:h-96 lg:h-[30rem] w-11/12 max-w-2xl mt-8 mb-12 text-sm lg:text-base">
+        <div className="h-72 md:h-96 lg:h-[30rem] w-11/12 max-w-2xl mb-12 text-sm lg:text-base">
           <ResponsiveContainer>
             <BarChart
               data={formattedData}
