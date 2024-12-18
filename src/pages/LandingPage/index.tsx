@@ -129,7 +129,7 @@ const LandingPage = () => {
                 </div>
               </h1>
               <h2 className="text-lg opacity-0 animate-fade-up" style={{ animationDelay: "1500ms" }}>
-                Open-source, open-data, decentralized
+                Open-source, open-data, open-standards
               </h2>
             </div>
 

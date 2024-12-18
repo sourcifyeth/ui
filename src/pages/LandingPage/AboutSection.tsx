@@ -7,9 +7,9 @@ const AboutSection = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-20">
+    <div className="min-h-screen bg-gray-100">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="space-y-24">
+        <div className="space-y-12">
           {/* Feature 1 */}
           <motion.div
             initial="hidden"
@@ -19,16 +19,15 @@ const AboutSection = () => {
             transition={{ duration: 0.5 }}
             className="group hover:bg-white hover:shadow-xl p-8 rounded-xl transition-all duration-300"
           >
-            <div className="flex flex-col md:flex-row items-start gap-8 relative">
+            <div className="flex flex-col md:flex-row items-center gap-8 relative">
               <div className="md:w-1/3">
-                <h2 className="text-6xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
-                  Open Source
+                <h2 className="text-6xl font-bold text-gray-800 group-hover:text-ceruleanBlue-500 transition-colors duration-300">
+                  Open-Source
                 </h2>
               </div>
-              <div className="md:w-2/3 border-l-2 border-gray-200 pl-8">
-                <p className="text-xl text-gray-600">
-                  Sourcify is and always will be 100% open source, ensuring transparency and community collaboration.
-                </p>
+              <div className="hidden md:block h-full min-h-[100px] w-[2px] bg-gray-200 self-stretch" />
+              <div className="md:w-2/3">
+                <p className="text-xl text-gray-600">Sourcify is and always will be 100% open source.</p>
               </div>
             </div>
           </motion.div>
@@ -42,15 +41,26 @@ const AboutSection = () => {
             transition={{ duration: 0.5 }}
             className="group hover:bg-white hover:shadow-xl p-8 rounded-xl transition-all duration-300"
           >
-            <div className="flex flex-col md:flex-row items-start gap-8 relative">
+            <div className="flex flex-col md:flex-row items-center gap-8 relative">
               <div className="md:w-1/3">
-                <h2 className="text-6xl font-bold text-gray-800 group-hover:text-green-600 transition-colors duration-300">
-                  Open Data
+                <h2 className="text-6xl font-bold text-gray-800 group-hover:text-ceruleanBlue-500 transition-colors duration-300">
+                  Open-Data
                 </h2>
               </div>
-              <div className="md:w-2/3 border-l-2 border-gray-200 pl-8">
+              <div className="hidden md:block h-full min-h-[100px] w-[2px] bg-gray-200 self-stretch" />
+              <div className="md:w-2/3">
                 <p className="text-xl text-gray-600">
-                  Access and contribute to our growing database of verified source code and documentation.
+                  Verified contract data should be open and easily accessible.
+                  <br />
+                  Sourcify's whole database is available for free and open access.{" "}
+                  <a
+                    className="text-ceruleanBlue-500 font-medium link-underline"
+                    href="https://docs.sourcify.dev/docs/repository/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Download the repository →
+                  </a>
                 </p>
               </div>
             </div>
@@ -65,15 +75,21 @@ const AboutSection = () => {
             transition={{ duration: 0.5 }}
             className="group hover:bg-white hover:shadow-xl p-8 rounded-xl transition-all duration-300"
           >
-            <div className="flex flex-col md:flex-row items-start gap-8 relative">
+            <div className="flex flex-col md:flex-row items-center gap-8 relative">
               <div className="md:w-1/3">
-                <h2 className="text-6xl font-bold text-gray-800 group-hover:text-purple-600 transition-colors duration-300">
-                  Community Driven
+                <h2 className="text-6xl font-bold text-gray-800 group-hover:text-ceruleanBlue-500 transition-colors duration-300">
+                  Open-Standards
                 </h2>
               </div>
-              <div className="md:w-2/3 border-l-2 border-gray-200 pl-8">
+              <div className="hidden md:block h-full min-h-[100px] w-[2px] bg-gray-200 self-stretch" />
+              <div className="md:w-2/3 mb-6">
                 <p className="text-xl text-gray-600">
-                  Join our thriving community of developers and contributors shaping the future of code verification.
+                  As a
+                  <a href="https://verifieralliance.org" target="_blank" rel="noopener noreferrer">
+                    <img src="/verifier-alliance.svg" alt="Verifier Alliance" className="h-16 inline-block -m-2" />
+                  </a>{" "}
+                  member, Sourcify fosters open standards, data sharing, interoperability, and collaboration between all
+                  source code verifiers.
                 </p>
               </div>
             </div>
