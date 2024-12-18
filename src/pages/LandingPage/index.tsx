@@ -190,7 +190,10 @@ const LandingPage = () => {
 
       <AboutSection />
       <SupportedChains />
-
+      {/* Verified contract stats */}
+      <section className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-16">
+        <ChartSection />
+      </section>
       <Tooling />
 
       <section className="px-8 md:px-12 lg:px-24 bg-ceruleanBlue-500 py-16">
@@ -224,11 +227,6 @@ const LandingPage = () => {
             </a>
           </div>
         </div>
-      </section>
-
-      {/* Verified contract stats */}
-      <section className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-16">
-        <ChartSection />
       </section>
 
       {/* Footer */}

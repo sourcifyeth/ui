@@ -41,7 +41,7 @@ const SupportedChains = () => {
   }, [chainCount, isTitleInView]);
 
   return (
-    <section className="px-8 md:px-12 lg:px-24 bg-gray-100 py-16 text-center">
+    <section className="px-8 md:px-12 lg:px-24 bg-gray-100 py-8 text-center">
       <motion.div
         ref={titleRef}
         initial={{ opacity: 0, y: 20 }}

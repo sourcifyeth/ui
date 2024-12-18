@@ -124,7 +124,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
   }, [isCodeInView, activeTab, foundryExample, hardhatExampleJS, hardhatExampleBash]);
 
   return (
-    <section className="w-full mt-16 flex flex-col items-center text-gray-700">
+    <section className="w-full flex flex-col items-center text-gray-700">
       <motion.h1
         ref={titleRef}
         initial={{ opacity: 0, y: 20 }}
@@ -262,7 +262,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
         )}
       </motion.div>
 
-      <div className="my-10 text-center">
+      <div className="my-24 text-center">
         <h2 className="text-6xl font-bold text-ceruleanBlue-500">Who's using</h2>
         <div className="flex flex-wrap justify-center gap-8 mt-12" ref={integrationsRef}>
           {integrations

@@ -101,6 +101,19 @@ const Chart = () => {
         <h2 className="text-8xl font-bold text-ceruleanBlue-500">{displayTotal.toLocaleString()}</h2>
         <h2 className="text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
       </motion.div>
+      <div className="flex flex-col items-center my-8">
+        <a
+          href="https://docs.sourcify.dev/docs/repository/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
+        >
+          Download all verified contracts →
+        </a>
+        <span className="text-sm text-gray-600 mt-1">
+          Access the complete repository of source-verified smart contracts
+        </span>
+      </div>
       <div className="w-full flex flex-col items-center justify-center">
         <div className="my-4 flex md:flex-row flex-col items-center text-gray-700">
           <span className="text-nowrap ml-2">

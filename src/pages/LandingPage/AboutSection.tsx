@@ -7,7 +7,7 @@ const AboutSection = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className=" bg-gray-100 py-16">
       <div className="max-w-7xl mx-auto px-4">
         <div className="space-y-12">
           {/* Feature 1 */}
