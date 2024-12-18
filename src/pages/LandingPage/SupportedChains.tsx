@@ -1,5 +1,5 @@
 import { Tooltip } from "react-tooltip";
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 import { Context } from "../../Context";
 import { DOCS_URL } from "../../constants";
 import chains from "./chains";
@@ -9,6 +9,7 @@ import { motion, useInView } from "framer-motion";
 const SupportedChains = () => {
   const { sourcifyChains } = useContext(Context);
   const chainCount = sourcifyChains?.filter((c) => c.supported).length;
+  const [displayCount, setDisplayCount] = useState(0);
 
   const titleRef = useRef(null);
   const chainsRef = useRef(null);
@@ -17,6 +18,27 @@ const SupportedChains = () => {
   const isTitleInView = useInView(titleRef, { once: true });
   const areChainsInView = useInView(chainsRef, { once: true });
   const isBottomInView = useInView(bottomRef, { once: true });
+
+  useEffect(() => {
+    if (chainCount && isTitleInView) {
+      const duration = 1000; // 1 second for the animation
+      const steps = 60; // Number of steps in the animation
+      const increment = chainCount / steps;
+      let current = 0;
+
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= chainCount) {
+          setDisplayCount(chainCount);
+          clearInterval(timer);
+        } else {
+          setDisplayCount(Math.floor(current));
+        }
+      }, duration / steps);
+
+      return () => clearInterval(timer);
+    }
+  }, [chainCount, isTitleInView]);
 
   return (
     <section className="px-8 md:px-12 lg:px-24 bg-gray-100 py-16 text-center">
@@ -28,7 +50,7 @@ const SupportedChains = () => {
       >
         {chainCount ? (
           <h1 className="text-5xl text-ceruleanBlue-500 font-light ">
-            <div className="text-9xl font-bold">{chainCount}</div> Chains
+            <div className="text-9xl font-bold">{displayCount}</div> Chains
           </h1>
         ) : (
           <h1 className="text-5xl text-ceruleanBlue-500 font-bold">Supported Chains</h1>
@@ -58,7 +80,7 @@ const SupportedChains = () => {
               src={chain.logo}
               data-tooltip-id="supported-chains-tooltip"
               data-tooltip-content={chain.name}
-              className={`h-12 md:h-24 hover:cursor-pointer mx-4 my-4 rounded-full`}
+              className={`h-12 md:h-24 mx-4 my-4 rounded-full`}
               alt={`${chain.name} logo`}
             />
           ))}
@@ -81,7 +103,7 @@ const SupportedChains = () => {
               src={chain.logo}
               data-tooltip-id="supported-chains-tooltip"
               data-tooltip-content={chain.name}
-              className={`h-12 md:h-24 hover:cursor-pointer mx-4 my-4 rounded-full`}
+              className={`h-12 md:h-24 mx-4 my-4 rounded-full`}
               alt={`${chain.name} logo`}
             />
           ))}
