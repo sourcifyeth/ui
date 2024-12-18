@@ -27,7 +27,17 @@ const AboutSection = () => {
               </div>
               <div className="hidden md:block h-full min-h-[100px] w-[2px] bg-gray-200 self-stretch" />
               <div className="md:w-2/3">
-                <p className="text-xl text-gray-600">Sourcify is and always will be 100% open source.</p>
+                <p className="text-xl text-gray-600">
+                  Sourcify is and always will be 100% open source.{" "}
+                  <a
+                    className="text-ceruleanBlue-500 font-medium link-underline"
+                    href="https://github.com/ethereum/sourcify"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Github →
+                  </a>
+                </p>
               </div>
             </div>
           </motion.div>
