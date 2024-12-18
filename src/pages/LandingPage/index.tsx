@@ -216,14 +216,6 @@ const LandingPage = () => {
             </a>
 
             <a
-              href="irc://irc.w3.org:6667/#sourcify"
-              className="bg-ceruleanBlue-100 rounded-xl font-bold p-4 w-64 text-center"
-              style={{ fontSize: "1.2rem" }}
-            >
-              #IRC
-            </a>
-
-            <a
               className="bg-ceruleanBlue-100 rounded-xl font-bold p-4 w-64 text-center"
               href="mailto:hello@sourcify.dev"
             >
