@@ -85,20 +85,6 @@ const Chart = () => {
 
   const formattedData = Object.entries(stats)
     .sort(([aKey, aStats], [bKey, bStats]) => {
-      // Sort selected chain to start of the list
-      if (aKey === selectedChain && bKey !== selectedChain) return -1;
-      if (aKey !== selectedChain && bKey === selectedChain) return 1;
-
-      // Sort Ethereum chains to start of the list
-      const preferredChains = ["1", "11155111", "17000"];
-      const aKeyPreferred = preferredChains.indexOf(aKey);
-      const bKeyPreferred = preferredChains.indexOf(bKey);
-      if (aKeyPreferred > -1 && bKeyPreferred > -1) {
-        return aKeyPreferred - bKeyPreferred;
-      }
-      if (aKeyPreferred > -1) return -1;
-      if (bKeyPreferred > -1) return 1;
-
       return bStats.full_match + bStats.partial_match - (aStats.full_match + aStats.partial_match);
     })
     .slice(0, NUMBER_OF_TOP_CHAINS)
@@ -134,18 +120,12 @@ const Chart = () => {
               {...{
                 overflow: "visible",
               }}
+              layout="vertical"
             >
               <CartesianGrid strokeDasharray="3 3" />
               <Tooltip cursor={{ fill: "rgba(232, 239, 255, 0.4)" }} />
+              <YAxis dataKey="name" type="category" tick={{ fontSize: 12, width: 300, textAnchor: "end" }} />
               <XAxis
-                dataKey="name"
-                angle={30}
-                textAnchor="start"
-                interval={0} // Display every label
-              />
-              <YAxis
-                width={40}
-                dataKey="total"
                 domain={[
                   0,
                   (dataMax: number) => {
@@ -154,6 +134,8 @@ const Chart = () => {
                     return roundedMax;
                   },
                 ]}
+                dataKey="total"
+                type="number"
                 tickFormatter={(tick) => tick.toLocaleString()}
               />
               <Legend verticalAlign="top" align="center" height={36} />
