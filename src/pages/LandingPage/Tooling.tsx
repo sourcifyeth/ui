@@ -225,10 +225,6 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
         )}
         {activeTab === "remix" && (
           <div className="flex flex-col justify-center">
-            <div className="my-2 text-lg text-center">
-              You can verify contracts on Sourcify and other verifiers using the Remix's new unified "Verification
-              Plugin"
-            </div>
             <div className="mb-4 text-center">
               <a
                 href="https://remix.ethereum.org"
@@ -238,6 +234,9 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
               >
                 Try it in Remix →
               </a>
+            </div>
+            <div className="my-2 text-xl text-center">
+              Use the "Contract Verification" plugin to verify on Sourcify and others.
             </div>
             <video src="/remix-plugin.mp4" autoPlay loop muted playsInline className="" />
           </div>
