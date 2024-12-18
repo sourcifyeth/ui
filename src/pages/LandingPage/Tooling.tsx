@@ -143,21 +143,40 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
         className="inline-flex rounded-full"
       >
         {tabs.map((tab, index) => (
-          <button
+          <motion.button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-6 py-2 text-lg transition-colors flex items-center gap-2
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0, scale: activeTab === tab ? 1.1 : 1 }}
+            transition={{ duration: 0.3 }}
+            className={`px-6 py-2 text-lg transition-colors flex items-center gap-2 relative
               ${index === 0 ? "rounded-l-full" : ""}
               ${index === tabs.length - 1 ? "rounded-r-full" : ""}
-              ${activeTab === tab ? "font-bold shadow-sm" : "font-medium text-gray-500 hover:text-gray-700"}`}
+              ${
+                activeTab === tab
+                  ? "font-bold transform -translate-y-0.5"
+                  : "font-medium text-gray-500 hover:text-gray-700"
+              }`}
           >
-            <img
+            <motion.img
               src={`/${tab}.png`}
               alt={`${tab} logo`}
+              initial={{ scale: 0.8 }}
+              animate={{ scale: activeTab === tab ? 1 : 0.8 }}
+              transition={{ duration: 0.2 }}
               className={`w-10 h-10 ${activeTab === tab ? "" : "opacity-50"}`}
             />
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
+            {activeTab === tab && (
+              <motion.div
+                layoutId="activeTab"
+                className="absolute bottom-0 left-0 w-full h-0.5 bg-lightCoral-400"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
+              />
+            )}
+          </motion.button>
         ))}
       </motion.div>
 
@@ -175,7 +194,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 href="https://book.getfoundry.sh/reference/forge/forge-verify-contract"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline"
+                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
               >
                 Foundry Documentation →
               </a>
@@ -198,7 +217,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 href="https://hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-verify#verifying-on-sourcify"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline"
+                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
               >
                 Hardhat Documentation →
               </a>
@@ -230,7 +249,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 href="https://remix.ethereum.org"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline"
+                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
               >
                 Try it in Remix →
               </a>
