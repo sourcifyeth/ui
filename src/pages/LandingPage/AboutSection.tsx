@@ -60,7 +60,7 @@ const AboutSection = () => {
               <div className="hidden md:block h-full min-h-[100px] w-[2px] bg-gray-200 self-stretch" />
               <div className="md:w-2/3">
                 <p className="text-xl text-gray-600">
-                  Verified contract data should be open and easily accessible.
+                  Verified contract datasets should be open and easily accessible.
                   <br />
                   Sourcify's whole database is available for free and open access.{" "}
                   <a
