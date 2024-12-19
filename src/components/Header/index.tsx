@@ -37,7 +37,7 @@ const Header = ({ className }: { className?: string }) => {
     <div
       className={`flex items-center justify-between w-full flex-wrap lg:flex-nowrap p-4 sticky top-0 backdrop-filter backdrop-blur-sm bg-gray-100 bg-opacity-70 ${
         isScrolled ? "first:shadow-md" : ""
-      } z-50 px-8 md:px-12 lg:px-12 xl:px-24 ${className}`}
+      } z-10 px-8 md:px-12 lg:px-12 xl:px-24 ${className}`}
     >
       <Tooltip id="social-tooltip" />
       <div className="flex items-center">
