@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { HiMenu } from "react-icons/hi";
+import { HiMenu, HiX } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
 import { SiMatrix } from "react-icons/si";
@@ -36,7 +36,7 @@ const Header = ({ className }: { className?: string }) => {
   return (
     <div
       className={`flex items-center justify-between w-full flex-wrap lg:flex-nowrap p-4 sticky top-0 backdrop-filter backdrop-blur-sm bg-gray-100 bg-opacity-70 ${
-        isScrolled ? "lg:first:shadow-md" : ""
+        isScrolled ? "first:shadow-md" : ""
       } z-50 px-8 md:px-12 lg:px-12 xl:px-24 ${className}`}
     >
       <Tooltip id="social-tooltip" />
@@ -51,9 +51,15 @@ const Header = ({ className }: { className?: string }) => {
       </button>
       <div
         className={`${showNav || isDesktop ? "flex" : "hidden"} ${
-          !isDesktop ? "absolute top-[6rem] left-0 shadow-md" : ""
+          !isDesktop ? "absolute top-0 left-0 h-screen w-screen z-20" : ""
         } items-center justify-center lg:justify-end text-center flex-col lg:flex-row py-4 lg:mt-0 bg-gray-100 lg:bg-transparent bg-opacity-95 w-full`}
       >
+        {!isDesktop && showNav && (
+          <button className="absolute top-4 right-8" onClick={toggleNav}>
+            <HiX className="text-gray-700 text-3xl hover:text-ceruleanBlue-500" />
+          </button>
+        )}
+
         <nav
           className={`${
             showNav || isDesktop ? "flex" : "hidden"
