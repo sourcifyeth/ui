@@ -18,6 +18,8 @@ import { FaEthereum } from "react-icons/fa";
 import AboutSection from "./AboutSection";
 import SupportedChains from "./SupportedChains";
 import Tooling from "./Tooling";
+import FAQ from "./FAQ";
+import Contact from "./Contact";
 
 SyntaxHighlighter.registerLanguage("solidity", solidityLang);
 SyntaxHighlighter.registerLanguage("json", jsonLang);
@@ -196,38 +198,9 @@ const LandingPage = () => {
       </section>
       <Tooling />
 
-      <section className="px-8 md:px-12 lg:px-24 bg-ceruleanBlue-500 py-16">
-        <div className="mt-4 flex flex-col items-center justify-center">
-          <h1 className="text-5xl text-ceruleanBlue-100 font-bold mb-12">Get in touch</h1>
+      <Contact />
 
-          <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="https://matrix.to/#/#ethereum_source-verify:gitter.im"
-              rel="noreferrer"
-              target="_blank"
-              className="bg-ceruleanBlue-100 rounded-xl p-4 w-64 text-center"
-            >
-              <img src={matrix} alt="Matrix logo" className="w-28 m-auto" style={{ height: "35px" }} />
-            </a>
-
-            <a
-              href="https://discord.gg/6aqd9cfZ9s"
-              rel="noreferrer"
-              target="_blank"
-              className="bg-ceruleanBlue-100 rounded-xl p-4 w-64 text-center"
-            >
-              <img src={discord} alt="Discord logo" className="w-28 m-auto" style={{ height: "35px" }} />
-            </a>
-
-            <a
-              className="bg-ceruleanBlue-100 rounded-xl font-bold p-4 w-64 text-center"
-              href="mailto:hello@sourcify.dev"
-            >
-              hello@sourcify.dev
-            </a>
-          </div>
-        </div>
-      </section>
+      <FAQ />
 
       {/* Footer */}
       <footer className="text-center md:text-left px-8 py-8 md:px-48 md:py-16 bg-ceruleanBlue-500 text-white text-xl">
@@ -261,7 +234,18 @@ const LandingPage = () => {
           </div>
         </nav>
         <div className="text-center text-sm mt-8 text-ceruleanBlue-300">
-          Sourcify Team • {new Date().getFullYear()} • sourcify.eth{" "}
+          <div className="text-base mb-1">
+            Made with ❤️ by{" "}
+            <a
+              href="https://argot.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-ceruleanBlue-100 underline"
+            >
+              Argot Collective
+            </a>{" "}
+          </div>
+          <div>{new Date().getFullYear()} • sourcify.eth</div>
         </div>
       </footer>
     </div>
