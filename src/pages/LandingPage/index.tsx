@@ -1,6 +1,5 @@
 // AnimateOnScroll
-import { useContext, useRef, useState, useEffect } from "react";
-import { BsCheckCircleFill } from "react-icons/bs";
+import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
@@ -10,9 +9,7 @@ import Button from "../../components/Button";
 import Header from "../../components/Header";
 import { DOCS_URL } from "../../constants";
 import ChartSection from "./ChartSection";
-import { Context } from "../../Context";
 import { bytecode, solidityCode } from "./example";
-import { FaEthereum } from "react-icons/fa";
 import AboutSection from "./AboutSection";
 import SupportedChains from "./SupportedChains";
 import Tooling from "./Tooling";
@@ -32,17 +29,11 @@ const FooterItem = ({ href, children }: FooterItemProps) => (
   </a>
 );
 
-const A = ({ href, children }: FooterItemProps) => (
-  <a href={href} className="text-ceruleanBlue-500 link-underline">
-    {children}
-  </a>
-);
 //////////////////////////////////
 ///////// MAIN COMPONENT /////////
 //////////////////////////////////
 
 const LandingPage = () => {
-  const { sourcifyChains } = useContext(Context);
   const [isHovering, setIsHovering] = useState(false);
   const animationRef = useRef<number>(null);
   const MAX_VELOCITY = 0.3;
@@ -98,51 +89,33 @@ const LandingPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 w-full">
       <Header />
-      <section className="min-h-screen flex flex-col justify-center px-8 md:px-12 -mt-20 pt-20">
+      <section className="min-h-screen flex flex-col justify-center px-8 md:px-12 -mt-20 pt-20 max-w-7xl mx-auto">
         <div className="flex flex-col justify-center items-center">
           {/* Hero section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 flex-1">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 flex-1 place-items-center">
             {/* Hero left */}
-            <div className="flex flex-col justify-center text-center md:text-left">
-              <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-4">
+            <div className="flex flex-col justify-center text-center lg:text-left order-2 lg:order-1">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4">
                 <div className="opacity-0 animate-fade-up" style={{ animationDelay: "400ms" }}>
-                  <div>Source Code</div>
-                  <span className="relative">
-                    Verification
-                    <div
-                      className="absolute -right-2 bottom-0 md:bottom-1 md:-right-4 bg-gray-100 rounded-full opacity-0 animate-fade-up"
-                      style={{ animationDelay: "700ms" }}
-                    >
-                      <BsCheckCircleFill className="text-green-500 rotate-12 md:h-8 md:w-8 h-5 w-5" />
-                    </div>
-                  </span>
-                </div>
-                <div
-                  className="text-2xl md:text-4xl my-2 opacity-0 animate-fade-up"
-                  style={{ animationDelay: "800ms" }}
-                >
-                  for
-                </div>
-                <div className="flex flex-col gap-2 opacity-0 animate-fade-up" style={{ animationDelay: "1000ms" }}>
-                  <div className="flex flex-row items-center justify-center md:justify-start gap-2">
-                    <span>Ethereum</span>
-                    <FaEthereum className="" />
-                  </div>
-                  <div>Smart Contracts</div>
+                  Source Code Verification <br /> for{" "}
+                  <span className="text-ceruleanBlue-500">Ethereum Smart Contracts</span>
                 </div>
               </h1>
-              <h2 className="text-lg opacity-0 animate-fade-up" style={{ animationDelay: "1500ms" }}>
+              <h2
+                className="text-base md:text-xl font-semibold text-gray-500 opacity-0 animate-fade-up"
+                style={{ animationDelay: "1500ms" }}
+              >
                 Open-source, open-data, open-standards
               </h2>
             </div>
 
             {/* Hero right */}
             <div
-              className="hidden relative h-96 w-[30rem] md:flex items-center justify-center opacity-0 animate-fade-up"
+              className="relative h-72 w-72 md:h-96 md:w-[30rem] md:flex items-center justify-center opacity-0 animate-fade-up order-1 lg:order-2 mt-4 lg:mt-0"
               style={{ animationDelay: "100ms" }}
             >
               <div
-                className="absolute h-96 w-[30rem] z-10 spotlight-effect rounded-xl overflow-hidden "
+                className="absolute h-72 w-72 md:h-96 md:w-[30rem] z-10 spotlight-effect rounded-xl overflow-hidden "
                 style={{
                   maskImage: "radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent 80px, black 128px)",
                   WebkitMaskImage:
@@ -162,7 +135,7 @@ const LandingPage = () => {
               >
                 <div className="p-4 text-xs text-gray-100 break-all bg-[#111827]">{bytecode}</div>
               </div>
-              <div className="absolute h-96 w-[30rem] rounded-xl overflow-hidden shadow-xl">
+              <div className="absolute h-72 w-72 md:h-96 md:w-[30rem] rounded-xl overflow-hidden shadow-xl">
                 <SyntaxHighlighter
                   language="solidity"
                   customStyle={{ margin: 0, background: "#111827" }}
@@ -176,7 +149,7 @@ const LandingPage = () => {
           </div>
           {/* Buttons */}
           <div
-            className="flex flex-col justify-center sm:flex-row gap-2 md:gap-4 mt-8 md:mt-12 opacity-0 animate-fade-up"
+            className="flex flex-col justify-center sm:flex-row gap-2 md:gap-4 mt-4 lg:mt-12 opacity-0 animate-fade-up"
             style={{ animationDelay: "1700ms" }}
           >
             <Link to="/verifier">
