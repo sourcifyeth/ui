@@ -140,7 +140,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
         initial={{ opacity: 0, y: 20 }}
         animate={areTabsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6 }}
-        className="inline-flex rounded-full"
+        className="flex flex-col md:inline-flex md:flex-row rounded-full"
       >
         {tabs.map((tab, index) => (
           <motion.button
@@ -181,7 +181,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
       </motion.div>
 
       <motion.div
-        className="my-6 rounded-lg w-[60rem]"
+        className="my-6 rounded-lg md:w-[60rem] px-4 max-w-full overflow-x-auto"
         ref={codeRef}
         initial={{ opacity: 0, y: 20 }}
         animate={isCodeInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -203,7 +203,10 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
               language="bash"
               style={customStyle}
               customStyle={{ background: "#111827" }}
-              className="min-h-80"
+              className="text-xs lg:text-base min-h-80 max-w-full"
+              codeTagProps={{
+                className: "break-all sm:break-normal",
+              }}
               wrapLongLines
             >
               {isCodeInView ? displayedCode : foundryExample}
@@ -226,7 +229,10 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
               language="javascript"
               style={codeStyle}
               customStyle={{ background: "#111827" }}
-              className="w-full min-h-48"
+              className="text-xs lg:text-base w-full min-h-48"
+              codeTagProps={{
+                className: "break-all sm:break-normal",
+              }}
             >
               {isCodeInView ? displayedCode.slice(0, hardhatExampleJS.length) : hardhatExampleJS}
             </SyntaxHighlighter>
@@ -237,7 +243,10 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
             language="bash"
             style={codeStyle}
             customStyle={{ background: "#111827" }}
-            className="w-full min-h-24"
+            className="text-xs lg:text-base w-full min-h-24"
+            codeTagProps={{
+              className: "break-all sm:break-normal",
+            }}
           >
             {isCodeInView ? displayedCode.slice(hardhatExampleJS.length) : hardhatExampleBash}
           </SyntaxHighlighter>
@@ -263,8 +272,8 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
       </motion.div>
 
       <div className="my-24 text-center">
-        <h2 className="text-6xl font-bold text-ceruleanBlue-500">Who's using</h2>
-        <div className="flex flex-wrap justify-center gap-8 mt-12" ref={integrationsRef}>
+        <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500">Who's using</h2>
+        <div className="flex flex-wrap justify-center gap-2 md:gap-8 mt-12 mx-2" ref={integrationsRef}>
           {integrations
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((integration, index) => (
@@ -289,9 +298,9 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 <img
                   src={integration.logo}
                   alt={integration.name}
-                  className={`w-14 ${integration.name !== "Blockscout" ? "rounded-full" : ""}`}
+                  className={`w-10 md:w-14 ${integration.name !== "Blockscout" ? "rounded-full" : ""}`}
                 />
-                <div className="text-gray-700 text-sm mt-1 text-wrap">{integration.name}</div>
+                <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">{integration.name}</div>
               </motion.a>
             ))}
         </div>

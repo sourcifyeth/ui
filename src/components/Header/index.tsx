@@ -9,7 +9,7 @@ import { DOCS_URL, PLAYGROUND_URL } from "../../constants";
 
 const Header = ({ className }: { className?: string }) => {
   const [showNav, setShowNav] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768); // tailwind md=768px
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 1024); // tailwind md=768px
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const Header = ({ className }: { className?: string }) => {
     };
 
     const handleResize = () => {
-      setIsDesktop(window.innerWidth > 768);
+      setIsDesktop(window.innerWidth > 1024);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -34,10 +34,10 @@ const Header = ({ className }: { className?: string }) => {
     setShowNav((prev) => !prev);
   };
   return (
-    <nav
-      className={`flex items-centerjustify-between w-full flex-wrap md:flex-nowrap sticky top-0 backdrop-filter backdrop-blur-sm bg-gray-100 bg-opacity-70 ${
-        isScrolled ? "shadow-md" : ""
-      } z-50 ${className}`}
+    <div
+      className={`flex items-center justify-between w-full flex-wrap lg:flex-nowrap p-4 sticky top-0 backdrop-filter backdrop-blur-sm bg-gray-100 bg-opacity-70 ${
+        isScrolled ? "lg:first:shadow-md" : ""
+      } z-50 px-8 md:px-12 lg:px-12 xl:px-24 ${className}`}
     >
       <Tooltip id="social-tooltip" />
       <div className="flex items-center">
@@ -46,40 +46,38 @@ const Header = ({ className }: { className?: string }) => {
           <span className="ml-3 text-gray-700 font-vt323 text-2xl">sourcify.eth</span>
         </Link>
       </div>
-      <button className="block md:hidden" onClick={toggleNav}>
+      <button className="block lg:hidden" onClick={toggleNav}>
         <HiMenu className="text-gray-700 text-3xl hover:text-ceruleanBlue-500" />
       </button>
-      {/* A div to break flex into new line */}
-      <div className="h-0 basis-full"></div>
       <div
-        className={`${
-          showNav || isDesktop ? "flex" : "hidden"
-        } items-center justify-center md:justify-end text-center flex-col md:flex-row w-full mt-4 md:mt-0`}
+        className={`${showNav || isDesktop ? "flex" : "hidden"} ${
+          !isDesktop ? "absolute top-[6rem] left-0 shadow-md" : ""
+        } items-center justify-center lg:justify-end text-center flex-col lg:flex-row py-4 lg:mt-0 bg-gray-100 lg:bg-transparent bg-opacity-95 w-full`}
       >
         <nav
           className={`${
             showNav || isDesktop ? "flex" : "hidden"
-          } font-vt323 text-2xl text-gray-700 flex-col md:flex-row`}
+          } font-vt323 text-2xl text-gray-700 flex-col lg:flex-row`}
         >
-          <Link className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500" to="/verifier">
+          <Link className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" to="/verifier">
             Verify
           </Link>
-          <Link className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500" to="/lookup">
+          <Link className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" to="/lookup">
             Lookup
           </Link>
-          <a className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500" href={DOCS_URL}>
+          <a className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" href={DOCS_URL}>
             Docs
           </a>
           <a
-            className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500"
+            className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
             href="https://docs.sourcify.dev/blog/"
           >
             Blog
           </a>
-          <a className="link-underline mx-2 my-2 md:mx-6 hover:text-ceruleanBlue-500" href={PLAYGROUND_URL}>
+          <a className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" href={PLAYGROUND_URL}>
             Playground
           </a>
-          <div className="flex items-center ml-2">
+          <div className="flex items-center ml-2 mt-4 lg:mt-0">
             <iframe
               src="https://ghbtns.com/github-btn.html?user=ethereum&repo=sourcify&type=star&count=true&size=large"
               // frameborder="0"
@@ -92,7 +90,7 @@ const Header = ({ className }: { className?: string }) => {
           </div>
         </nav>
         {/* Icons */}
-        <div className="flex items-center ml-2 mt-6 md:mt-0">
+        <div className="flex items-center ml-2 mt-6 lg:mt-0">
           <a className="px-2 hover-to-fill" href="https://x.com/sourcifyeth" target="_blank" rel="noreferrer">
             <RiTwitterXFill className="h-[1.4rem] w-auto fill-gray-700 500" />
           </a>
@@ -108,7 +106,7 @@ const Header = ({ className }: { className?: string }) => {
           </a>
         </div>
       </div>
-    </nav>
+    </div>
   );
 };
 

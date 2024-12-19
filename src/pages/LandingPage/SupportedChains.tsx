@@ -49,11 +49,11 @@ const SupportedChains = () => {
         transition={{ duration: 0.6 }}
       >
         {chainCount ? (
-          <h1 className="text-5xl text-ceruleanBlue-500 font-light ">
-            <div className="text-9xl font-bold">{displayCount}</div> Chains
+          <h1 className="text-4xl md:text-5xl text-ceruleanBlue-500 font-light ">
+            <div className="text-8xl md:text-9xl font-bold">{displayCount}</div> Chains
           </h1>
         ) : (
-          <h1 className="text-5xl text-ceruleanBlue-500 font-bold">Supported Chains</h1>
+          <h1 className="text-3xl md:text-5xl text-ceruleanBlue-500 font-bold">Supported Chains</h1>
         )}
       </motion.div>
 
@@ -61,32 +61,9 @@ const SupportedChains = () => {
         className="!rounded-xl !text-lg !bg-ceruleanBlue-100 !text-ceruleanBlue-600 !opacity-100 !px-6 !py-4 !z-50"
         id="supported-chains-tooltip"
       />
-      <div className="flex flex-col w-full mb-8 mt-16" ref={chainsRef}>
-        <div className="flex flex-row justify-center">
-          {chains.slice(0, Math.ceil(chains.length / 2)).map((chain, index) => (
-            <motion.img
-              initial={{ opacity: 0 }}
-              animate={
-                areChainsInView
-                  ? {
-                      opacity: 1,
-                      y: [0, 0, -20],
-                      transition: { duration: 0.6, delay: index * 0.1 },
-                    }
-                  : { opacity: 0 }
-              }
-              whileHover={{ scale: 1.1, transition: { duration: 0.1, delay: 0 } }}
-              key={chain.name}
-              src={chain.logo}
-              data-tooltip-id="supported-chains-tooltip"
-              data-tooltip-content={chain.name}
-              className={`h-12 md:h-24 mx-4 my-4 rounded-full`}
-              alt={`${chain.name} logo`}
-            />
-          ))}
-        </div>
-        <div className="flex flex-row justify-center">
-          {chains.slice(Math.ceil(chains.length / 2)).map((chain, index) => (
+      <div className="flex flex-col items-center w-full md:mb-8 mt-8 md:mt-16" ref={chainsRef}>
+        <div className="flex flex-row justify-center md:w-[50rem] flex-wrap">
+          {chains.map((chain, index) => (
             <motion.img
               initial={{ opacity: 0 }}
               animate={
@@ -103,7 +80,7 @@ const SupportedChains = () => {
               src={chain.logo}
               data-tooltip-id="supported-chains-tooltip"
               data-tooltip-content={chain.name}
-              className={`h-12 md:h-24 mx-4 my-4 rounded-full`}
+              className={`h-12 md:h-24 m-2 md:m-4 rounded-full`}
               alt={`${chain.name} logo`}
             />
           ))}
@@ -115,15 +92,15 @@ const SupportedChains = () => {
         animate={isBottomInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        <div className="my-8 text-xl text-ceruleanBlue-500">
+        <div className="my-4 md:my-8 text-base md:text-xl text-ceruleanBlue-500">
           <p>Sourcify works on all EVM based chains.</p>
         </div>
-        <div className="flex justify-center">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4">
           <a href={`${DOCS_URL}/docs/chains`}>
             <Button className="font-semibold">{`See all ${chainCount.toString() || ""} chains`}</Button>
           </a>
           <a href={`${DOCS_URL}/docs/chain-support/`}>
-            <Button type="secondary" className="font-semibold ml-4">
+            <Button type="secondary" className="font-semibold">
               Add a new chain
             </Button>
           </a>

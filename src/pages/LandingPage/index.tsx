@@ -6,8 +6,6 @@ import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
 import solidityLang from "react-syntax-highlighter/dist/esm/languages/prism/solidity";
 import codeStyle from "react-syntax-highlighter/dist/esm/styles/prism/dracula";
-import discord from "../../assets/discord.svg";
-import matrix from "../../assets/matrix.svg";
 import Button from "../../components/Button";
 import Header from "../../components/Header";
 import { DOCS_URL } from "../../constants";
@@ -99,31 +97,34 @@ const LandingPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 w-full">
-      <Header className="px-24 h-24" />
+      <Header />
       <section className="min-h-screen flex flex-col justify-center px-8 md:px-12 -mt-20 pt-20">
         <div className="flex flex-col justify-center items-center">
           {/* Hero section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 flex-1">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 flex-1">
             {/* Hero left */}
-            <div className="flex flex-col justify-center">
-              <h1 className="text-2xl md:text-7xl font-bold mb-4">
+            <div className="flex flex-col justify-center text-center md:text-left">
+              <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-4">
                 <div className="opacity-0 animate-fade-up" style={{ animationDelay: "400ms" }}>
                   <div>Source Code</div>
                   <span className="relative">
                     Verification
                     <div
-                      className="absolute bottom-1 -right-4 bg-gray-100 rounded-full opacity-0 animate-fade-up"
+                      className="absolute -right-2 bottom-0 md:bottom-1 md:-right-4 bg-gray-100 rounded-full opacity-0 animate-fade-up"
                       style={{ animationDelay: "700ms" }}
                     >
-                      <BsCheckCircleFill className="text-green-500 rotate-12" size={30} />
+                      <BsCheckCircleFill className="text-green-500 rotate-12 md:h-8 md:w-8 h-5 w-5" />
                     </div>
                   </span>
                 </div>
-                <div className="text-4xl my-2 opacity-0 animate-fade-up" style={{ animationDelay: "800ms" }}>
+                <div
+                  className="text-2xl md:text-4xl my-2 opacity-0 animate-fade-up"
+                  style={{ animationDelay: "800ms" }}
+                >
                   for
                 </div>
                 <div className="flex flex-col gap-2 opacity-0 animate-fade-up" style={{ animationDelay: "1000ms" }}>
-                  <div className="flex flex-row items-center gap-2">
+                  <div className="flex flex-row items-center justify-center md:justify-start gap-2">
                     <span>Ethereum</span>
                     <FaEthereum className="" />
                   </div>
@@ -137,7 +138,7 @@ const LandingPage = () => {
 
             {/* Hero right */}
             <div
-              className="relative h-96 w-[30rem] flex items-center justify-center opacity-0 animate-fade-up"
+              className="hidden relative h-96 w-[30rem] md:flex items-center justify-center opacity-0 animate-fade-up"
               style={{ animationDelay: "100ms" }}
             >
               <div
@@ -175,7 +176,7 @@ const LandingPage = () => {
           </div>
           {/* Buttons */}
           <div
-            className="flex flex-col justify-center sm:flex-row gap-4 mt-12 opacity-0 animate-fade-up"
+            className="flex flex-col justify-center sm:flex-row gap-2 md:gap-4 mt-8 md:mt-12 opacity-0 animate-fade-up"
             style={{ animationDelay: "1700ms" }}
           >
             <Link to="/verifier">

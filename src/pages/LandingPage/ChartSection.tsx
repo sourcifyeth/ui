@@ -23,6 +23,18 @@ const Chart = () => {
   const isSectionInView = useInView(sectionRef, { once: true });
   const [stats, setStats] = useState<statsType | undefined>(undefined);
 
+  // Window width to make the chart responsive. We'll change the font sizes and tick width based on this
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     fetch(`${REPOSITORY_SERVER_URL}/stats.json`)
       .then((res) => res.json())
@@ -91,15 +103,15 @@ const Chart = () => {
     .map(([key, chainStats]) => getFormattedChainData(key));
 
   return (
-    <div className="w-full flex flex-col items-center justify-center">
+    <div className="w-full flex flex-col items-center justify-center text-center">
       <motion.div
         ref={sectionRef}
         initial={{ opacity: 0, y: 20 }}
         animate={isSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="text-8xl font-bold text-ceruleanBlue-500">{displayTotal.toLocaleString()}</h2>
-        <h2 className="text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
+        <h2 className="text-5xl md:text-8xl font-bold text-ceruleanBlue-500">{displayTotal.toLocaleString()}</h2>
+        <h2 className="text-2xl md:text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
       </motion.div>
       <div className="flex flex-col items-center my-8">
         <a
@@ -127,7 +139,7 @@ const Chart = () => {
             transparent
           />
         </div>
-        <div className="h-72 md:h-96 lg:h-[30rem] w-11/12 max-w-2xl mb-12 text-sm lg:text-base">
+        <div className="h-[30rem] w-11/12 max-w-2xl mb-12 text-sm lg:text-base">
           <ResponsiveContainer>
             <BarChart
               data={formattedData}
@@ -138,7 +150,14 @@ const Chart = () => {
             >
               <CartesianGrid strokeDasharray="3 3" />
               <Tooltip cursor={{ fill: "rgba(232, 239, 255, 0.4)" }} />
-              <YAxis dataKey="name" type="category" tick={{ fontSize: 12, width: 300, textAnchor: "end" }} />
+              <YAxis
+                dataKey="name"
+                type="category"
+                tick={{
+                  fontSize: windowWidth < 768 ? 8 : 12,
+                  width: windowWidth < 768 ? 100 : 300,
+                }}
+              />
               <XAxis
                 domain={[
                   0,
@@ -148,9 +167,12 @@ const Chart = () => {
                     return roundedMax;
                   },
                 ]}
+                angle={windowWidth < 768 ? 45 : 0}
+                textAnchor={windowWidth < 768 ? "start" : "middle"}
                 dataKey="total"
                 type="number"
                 tickFormatter={(tick) => tick.toLocaleString()}
+                tick={{ fontSize: windowWidth < 768 ? 8 : 12 }}
               />
               <Legend verticalAlign="top" align="center" height={36} />
               <Bar name="Full Matches" dataKey="fullMatch" fill="#2B50AA" stackId="a" />
