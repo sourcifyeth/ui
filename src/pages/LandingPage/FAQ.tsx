@@ -14,6 +14,8 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
           isOpen ? "font-semibold" : ""
         }`}
         onClick={() => setIsOpen((currIsOpen) => !currIsOpen)}
+        aria-expanded={isOpen}
+        aria-controls={`faq-content-${question}`}
       >
         <div className="text-lg">{question}</div>
         <div className="text-ceruleanBlue-600">{isOpen ? <FaMinus /> : <FaPlus />}</div>
