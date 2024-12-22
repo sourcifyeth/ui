@@ -66,7 +66,7 @@ export default function FAQ() {
           </p>
           <p className="mb-2 font-medium">
             Source code verification is crucial for transparency and security in blockchains. You should not interact
-            with code that is not public.
+            with contracts that are not source-code verified.
           </p>
           <p className="mb-2">
             Verification does not mean it's safe to interact with a contract. Verifiers do not check the contents of the
