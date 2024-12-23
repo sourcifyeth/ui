@@ -19,16 +19,6 @@ import Contact from "./Contact";
 SyntaxHighlighter.registerLanguage("solidity", solidityLang);
 SyntaxHighlighter.registerLanguage("json", jsonLang);
 
-type FooterItemProps = {
-  href?: string;
-  children: string;
-};
-const FooterItem = ({ href, children }: FooterItemProps) => (
-  <a href={href}>
-    <li className="text-ceruleanBlue-300 hover:text-ceruleanBlue-100">{children}</li>
-  </a>
-);
-
 //////////////////////////////////
 ///////// MAIN COMPONENT /////////
 //////////////////////////////////
@@ -177,26 +167,46 @@ const LandingPage = () => {
       <FAQ />
 
       {/* Footer */}
-      <footer className="text-center md:text-left px-8 py-8 md:px-48 md:py-16 bg-ceruleanBlue-500 text-white text-xl">
-        <nav className="font-vt323 flex flex-row flex-wrap justify-center gap-20 max-w-7xl mx-auto">
-          <div>
-            <h3 className="uppercase font-bold text-ceruleanBlue-100">External Links</h3>
-            <ul>
-              <FooterItem href="https://docs.sourcify.dev">Documentation</FooterItem>
-              <FooterItem href="https://docs.sourcify.dev/docs/repository/">Contract Repository</FooterItem>
-              <FooterItem href="https://github.com/sourcifyeth/assets">Brand Resources</FooterItem>
-            </ul>
+      <footer className="text-center md:text-left px-8 py-8 md:px-48 md:py-12 bg-ceruleanBlue-500 text-white text-lg">
+        <nav className="font-vt323 flex flex-col flex-wrap gap-4 max-w-7xl mx-auto items-center">
+          <div className="flex flex-col items-center text-xl">
+            <div className="text-ceruleanBlue-200 flex flex-col md:flex-row flex-wrap justify-center gap-x-8">
+              <a href="https://docs.sourcify.dev" className="hover:text-ceruleanBlue-100 block">
+                Documentation
+              </a>
+              <a href="https://docs.sourcify.dev/docs/repository/" className="hover:text-ceruleanBlue-100 block">
+                Contract Repository
+              </a>
+              <a href="https://github.com/sourcifyeth/assets" className="hover:text-ceruleanBlue-100 block">
+                Brand Resources
+              </a>
+            </div>
           </div>
-          <div>
-            <h3 className="uppercase font-bold text-ceruleanBlue-100">Socials</h3>
-            <ul>
-              <FooterItem href="https://x.com/sourcifyeth">X (Twitter)</FooterItem>
-              <FooterItem href="https://discord.gg/6aqd9cfZ9s">Discord</FooterItem>
-              <FooterItem href="https://matrix.to/#/#ethereum_source-verify:gitter.im">Matrix</FooterItem>
-              <FooterItem href="https://github.com/ethereum/sourcify">GitHub (main)</FooterItem>
-              <FooterItem href="https://github.com/sourcifyeth">GitHub (organization)</FooterItem>
-              <FooterItem href="mailto:hello@sourcify.dev">E-Mail</FooterItem>
-            </ul>
+          <div className="flex flex-col items-center">
+            <h3 className="uppercase font-bold text-ceruleanBlue-100 text-2xl">Socials</h3>
+            <div className="flex flex-col md:flex-row flex-wrap gap-x-6 text-ceruleanBlue-200 justify-center">
+              <a href="https://x.com/sourcifyeth" className="hover:text-ceruleanBlue-100 block">
+                X (Twitter)
+              </a>
+              <a href="https://discord.gg/6aqd9cfZ9s" className="hover:text-ceruleanBlue-100 block">
+                Discord
+              </a>
+              <a
+                href="https://matrix.to/#/#ethereum_source-verify:gitter.im"
+                className="hover:text-ceruleanBlue-100 block"
+              >
+                Matrix
+              </a>
+              <a href="https://github.com/ethereum/sourcify" className="hover:text-ceruleanBlue-100 block">
+                GitHub (main)
+              </a>
+              <a href="https://github.com/sourcifyeth" className="hover:text-ceruleanBlue-100 block">
+                GitHub (organization)
+              </a>
+              <a href="mailto:hello@sourcify.dev" className="hover:text-ceruleanBlue-100 block">
+                E-Mail
+              </a>
+            </div>
           </div>
         </nav>
         <div className="text-center text-sm mt-8 text-ceruleanBlue-300">
