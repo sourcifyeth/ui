@@ -96,7 +96,11 @@ const AboutSection = () => {
                 <p className="text-lg md:text-xl text-gray-600">
                   As a
                   <a href="https://verifieralliance.org" target="_blank" rel="noopener noreferrer">
-                    <img src="/verifier-alliance.svg" alt="Verifier Alliance" className="h-16 inline-block -m-2" />
+                    <img
+                      src="/verifier-alliance.svg"
+                      alt="Verifier Alliance"
+                      className="h-16 inline-block -m-3 -mt-5"
+                    />
                   </a>{" "}
                   member, Sourcify fosters open standards, data sharing, interoperability, and collaboration between all
                   source code verifiers.
