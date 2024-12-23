@@ -7,7 +7,7 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
 
   return (
     <div
-      className={`flex flex-col w-full px-6 py-4 my-2 text-gray-700 bg-gray-50 rounded-lg shadow-lg transition-colors duration-500 ease-in-out`}
+      className={`flex flex-col w-full px-8 py-4 my-2 text-gray-700 bg-gray-50 rounded-lg shadow-lg transition-colors duration-500 ease-in-out`}
     >
       <button
         className={`flex flex-row justify-between items-center text-left cursor-pointer pt-2 pb-2 ${
@@ -32,7 +32,7 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
             transition={{ duration: 0.8, ease: [0, 0.62, 0.23, 0.98] }}
             className="overflow-hidden"
           >
-            <div className=" text-gray-700">{answer}</div>
+            <div className=" text-gray-700 py-4">{answer}</div>
           </motion.div>
         }
       </AnimatePresence>
