@@ -7,7 +7,7 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
 
   return (
     <div
-      className={`flex flex-col w-full px-6 py-4 my-2 text-ceruleanBlue-500 bg-ceruleanBlue-100 rounded-lg shadow-lg transition-colors duration-500 ease-in-out`}
+      className={`flex flex-col w-full px-6 py-4 my-2 text-gray-700 bg-gray-50 rounded-lg shadow-lg transition-colors duration-500 ease-in-out`}
     >
       <button
         className={`flex flex-row justify-between items-center text-left cursor-pointer pt-2 pb-2 ${
@@ -18,7 +18,7 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
         aria-controls={`faq-content-${question}`}
       >
         <div className="text-lg">{question}</div>
-        <div className="text-ceruleanBlue-600">{isOpen ? <FaMinus /> : <FaPlus />}</div>
+        <div className="">{isOpen ? <FaMinus /> : <FaPlus />}</div>
       </button>
       <AnimatePresence initial={false}>
         {
@@ -138,7 +138,7 @@ export default function FAQ() {
   ];
 
   return (
-    <section ref={faqRef} className="w-full flex flex-col items-center py-16 bg-gray-50">
+    <section ref={faqRef} className="w-full flex flex-col items-center py-16 bg-ceruleanBlue-100">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         animate={isFAQInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
