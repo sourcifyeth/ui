@@ -177,6 +177,15 @@ const LandingPage = () => {
               <a href="https://docs.sourcify.dev/docs/repository/" className="hover:text-ceruleanBlue-100 block">
                 Contract Repository
               </a>
+              <a href="https://github.com/orgs/ethereum/projects/46" className="hover:text-ceruleanBlue-100 block">
+                Project Board
+              </a>
+              <a
+                href="https://github.com/orgs/ethereum/projects/46/views/3"
+                className="hover:text-ceruleanBlue-100 block"
+              >
+                Milestones
+              </a>
               <a href="https://github.com/sourcifyeth/assets" className="hover:text-ceruleanBlue-100 block">
                 Brand Resources
               </a>
