@@ -2,12 +2,7 @@ import bytes from "bytes";
 import { useCallback, useContext, useEffect, useState } from "react";
 import Header from "../../components/Header";
 import Toast from "../../components/Toast";
-import {
-  ADD_FILES_URL,
-  RESTART_SESSION_URL,
-  SESSION_DATA_URL,
-  VERIFY_VALIDATED_URL,
-} from "../../constants";
+import { ADD_FILES_URL, RESTART_SESSION_URL, SESSION_DATA_URL, VERIFY_VALIDATED_URL } from "../../constants";
 import { Context } from "../../Context";
 import {
   DropzoneFile,
@@ -25,9 +20,7 @@ const UI_MAX_FILE_SIZE = 30 * 1024 * 1024;
 const Verifier: React.FC = () => {
   const [addedFiles, setAddedFiles] = useState<string[]>([]);
   const [unusedFiles, setUnusedFiles] = useState<string[]>([]);
-  const [checkedContracts, setCheckedContracts] = useState<SendableContract[]>(
-    []
-  );
+  const [checkedContracts, setCheckedContracts] = useState<SendableContract[]>([]);
   const { errorMessage, setErrorMessage } = useContext(Context);
 
   const fetchAndUpdate = useCallback(
@@ -79,9 +72,8 @@ const Verifier: React.FC = () => {
                 <>
                   <div>Possibly a CORS error, check the browser console.</div>
                   <div>
-                    Are you on a different domain than sourcify.dev or
-                    sourcify.eth? API v2 is not available except the official
-                    UI. See{" "}
+                    Are you on a different domain than sourcify.dev or sourcify.eth? API v2 is not available except the
+                    official UI. See{" "}
                     <a
                       className="font-bold"
                       href="https://docs.sourcify.dev/docs/api/#verification-api-v2---session-based"
@@ -115,9 +107,7 @@ const Verifier: React.FC = () => {
       if (file.size > UI_MAX_FILE_SIZE) {
         const humanReadableSize = bytes(file.size);
         return setErrorMessage(
-          `Added file ${
-            file.name
-          } is ${humanReadableSize} which is more than the maximum single file size of ${bytes(
+          `Added file ${file.name} is ${humanReadableSize} which is more than the maximum single file size of ${bytes(
             UI_MAX_FILE_SIZE
           )}`
         );
@@ -126,10 +116,7 @@ const Verifier: React.FC = () => {
       // remove absolute path
       if (file.path.startsWith("/")) filePath = file.path.substring(1);
       // If a zip, send a separate request, since there's already no file path
-      if (
-        file.type === "application/zip" ||
-        file.type === "application/x-zip-compressed"
-      ) {
+      if (file.type === "application/zip" || file.type === "application/x-zip-compressed") {
         const formData = new FormData();
         formData.append("files", file);
         await fetchAndUpdate(ADD_FILES_URL, {
@@ -183,39 +170,31 @@ const Verifier: React.FC = () => {
   }, [fetchAndUpdate]);
 
   return (
-    <div className="flex flex-col flex-1 pb-8 px-8 md:px-12 lg:px-24 bg-gray-100">
+    <div className="flex flex-col flex-1 bg-gray-100">
       <Header />
-      <Toast
-        message={errorMessage}
-        isShown={!!errorMessage}
-        dismiss={() => setErrorMessage("")}
-      />
-      <div className="text-center">
-        <h1 className="text-3xl md:text-4xl font-bold">Verifier</h1>
-        <p className="mt-2">
-          Verify smart contracts by recompiling with the Solidity source code
-          and metadata.
-        </p>
-      </div>
-      <div className="flex flex-col md:flex-row flex-grow mt-6">
-        <FileUpload
-          handleFilesAdded={handleFiles}
-          addedFiles={addedFiles}
-          metadataMissing={
-            unusedFiles.length > 0 && checkedContracts.length === 0
-          }
-          restartSession={restartSession}
-          fetchAndUpdate={fetchAndUpdate}
-        />
-        <CheckedContractsView
-          checkedContracts={checkedContracts}
-          isHidden={checkedContracts.length < 1}
-          verifyCheckedContract={verifyCheckedContract}
-        />
-      </div>
-      <div className="text-xs italic mx-2 mt-1 text-gray-400">
-        Once a contract is verified it can't be removed from the Sourcify
-        repository.
+      <Toast message={errorMessage} isShown={!!errorMessage} dismiss={() => setErrorMessage("")} />
+      <div className="flex flex-col w-full flex-1 max-w-[100rem] mx-auto pb-8 px-8 md:px-12 lg:px-24 ">
+        <div className="text-center">
+          <h1 className="text-3xl md:text-4xl font-bold">Verifier</h1>
+          <p className="mt-2">Verify smart contracts by recompiling with the Solidity source code and metadata.</p>
+        </div>
+        <div className="flex flex-col md:flex-row flex-grow mt-6">
+          <FileUpload
+            handleFilesAdded={handleFiles}
+            addedFiles={addedFiles}
+            metadataMissing={unusedFiles.length > 0 && checkedContracts.length === 0}
+            restartSession={restartSession}
+            fetchAndUpdate={fetchAndUpdate}
+          />
+          <CheckedContractsView
+            checkedContracts={checkedContracts}
+            isHidden={checkedContracts.length < 1}
+            verifyCheckedContract={verifyCheckedContract}
+          />
+        </div>
+        <div className="text-xs italic mx-2 mt-1 text-gray-400">
+          Once a contract is verified it can't be removed from the Sourcify repository.
+        </div>
       </div>
     </div>
   );

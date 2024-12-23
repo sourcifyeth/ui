@@ -10,6 +10,7 @@ type ChainSelectProps = {
   id?: string;
   availableChains?: number[];
   transparent?: boolean;
+  className?: string;
 };
 
 export default function ChainSelect({
@@ -18,15 +19,14 @@ export default function ChainSelect({
   id,
   availableChains,
   transparent,
+  className,
 }: ChainSelectProps) {
   const { sourcifyChains } = useContext(Context);
 
   let filteredChains;
   if (availableChains) {
     // Explicitly define which chains to show, like in Etherscan chains
-    filteredChains = sourcifyChains.filter((chain) =>
-      availableChains.includes(chain.chainId)
-    );
+    filteredChains = sourcifyChains.filter((chain) => availableChains.includes(chain.chainId));
   } else {
     filteredChains = sourcifyChains.filter((chain) => chain.supported);
   }
@@ -44,7 +44,7 @@ export default function ChainSelect({
       filterOptions={fuzzySearch}
       emptyMessage="Couldn't fetch Sourcify chains"
       placeholder="Choose chain"
-      className={`select-search ${transparent ? "transparent-select" : ""}`}
+      className={`select-search ${transparent ? "transparent-select" : ""} ${className}`}
     />
   );
 }

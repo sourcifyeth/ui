@@ -16,8 +16,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 html {
@@ -61,21 +60,9 @@ html {
   }
 }
 
-.logos-container:hover > * {
-  opacity: 50%;
-}
-
-.logos-container > *:hover {
-  opacity: 100%;
-  cursor: pointer;
-}
-
 /* from https://codepen.io/christiancroser/pen/xqrLBm */
 .link-underline {
-  background-image: linear-gradient(
-    transparent calc(100% - 3px),
-    var(--color-secondary) 3px
-  );
+  background-image: linear-gradient(transparent calc(100% - 3px), var(--color-secondary) 3px);
   background-repeat: no-repeat;
   background-size: 0% 100%;
   transition: background-size 0.3s;

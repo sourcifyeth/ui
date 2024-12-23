@@ -13,7 +13,7 @@ const Button = ({ children, type, className, onClick }: ButtonProps) => {
 
   if (type === "secondary") {
     bg = "bg-ceruleanBlue-100";
-    hoverBg = "hover:bg-ceruleanBlue-200";
+    hoverBg = "hover:bg-[rgba(118,147,218,0.15)]";
     textColor = "text-ceruleanBlue-500";
   } else if (type === "white") {
     bg = "bg-slate-50";
@@ -23,7 +23,7 @@ const Button = ({ children, type, className, onClick }: ButtonProps) => {
 
   return (
     <button
-      className={`py-3 px-4 ${bg} ${hoverBg} disabled:hover:bg-ceruleanBlue-500 focus:ring-ceruleanBlue-300 focus:ring-offset-ceruleanBlue-100 ${textColor} transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg disabled:opacity-50 disabled:cursor-default ${className}`}
+      className={`py-3 px-6 ${bg} ${hoverBg} disabled:hover:bg-ceruleanBlue-500 focus:ring-ceruleanBlue-300 focus:ring-offset-ceruleanBlue-100 ${textColor} transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full disabled:opacity-50 disabled:cursor-default ${className}`}
       onClick={onClick}
     >
       {children}

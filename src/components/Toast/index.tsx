@@ -12,7 +12,7 @@ const Toast = ({ message, isShown, dismiss }: ToastProps) => {
   if (!isShown) return null;
   return (
     <div
-      className="z-20 fixed top-0 left-0 right-0 mt-4 margin-auto bg-red-400 shadow-md mx-auto w-96 max-w-full text-sm pointer-events-auto bg-clip-padding rounded-lg block mb-3"
+      className="z-50 fixed top-0 left-0 right-0 mt-4 margin-auto bg-red-400 shadow-md mx-auto w-96 max-w-full text-sm pointer-events-auto bg-clip-padding rounded-lg block mb-3"
       id="static-example"
       role="alert"
       aria-live="assertive"
@@ -33,9 +33,7 @@ const Toast = ({ message, isShown, dismiss }: ToastProps) => {
           </button>
         </div>
       </div>
-      <div className="p-3 bg-red-400 rounded-b-lg break-words text-white overflow-y-auto max-h-96">
-        {message}
-      </div>
+      <div className="p-3 bg-red-400 rounded-b-lg break-words text-white overflow-y-auto max-h-96">{message}</div>
     </div>
   );
 };

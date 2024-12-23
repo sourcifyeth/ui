@@ -1,34 +1,20 @@
 import { isHexString } from "@ethersproject/bytes";
 import { getAddress } from "@ethersproject/address";
-import React, {
-  ChangeEventHandler,
-  FormEventHandler,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEventHandler, FormEventHandler, useContext, useEffect, useRef, useState } from "react";
 import Input from "../../../../../components/Input";
 import ChainSelect from "../../../../../components/ChainSelect";
 import { Context } from "../../../../../Context";
-import {
-  CheckAllByAddressResult,
-  SendableContract,
-  SessionResponse,
-  VerificationInput,
-} from "../../../../../types";
+import { CheckAllByAddressResult, SendableContract, SessionResponse, VerificationInput } from "../../../../../types";
 import { checkAllByAddresses } from "../../../../../utils/api";
 import Message from "./Message";
 import { HiChevronDown } from "react-icons/hi";
-import ReactTooltip from "react-tooltip";
+import { Tooltip } from "react-tooltip";
 import { SelectedOptionValue } from "react-select-search";
 
 type ChainAddressFormProps = {
   customStatus: string;
   checkedContract: SendableContract;
-  verifyCheckedContract: (
-    sendable: VerificationInput
-  ) => Promise<SessionResponse | undefined>;
+  verifyCheckedContract: (sendable: VerificationInput) => Promise<SessionResponse | undefined>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const ChainAddressForm = ({
@@ -49,8 +35,7 @@ const ChainAddressForm = ({
   const [msgSender, setMsgSender] = useState<string>(""); */
   /* const [isInvalidMsgSender, setIsInvalidMsgSender] = useState<boolean>(false); */
   const [creatorTxHash, setCreatorTxHash] = useState<string>("");
-  const [isInvalidCreatorTxHash, setIsInvalidCreatorTxHash] =
-    useState<boolean>(false);
+  const [isInvalidCreatorTxHash, setIsInvalidCreatorTxHash] = useState<boolean>(false);
   /* const [showRawAbiInput, setShowRawAbiInput] = useState(false);
   const [isInvalidConstructorArguments, setIsInvalidConstructorArguments] =
     useState(false); */
@@ -81,21 +66,14 @@ const ChainAddressForm = ({
       return setIsInvalidAddress(true);
     }
 
-    checkAllByAddresses(
-      checksummedAddress,
-      sourcifyChains.map((c) => c.chainId.toString()).join(",")
-    ).then((res) => {
+    checkAllByAddresses(checksummedAddress, sourcifyChains.map((c) => c.chainId.toString()).join(",")).then((res) => {
       // checkAllByAddresses inputs and outptus multiple addresses.
-      const currentAddressMatches = res.find(
-        (match) => (match.address = checksummedAddress)
-      );
+      const currentAddressMatches = res.find((match) => (match.address = checksummedAddress));
       setFoundMatches(currentAddressMatches);
     });
   };
 
-  const handleChainIdChange = (
-    selectedOptionValue: SelectedOptionValue | SelectedOptionValue[]
-  ) => {
+  const handleChainIdChange = (selectedOptionValue: SelectedOptionValue | SelectedOptionValue[]) => {
     const newChainIdStr = `${selectedOptionValue as SelectedOptionValue}`;
     setChainId(newChainIdStr);
     verifyButtonRef.current?.focus();
@@ -112,9 +90,7 @@ const ChainAddressForm = ({
     setIsInvalidMsgSender(false);
   }; */
 
-  const handleCreatorTxHashChange: ChangeEventHandler<HTMLInputElement> = (
-    e
-  ) => {
+  const handleCreatorTxHashChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const tempHash = e.target.value;
     setCreatorTxHash(tempHash);
     if (!isHexString(tempHash, 32) && tempHash !== "") {
@@ -125,8 +101,7 @@ const ChainAddressForm = ({
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    if (!address || !chainId || isInvalidAddress /* || isInvalidMsgSender */)
-      return;
+    if (!address || !chainId || isInvalidAddress /* || isInvalidMsgSender */) return;
     setIsLoading(true);
     verifyCheckedContract({
       verificationId: checkedContract.verificationId || "",
@@ -139,11 +114,7 @@ const ChainAddressForm = ({
   return (
     <div className="">
       <div className="">
-        <Message
-          customStatus={customStatus}
-          checkedContract={checkedContract}
-          foundMatches={foundMatches}
-        />
+        <Message customStatus={customStatus} checkedContract={checkedContract} foundMatches={foundMatches} />
       </div>
       <form className="mt-4" onSubmit={handleSubmit}>
         <div>
@@ -151,9 +122,7 @@ const ChainAddressForm = ({
             <label className="block" htmlFor="address">
               Address
             </label>
-            {isInvalidAddress && (
-              <span className="text-red-500 text-sm">Invalid Address</span>
-            )}
+            {isInvalidAddress && <span className="text-red-500 text-sm">Invalid Address</span>}
           </div>
           <Input
             id="address"
@@ -167,11 +136,7 @@ const ChainAddressForm = ({
           <label className="block" htmlFor="chain-select">
             Chain
           </label>
-          <ChainSelect
-            id="chain-select"
-            value={chainId}
-            handleChainIdChange={handleChainIdChange}
-          />
+          <ChainSelect id="chain-select" value={chainId} handleChainIdChange={handleChainIdChange} />
         </div>
 
         <button
@@ -188,34 +153,22 @@ const ChainAddressForm = ({
         </button>
 
         {/* CreatorTx, Constructor arguments, msg.sender etc fields. */}
-        <div
-          className={`${isMoreFieldsOpen ? "flex" : "hidden"} flex-col mt-2`}
-        >
+        <div className={`${isMoreFieldsOpen ? "flex" : "hidden"} flex-col mt-2`}>
           {/* Creator Tx Hash */}
           <div className="">
             <div className="flex justify-between">
-              <ReactTooltip
-                effect="solid"
-                delayHide={500}
-                clickable={true}
-                className="max-w-xl"
-                id="creator-tx-hash-tooltip"
-              />
+              <Tooltip delayHide={500} clickable={true} className="max-w-xl" id="creator-tx-hash-tooltip" />
               <label className="block" htmlFor="creatorTxHash">
                 Creator Tx Hash{" "}
                 <span
                   className="ml-1 text-ceruleanBlue-200 font-bold"
-                  data-for="creator-tx-hash-tooltip"
-                  data-tip="If your contract has immutable variables, we will look for the tx.input of transaction that created the contract to see if it matches the creation bytecode. If you leave this blank and we need it, we will try getting it ourselves from block explorers or APIs that provide this data."
+                  data-tooltip-id="creator-tx-hash-tooltip"
+                  data-tooltip-content="If your contract has immutable variables, we will look for the tx.input of transaction that created the contract to see if it matches the creation bytecode. If you leave this blank and we need it, we will try getting it ourselves from block explorers or APIs that provide this data."
                 >
                   ?
                 </span>
               </label>
-              {isInvalidCreatorTxHash && (
-                <span className="text-red-500 text-sm">
-                  Invalid Transaction Hash String
-                </span>
-              )}
+              {isInvalidCreatorTxHash && <span className="text-red-500 text-sm">Invalid Transaction Hash String</span>}
             </div>
 
             <Input
@@ -275,7 +228,7 @@ const ChainAddressForm = ({
                 <span
                   className="ml-1 text-ceruleanBlue-200 font-bold"
                   data-for="msg-sender-tooltip"
-                  data-tip="`msg.sender` will be used if your contract assigns it to an immutable variable such as an `owner`. In the case of a contract created by a factory, this is the factory address"
+                  data-tooltip-content="`msg.sender` will be used if your contract assigns it to an immutable variable such as an `owner`. In the case of a contract created by a factory, this is the factory address"
                 >
                   ?
                 </span>
