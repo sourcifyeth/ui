@@ -178,15 +178,7 @@ const LandingPage = () => {
 
       {/* Footer */}
       <footer className="text-center md:text-left px-8 py-8 md:px-48 md:py-16 bg-ceruleanBlue-500 text-white text-xl">
-        <nav className="font-vt323 grid md:grid-cols-3 gap-8">
-          <div>
-            <h3 className="uppercase font-bold text-ceruleanBlue-100">Internal Links</h3>
-            <ul>
-              <FooterItem href="/verifier">Contract Verifier</FooterItem>
-              <FooterItem href="/lookup">Contract Lookup</FooterItem>
-              {/* <FooterItem href="/status">Server Status</FooterItem> */}
-            </ul>
-          </div>
+        <nav className="font-vt323 flex flex-row flex-wrap justify-center gap-20 max-w-7xl mx-auto">
           <div>
             <h3 className="uppercase font-bold text-ceruleanBlue-100">External Links</h3>
             <ul>
@@ -198,7 +190,7 @@ const LandingPage = () => {
           <div>
             <h3 className="uppercase font-bold text-ceruleanBlue-100">Socials</h3>
             <ul>
-              <FooterItem href="https://twitter.com/sourcifyeth">Twitter</FooterItem>
+              <FooterItem href="https://x.com/sourcifyeth">X (Twitter)</FooterItem>
               <FooterItem href="https://discord.gg/6aqd9cfZ9s">Discord</FooterItem>
               <FooterItem href="https://matrix.to/#/#ethereum_source-verify:gitter.im">Matrix</FooterItem>
               <FooterItem href="https://github.com/ethereum/sourcify">GitHub (main)</FooterItem>
