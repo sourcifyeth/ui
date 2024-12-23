@@ -255,7 +255,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
           <div className="flex flex-col justify-center">
             <div className="mb-4 text-center">
               <a
-                href="https://remix.ethereum.org"
+                href="https://remix.ethereum.org/?#activate=contract-verification"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
