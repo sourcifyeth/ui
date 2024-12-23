@@ -17,7 +17,7 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
         aria-expanded={isOpen}
         aria-controls={`faq-content-${question}`}
       >
-        <div className="text-lg">{question}</div>
+        <div className="text-xl">{question}</div>
         <div className="">{isOpen ? <FaMinus /> : <FaPlus />}</div>
       </button>
       <AnimatePresence initial={false}>
