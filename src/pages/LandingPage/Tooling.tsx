@@ -41,7 +41,7 @@ export default function Tooling() {
     {
       name: "DexGuru Explorer",
       url: "https://ethereum.dex.guru/verifyContract",
-      logo: "/dexguru.svg",
+      logo: "/dexGuru.svg",
     },
     {
       name: "Chainlens",
