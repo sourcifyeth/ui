@@ -1,18 +1,10 @@
 import { useContext } from "react";
 import { renderToString } from "react-dom/server";
-import {
-  HiBadgeCheck,
-  HiOutlineArrowLeft,
-  HiOutlineInformationCircle,
-  HiX,
-} from "react-icons/hi";
+import { HiBadgeCheck, HiOutlineArrowLeft, HiOutlineInformationCircle, HiX } from "react-icons/hi";
 import { Link } from "react-router-dom";
-import ReactTooltip from "react-tooltip";
+import { Tooltip } from "react-tooltip";
 import Button from "../../components/Button";
-import {
-  REPOSITORY_SERVER_URL_FULL_MATCH,
-  REPOSITORY_SERVER_URL_PARTIAL_MATCH,
-} from "../../constants";
+import { REPOSITORY_SERVER_URL_FULL_MATCH, REPOSITORY_SERVER_URL_PARTIAL_MATCH } from "../../constants";
 import { Context } from "../../Context";
 import { CheckAllByAddressResult } from "../../types";
 import { isBrowser } from "react-device-detect";
@@ -27,16 +19,8 @@ const URL_TYPE = {
   REPO: "repo",
 };
 
-const generateUrl = (
-  type: string,
-  chainId: string,
-  address: string,
-  status: string
-) => {
-  const REPO_URL =
-    status === "partial"
-      ? REPOSITORY_SERVER_URL_PARTIAL_MATCH
-      : REPOSITORY_SERVER_URL_FULL_MATCH;
+const generateUrl = (type: string, chainId: string, address: string, status: string) => {
+  const REPO_URL = status === "partial" ? REPOSITORY_SERVER_URL_PARTIAL_MATCH : REPOSITORY_SERVER_URL_FULL_MATCH;
   if (type === URL_TYPE.REMIX)
     return `https://remix.ethereum.org/?#activate=sourcify&call=sourcify//fetchAndSave//${address}//${chainId}`;
   return `${REPO_URL}/${chainId}/${address}/`;
@@ -61,12 +45,9 @@ type MatchStatusProps = {
 };
 const PerfectMatchInfoText = (
   <span>
-    A perfect match indicates the Solidity source code does not deviate a single
-    byte from the source code when deployed. <br /> See{" "}
-    <a
-      href="https://docs.sourcify.dev/docs/full-vs-partial-match"
-      className="underline cursor"
-    >
+    A perfect match indicates the Solidity source code does not deviate a single byte from the source code when
+    deployed. <br /> See{" "}
+    <a href="https://docs.sourcify.dev/docs/full-vs-partial-match" className="underline cursor">
       docs
     </a>{" "}
     for details.
@@ -74,13 +55,9 @@ const PerfectMatchInfoText = (
 );
 const PartialMatchInfoText = (
   <span>
-    A partial match indicates the Solidity source code functionally corresponds
-    to the deployed contract but some aspects of the source code might differ
-    from the original source code. <br /> See{" "}
-    <a
-      href="https://docs.sourcify.dev/docs/full-vs-partial-match"
-      className="underline cursor"
-    >
+    A partial match indicates the Solidity source code functionally corresponds to the deployed contract but some
+    aspects of the source code might differ from the original source code. <br /> See{" "}
+    <a href="https://docs.sourcify.dev/docs/full-vs-partial-match" className="underline cursor">
       docs
     </a>{" "}
     for details.
@@ -90,18 +67,12 @@ const MatchStatusBadge = ({ status }: MatchStatusProps) => {
   if (status === "perfect") {
     return (
       <>
-        <ReactTooltip
-          effect="solid"
-          delayHide={500}
-          clickable={true}
-          className="max-w-xl"
-          id="perfect-info"
-        />
+        <Tooltip delayHide={500} clickable={true} className="max-w-xl" id="perfect-info" />
         <span
           className="text-sm px-3 ml-1 py-1.5 capitalize bg-green-600 text-white font-medium rounded-full"
-          data-tip={renderToString(PerfectMatchInfoText)}
+          data-tooltip-html={renderToString(PerfectMatchInfoText)}
+          data-tooltip-id="perfect-info"
           data-html={true}
-          data-for="perfect-info"
         >
           {status} match
         </span>
@@ -111,18 +82,12 @@ const MatchStatusBadge = ({ status }: MatchStatusProps) => {
   if (status === "partial") {
     return (
       <>
-        <ReactTooltip
-          effect="solid"
-          delayHide={500}
-          clickable={true}
-          className="max-w-xl"
-          id="partial-info"
-        />
+        <Tooltip delayHide={500} clickable={true} className="max-w-xl" id="partial-info" />
         <span
           className="text-sm px-3 ml-1 py-1.5 capitalize bg-partialMatch-500 text-white font-medium rounded-full"
-          data-tip={renderToString(PartialMatchInfoText)}
+          data-tooltip-html={renderToString(PartialMatchInfoText)}
+          data-tooltip-id="partial-info"
           data-html={true}
-          data-for="partial-info"
         >
           {status} match
         </span>
@@ -149,18 +114,12 @@ const NetworkRow = ({ address, chainId, status }: NetworkRowProp) => {
             <MatchStatusBadge status={status} />
           </td>
           <td className="py-4 text-right">
-            <a
-              className="underline"
-              href={generateUrl(URL_TYPE.REPO, chainId, address, status)}
-            >
+            <a className="underline" href={generateUrl(URL_TYPE.REPO, chainId, address, status)}>
               View in Sourcify Repository
             </a>
           </td>
           <td className="py-4 pr-4 text-right">
-            <a
-              className="underline"
-              href={generateUrl(URL_TYPE.REMIX, chainId, address, status)}
-            >
+            <a className="underline" href={generateUrl(URL_TYPE.REMIX, chainId, address, status)}>
               View in Remix
             </a>
           </td>
@@ -174,18 +133,12 @@ const NetworkRow = ({ address, chainId, status }: NetworkRowProp) => {
             <MatchStatusBadge status={status} />
           </div>
           <div className="py-4">
-            <a
-              className="underline"
-              href={generateUrl(URL_TYPE.REPO, chainId, address, status)}
-            >
+            <a className="underline" href={generateUrl(URL_TYPE.REPO, chainId, address, status)}>
               View in Sourcify Repository
             </a>
           </div>
           <div className="pb-4">
-            <a
-              className="underline"
-              href={generateUrl(URL_TYPE.REMIX, chainId, address, status)}
-            >
+            <a className="underline" href={generateUrl(URL_TYPE.REMIX, chainId, address, status)}>
               View in Remix
             </a>
           </div>
@@ -197,12 +150,9 @@ const NetworkRow = ({ address, chainId, status }: NetworkRowProp) => {
 
 const InfoText = () => (
   <span>
-    Sourcify verification means a matching Solidity source code of the <br />{" "}
-    contract is available on the Sourcify repo. <br /> See{" "}
-    <a
-      href="https://docs.sourcify.dev/docs/full-vs-partial-match"
-      className="underline cursor"
-    >
+    Sourcify verification means a matching Solidity source code of the <br /> contract is available on the Sourcify
+    repo. <br /> See{" "}
+    <a href="https://docs.sourcify.dev/docs/full-vs-partial-match" className="underline cursor">
       docs
     </a>{" "}
     for details.
@@ -213,22 +163,11 @@ const Found = ({ response, goBack }: FoundProp) => {
   const chains = response?.chainIds;
   return (
     <div className="flex flex-col justify-center">
-      <ReactTooltip
-        effect="solid"
-        delayHide={500}
-        clickable={true}
-        className="max-w-xl"
-        id="verified-info"
-      />
+      <Tooltip delayHide={500} clickable={true} className="max-w-xl" id="verified-info" />
       <div className="sm:mx-20 mt-1 ">
         <p>
-          The contract at address{" "}
-          <span className="font-medium break-all">{response?.address}</span> is{" "}
-          <span
-            data-tip={renderToString(InfoText())}
-            data-html={true}
-            data-for="verified-info"
-          >
+          The contract at address <span className="font-medium break-all">{response?.address}</span> is{" "}
+          <span data-tooltip-id="verified-info" data-tooltip-html={renderToString(InfoText())}>
             verified
             <HiOutlineInformationCircle className="inline text-gray-600 text-lg" />
           </span>
@@ -238,18 +177,11 @@ const Found = ({ response, goBack }: FoundProp) => {
       {chains.length > 0 ? (
         <table className="mt-12 mx-4 border-t">
           {chains.map(({ chainId, status }) => (
-            <NetworkRow
-              address={response?.address}
-              chainId={chainId}
-              status={status}
-              key={chainId}
-            />
+            <NetworkRow address={response?.address} chainId={chainId} status={status} key={chainId} />
           ))}
         </table>
       ) : (
-        <div className="sm:mx-20 mt-1">
-          This contract has not yet been deployed on any chain
-        </div>
+        <div className="sm:mx-20 mt-1">This contract has not yet been deployed on any chain</div>
       )}
       <div className="mt-14">
         <p>Not verified on the chain you are looking for?</p>
@@ -269,8 +201,7 @@ const NotFound = ({ address, goBack }: NotFoundProp) => {
     <>
       <div className="sm:mx-20 mt-6">
         <p>
-          The contract at address <span className="font-medium">{address}</span>{" "}
-          is not verified on Sourcify.
+          The contract at address <span className="font-medium">{address}</span> is not verified on Sourcify.
         </p>
       </div>
       <div className="mt-14">
@@ -296,10 +227,7 @@ const verificationIcon = (status: string | undefined) => {
 const Result = ({ response, goBack }: ResultProp) => {
   return (
     <div className="flex flex-col basis-0 py-8 flex-grow rounded-lg px-8 transition-all ease-in-out duration-300 bg-white overflow-hidden shadow-md">
-      <HiOutlineArrowLeft
-        className="h-8 w-8 cursor-pointer"
-        onClick={() => goBack()}
-      />
+      <HiOutlineArrowLeft className="h-8 w-8 cursor-pointer" onClick={() => goBack()} />
       <div className="flex flex-col items-center text-center">
         {verificationIcon(response?.status)}
         {!!response && response?.status !== "false" ? (

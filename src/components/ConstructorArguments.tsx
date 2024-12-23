@@ -1,20 +1,16 @@
 import { useEffect, useState } from "react";
 import { renderToString } from "react-dom/server";
-import ReactTooltip from "react-tooltip";
+import { Tooltip } from "react-tooltip";
 import TextArea from "./TextArea";
 import Input from "./Input";
 import { defaultAbiCoder, ParamType } from "@ethersproject/abi";
 
 interface ConstructorArgumentsProps {
-  setAbiEncodedConstructorArguments: React.Dispatch<
-    React.SetStateAction<string>
-  >;
+  setAbiEncodedConstructorArguments: React.Dispatch<React.SetStateAction<string>>;
   abiEncodedConstructorArguments: string;
   abiJsonConstructorArguments: ParamType[];
   showRawAbiInput: boolean;
-  setIsInvalidConstructorArguments: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setIsInvalidConstructorArguments: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface ParamTypeWithValue extends ParamType {
@@ -23,16 +19,11 @@ interface ParamTypeWithValue extends ParamType {
 
 const InfoTooltip = () => (
   <span>
-    <ReactTooltip
-      effect="solid"
-      delayHide={500}
-      clickable={true}
-      className="max-w-xl"
-      id="abi-encoding-info"
-    />
+    <Tooltip delayHide={500} clickable={true} className="max-w-xl" id="abi-encoding-info" />
     <span
       className="ml-1 text-ceruleanBlue-200 font-bold"
-      data-tip={renderToString(
+      data-tooltip-id="abi-encoding-info"
+      data-tooltip-content={renderToString(
         <div>
           Constructor arguments used when creating the contract in{" "}
           <a
@@ -86,9 +77,7 @@ const ConstructorArguments = ({
     }
 
     if (trimmed.length % 64 !== 0) {
-      setRawAbiError(
-        `ABI encoding length must be a multiple of 64 (256 bits). Currently it is ${trimmed.length}`
-      );
+      setRawAbiError(`ABI encoding length must be a multiple of 64 (256 bits). Currently it is ${trimmed.length}`);
       setIsInvalidConstructorArguments(true);
       return;
     }
@@ -101,9 +90,7 @@ const ConstructorArguments = ({
       tempUserAbiJson[index].value = value;
       // Also update the abi encoding
       const types = tempUserAbiJson.map((argument) => argument.type);
-      const values = tempUserAbiJson
-        .map((argument) => argument.value)
-        .filter((value) => !!value);
+      const values = tempUserAbiJson.map((argument) => argument.value).filter((value) => !!value);
       try {
         if (values.length === 0) {
           setAbiEncodingError("");
@@ -136,15 +123,10 @@ const ConstructorArguments = ({
               Constructor Arguments
             </label>
             <div className="text-xs text-gray-600">
-              Enter each of the constructor arguments below to given fields. We
-              will generate the ABI-encoding for you.
+              Enter each of the constructor arguments below to given fields. We will generate the ABI-encoding for you.
             </div>
           </div>
-          {abiEncodingError && (
-            <div className="text-lightCoral-600 break-all text-sm mt-2">
-              {abiEncodingError}
-            </div>
-          )}
+          {abiEncodingError && <div className="text-lightCoral-600 break-all text-sm mt-2">{abiEncodingError}</div>}
           <div className="ml-4" id="argumentsForm">
             {userAbiJsonConstructorArguments?.map((currentArgument, index) => (
               <div key={`constructor_${index}`} className="mt-2">
@@ -186,18 +168,11 @@ const ConstructorArguments = ({
       {/* Direct ABI Encoded Input */}
       <div className="mt-2">
         <div className="mt-4 mb-2">
-          <label
-            className="flex flex-row items-center font-bold"
-            htmlFor="rawConstructorArgs"
-          >
+          <label className="flex flex-row items-center font-bold" htmlFor="rawConstructorArgs">
             ABI-Encoded Constructor Arguments <InfoTooltip />
           </label>
         </div>
-        {rawAbiError && (
-          <div className="text-lightCoral-600 break-all text-sm mt-2">
-            {rawAbiError}
-          </div>
-        )}
+        {rawAbiError && <div className="text-lightCoral-600 break-all text-sm mt-2">{rawAbiError}</div>}
         <TextArea
           id="rawConstructorArgs"
           value={abiEncodedConstructorArguments}
