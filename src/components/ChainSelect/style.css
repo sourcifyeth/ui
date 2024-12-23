@@ -173,7 +173,6 @@
   border-right: 2px solid rgb(55, 65, 81) !important;
   border-bottom: 2px solid rgb(55, 65, 81) !important;
   pointer-events: none !important;
-  right: 0 !important;
 }
 
 .select-search--multiple .select-search__input {
