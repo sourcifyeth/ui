@@ -32,7 +32,7 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
             transition={{ duration: 0.8, ease: [0, 0.62, 0.23, 0.98] }}
             className="overflow-hidden"
           >
-            <div className=" text-gray-700 py-4">{answer}</div>
+            <div className=" text-gray-700 pb-6">{answer}</div>
           </motion.div>
         }
       </AnimatePresence>
