@@ -7,10 +7,10 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
 
   return (
     <div
-      className={`flex flex-col w-full px-8 py-4 my-2 text-gray-700 bg-gray-50 rounded-lg shadow-lg transition-colors duration-500 ease-in-out`}
+      className={`flex flex-col w-full px-8 my-2 text-gray-700 bg-gray-50 rounded-lg shadow-lg transition-colors duration-500 ease-in-out`}
     >
       <button
-        className={`flex flex-row justify-between items-center text-left cursor-pointer pt-2 pb-2 ${
+        className={`flex flex-row justify-between items-center text-left cursor-pointer py-6 ${
           isOpen ? "font-semibold" : ""
         }`}
         onClick={() => setIsOpen((currIsOpen) => !currIsOpen)}
