@@ -5,6 +5,7 @@ import { REPOSITORY_SERVER_URL } from "../../constants";
 import { Context } from "../../Context";
 import ChainSelect from "../../components/ChainSelect";
 import { motion, useInView } from "framer-motion";
+import Button from "../../components/Button";
 
 const NUMBER_OF_TOP_CHAINS = 10;
 
@@ -114,17 +115,11 @@ const Chart = () => {
         <h2 className="text-2xl md:text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
       </motion.div>
       <div className="flex flex-col items-center my-8">
-        <a
-          href="https://docs.sourcify.dev/docs/repository/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
-        >
-          Download all verified contracts →
-        </a>
-        <span className="text-sm text-gray-600 mt-1">
-          Access the complete repository of source-verified smart contracts
-        </span>
+        <Button type="">
+          <a href="https://docs.sourcify.dev/docs/repository/" target="_blank" rel="noopener noreferrer">
+            Download all verified contracts
+          </a>
+        </Button>
       </div>
       <div className="w-full flex flex-col items-center justify-center">
         <div className="my-4 flex md:flex-row flex-col items-center text-gray-700">
