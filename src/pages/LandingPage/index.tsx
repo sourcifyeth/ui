@@ -149,7 +149,7 @@ const LandingPage = () => {
           </div>
           {/* Buttons */}
           <div
-            className="flex flex-col justify-center sm:flex-row gap-2 md:gap-4 mt-4 lg:mt-12 opacity-0 animate-fade-up"
+            className="flex flex-col items-center justify-center sm:flex-row gap-2 md:gap-4 mt-4 lg:mt-12 opacity-0 animate-fade-up"
             style={{ animationDelay: "1700ms" }}
           >
             <Link to="/verifier">
