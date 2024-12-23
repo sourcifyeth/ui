@@ -70,7 +70,7 @@ const MatchStatusBadge = ({ status }: MatchStatusProps) => {
         <Tooltip delayHide={500} clickable={true} className="max-w-xl" id="perfect-info" />
         <span
           className="text-sm px-3 ml-1 py-1.5 capitalize bg-green-600 text-white font-medium rounded-full"
-          data-tooltip-content={renderToString(PerfectMatchInfoText)}
+          data-tooltip-html={renderToString(PerfectMatchInfoText)}
           data-tooltip-id="perfect-info"
           data-html={true}
         >
@@ -85,7 +85,7 @@ const MatchStatusBadge = ({ status }: MatchStatusProps) => {
         <Tooltip delayHide={500} clickable={true} className="max-w-xl" id="partial-info" />
         <span
           className="text-sm px-3 ml-1 py-1.5 capitalize bg-partialMatch-500 text-white font-medium rounded-full"
-          data-tooltip-content={renderToString(PartialMatchInfoText)}
+          data-tooltip-html={renderToString(PartialMatchInfoText)}
           data-tooltip-id="partial-info"
           data-html={true}
         >
@@ -167,7 +167,7 @@ const Found = ({ response, goBack }: FoundProp) => {
       <div className="sm:mx-20 mt-1 ">
         <p>
           The contract at address <span className="font-medium break-all">{response?.address}</span> is{" "}
-          <span data-tooltip-id="verified-info" data-tooltip-content={renderToString(InfoText())} data-html={true}>
+          <span data-tooltip-id="verified-info" data-tooltip-html={renderToString(InfoText())}>
             verified
             <HiOutlineInformationCircle className="inline text-gray-600 text-lg" />
           </span>
