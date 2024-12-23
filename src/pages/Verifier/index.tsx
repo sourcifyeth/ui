@@ -173,7 +173,7 @@ const Verifier: React.FC = () => {
     <div className="flex flex-col flex-1 bg-gray-100">
       <Header />
       <Toast message={errorMessage} isShown={!!errorMessage} dismiss={() => setErrorMessage("")} />
-      <div className="flex flex-col flex-1 max-w-[100rem] mx-auto pb-8 px-8 md:px-12 lg:px-24 ">
+      <div className="flex flex-col w-full flex-1 max-w-[100rem] mx-auto pb-8 px-8 md:px-12 lg:px-24 ">
         <div className="text-center">
           <h1 className="text-3xl md:text-4xl font-bold">Verifier</h1>
           <p className="mt-2">Verify smart contracts by recompiling with the Solidity source code and metadata.</p>
