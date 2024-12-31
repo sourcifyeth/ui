@@ -38,7 +38,7 @@ const generateUrl = (
       ? REPOSITORY_SERVER_URL_PARTIAL_MATCH
       : REPOSITORY_SERVER_URL_FULL_MATCH;
   if (type === URL_TYPE.REMIX)
-    return `https://remix.ethereum.org/?#activate=sourcify&call=sourcify//fetchAndSave//${address}//${chainId}`;
+    return `https://remix.ethereum.org/?#activate=contract-verification&call=contract-verification//lookupAndSave//sourcify//${chainId}//${address}`;
   return `${REPO_URL}/${chainId}/${address}/`;
 };
 
