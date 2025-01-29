@@ -7,7 +7,7 @@ const AboutSection = () => {
   };
 
   return (
-    <div className=" bg-gray-100 py-16">
+    <section className=" bg-gray-100 py-16" id="about">
       <div className="max-w-7xl mx-auto px-4 md:text-left text-center">
         <div className="space-y-12">
           {/* Feature 1 */}
@@ -110,7 +110,7 @@ const AboutSection = () => {
           </motion.div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
