@@ -4,7 +4,7 @@ import discord from "../../assets/discord.svg";
 
 export default function Contact() {
   return (
-    <section className="px-8 md:px-12 lg:px-24 bg-ceruleanBlue-500 py-16">
+    <section className="px-8 md:px-12 lg:px-24 bg-ceruleanBlue-500 py-16" id="contact">
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-5xl text-gray-100 font-bold mb-12">Get in touch</h1>
 
