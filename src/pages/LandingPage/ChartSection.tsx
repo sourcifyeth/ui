@@ -104,7 +104,7 @@ const Chart = () => {
     .map(([key, chainStats]) => getFormattedChainData(key));
 
   return (
-    <div className="w-full flex flex-col items-center justify-center text-center">
+    <section className="w-full flex flex-col items-center justify-center text-center" id="verified-contracts">
       <motion.div
         ref={sectionRef}
         initial={{ opacity: 0, y: 20 }}
@@ -176,7 +176,7 @@ const Chart = () => {
           </ResponsiveContainer>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

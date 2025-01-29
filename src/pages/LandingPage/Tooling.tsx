@@ -124,7 +124,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
   }, [isCodeInView, activeTab, foundryExample, hardhatExampleJS, hardhatExampleBash]);
 
   return (
-    <section className="w-full flex flex-col items-center text-gray-700">
+    <section className="w-full flex flex-col items-center text-gray-700" id="tooling">
       <motion.h1
         ref={titleRef}
         initial={{ opacity: 0, y: 20 }}

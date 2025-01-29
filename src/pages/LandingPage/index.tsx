@@ -167,7 +167,10 @@ const LandingPage = () => {
       <FAQ />
 
       {/* Footer */}
-      <footer className="text-center md:text-left px-8 py-8 md:px-48 md:py-12 bg-ceruleanBlue-500 text-white text-lg">
+      <footer
+        className="text-center md:text-left px-8 py-8 md:px-48 md:py-12 bg-ceruleanBlue-500 text-white text-lg"
+        id="footer"
+      >
         <nav className="font-vt323 flex flex-col flex-wrap gap-4 max-w-7xl mx-auto items-center">
           <div className="flex flex-col items-center text-xl">
             <div className="text-ceruleanBlue-200 flex flex-col md:flex-row flex-wrap justify-center gap-x-8">
