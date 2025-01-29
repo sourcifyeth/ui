@@ -6,8 +6,9 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div
+    <section
       className={`flex flex-col w-full px-8 my-2 text-gray-700 bg-gray-50 rounded-lg shadow-lg transition-colors duration-500 ease-in-out`}
+      id="faq"
     >
       <button
         className={`flex flex-row justify-between items-center text-left cursor-pointer py-6 ${
@@ -36,7 +37,7 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
           </motion.div>
         }
       </AnimatePresence>
-    </div>
+    </section>
   );
 };
 
