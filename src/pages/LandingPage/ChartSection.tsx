@@ -37,7 +37,9 @@ const Chart = () => {
   }, []);
 
   useEffect(() => {
-    fetch(`${REPOSITORY_SERVER_URL}/stats.json`)
+    // We are temporarily putting the stats.json file in the static folder on GCP.
+    // This assumes that the file is available.
+    fetch(`/static/stats.json`)
       .then((res) => res.json())
       .then((json) => setStats(json))
       .catch(() => console.error("error fetching stats"));
