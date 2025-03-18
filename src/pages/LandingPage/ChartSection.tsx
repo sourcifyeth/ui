@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState, useRef } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import LoadingOverlay from "../../components/LoadingOverlay";
-import { REPOSITORY_SERVER_URL } from "../../constants";
 import { Context } from "../../Context";
 import ChainSelect from "../../components/ChainSelect";
 import { motion, useInView } from "framer-motion";
