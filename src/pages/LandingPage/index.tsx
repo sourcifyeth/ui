@@ -15,6 +15,7 @@ import SupportedChains from "./SupportedChains";
 import Tooling from "./Tooling";
 import FAQ from "./FAQ";
 import Contact from "./Contact";
+import { IoMdClose } from "react-icons/io";
 
 SyntaxHighlighter.registerLanguage("solidity", solidityLang);
 SyntaxHighlighter.registerLanguage("json", jsonLang);
@@ -30,6 +31,7 @@ const LandingPage = () => {
   const MIN_VELOCITY = 0.1;
   const velocityRef = useRef({ x: MAX_VELOCITY, y: MAX_VELOCITY }); // Store velocity
   const positionRef = useRef({ x: 50, y: 50 }); // Store position
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const element = document.querySelector(".spotlight-effect") as HTMLElement;
@@ -78,6 +80,30 @@ const LandingPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 w-full">
+      {isVisible && (
+        <div className="bg-ceruleanBlue-500 text-white py-3 px-4 relative">
+          <div className="max-w-7xl mx-auto flex items-center justify-center gap-3">
+            <p className="text-sm sm:text-base text-center">
+              🚀 APIv2 is now available! Make the most of the information-rich responses{" "}
+              <a
+                href="https://docs.sourcify.dev/blog/apiv2-lookup-endpoints/"
+                className="underline font-semibold hover:text-ceruleanBlue-100"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn more →
+              </a>
+            </p>
+            <button
+              onClick={() => setIsVisible(false)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-ceruleanBlue-400 rounded-full transition-colors"
+              aria-label="Close banner"
+            >
+              <IoMdClose className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      )}
       <Header />
       <section className="min-h-screen flex flex-col justify-center px-8 md:px-12 -mt-20 pt-20 max-w-7xl mx-auto">
         <div className="flex flex-col justify-center items-center">
