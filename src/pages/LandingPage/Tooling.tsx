@@ -63,6 +63,16 @@ export default function Tooling() {
       url: "https://support.avax.network/en/articles/6333375-explorer-how-do-i-manage-smart-contracts",
       logo: "/avalanche.svg",
     },
+    {
+      name: "Graph CLI",
+      url: "https://x.com/graphprotocol/status/1897291358114897929",
+      logo: "/graph-dev.jpg",
+    },
+    {
+      name: "Wake",
+      url: "https://github.com/Ackee-Blockchain/wake/releases/tag/v4.14.0",
+      logo: "/wake-logo.png",
+    },
   ];
 
   const foundryExample = `# Deploy and verify
@@ -298,7 +308,9 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 <img
                   src={integration.logo}
                   alt={integration.name}
-                  className={`w-10 md:w-14 ${integration.name !== "Blockscout" ? "rounded-full" : ""}`}
+                  className={`w-10 md:w-14 ${integration.name !== "Blockscout" ? "rounded-full" : ""} ${
+                    integration.name === "Wake" ? "bg-[#0000ff] p-2" : ""
+                  }`}
                 />
                 <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">{integration.name}</div>
               </motion.a>
