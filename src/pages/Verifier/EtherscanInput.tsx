@@ -24,7 +24,7 @@ const EtherscanInput = ({
   const [chainId, setChainId] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const { sourcifyChains, sourcifyChainMap } = useContext(Context);
+  const { sourcifyChains } = useContext(Context);
   const chainsIdsWithEtherscanAPI = sourcifyChains
     .filter((chain) => chain.etherscanAPI && chain.supported)
     .map((chainId) => chainId.chainId);
@@ -95,13 +95,11 @@ const EtherscanInput = ({
         handleChainIdChange={handleChainIdChange}
         availableChains={chainsIdsWithEtherscanAPI}
       />
-      {sourcifyChainMap[parseInt(chainId)]?.etherscanAPI && (
-        <div className="mt-1">
-          <p className="text-xs text-gray-400 text-right">
-            Powered by {sourcifyChainMap[parseInt(chainId)]?.etherscanAPI} APIs
-          </p>
-        </div>
-      )}
+      <div className="mt-1">
+        <p className="text-xs text-gray-400 text-right">
+          Powered by Etherscan.io APIs
+        </p>
+      </div>
     </div>
   );
 };

@@ -96,7 +96,7 @@ export type Chain = {
   network: string;
   networkId: number;
   supported?: boolean;
-  etherscanAPI?: string;
+  etherscanAPI?: boolean;
 };
 
 export type ChainMap = {
