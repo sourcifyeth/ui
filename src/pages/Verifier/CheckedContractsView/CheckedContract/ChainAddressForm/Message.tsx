@@ -1,11 +1,8 @@
 import { useContext } from "react";
 import { HiCheck, HiExclamation } from "react-icons/hi";
 import { Context } from "../../../../../Context";
-import {
-  CheckAllByAddressResult,
-  SendableContract,
-} from "../../../../../types";
-import { generateRepoLink } from "../../../../../utils/utils";
+import { CheckAllByAddressResult, SendableContract } from "../../../../../types";
+import { REPOSITORY_URL } from "../../../../../constants";
 
 // Message displayed after each interaction inside the container
 type MessageProps = {
@@ -20,24 +17,19 @@ type RepoLinkProps = {
   address: string;
   overrideLabel?: string;
 };
-const RepoLinks = ({
-  chainIds,
-  status,
-  address,
-  overrideLabel,
-}: RepoLinkProps) => {
+const RepoLinks = ({ chainIds, status, address, overrideLabel }: RepoLinkProps) => {
   const { sourcifyChainMap } = useContext(Context);
 
   return (
     <p>
       {status === "perfect" && !overrideLabel && (
         <>
-          <b>Fully verified</b> at{" "}
+          <b>verified (exact match)</b> at{" "}
         </>
       )}
       {status === "partial" && !overrideLabel && (
         <>
-          <b>Partially verified</b> at{" "}
+          <b>verified (match)</b> at{" "}
         </>
       )}
       {chainIds.map((chainId, i) => {
@@ -45,13 +37,11 @@ const RepoLinks = ({
           <span>
             {i > 0 && ", "}
             <a
-              href={generateRepoLink(chainId, address, status)}
+              href={`${REPOSITORY_URL}/${chainId}/${address}/`}
               className="underline"
               key={`${address}-${chainId}-repo-link`}
             >
-              {overrideLabel ||
-                sourcifyChainMap[parseInt(chainId)].title ||
-                sourcifyChainMap[parseInt(chainId)].name}{" "}
+              {overrideLabel || sourcifyChainMap[parseInt(chainId)].title || sourcifyChainMap[parseInt(chainId)].name}{" "}
               (#{chainId})
             </a>
           </span>
@@ -60,37 +50,20 @@ const RepoLinks = ({
     </p>
   );
 };
-const Message = ({
-  customStatus,
-  foundMatches,
-  checkedContract,
-}: MessageProps) => {
+const Message = ({ customStatus, foundMatches, checkedContract }: MessageProps) => {
   const { sourcifyChainMap } = useContext(Context);
   const chain = sourcifyChainMap[parseInt(checkedContract.chainId as string)];
-  const bgColor =
-    customStatus === "perfect" ? "bg-green-100" : "bg-partialMatch-100";
-  const outlineColor =
-    customStatus === "perfect"
-      ? "outline-green-400"
-      : "outline-partialMatch-400";
-  const textColor =
-    customStatus === "perfect" ? "text-green-500" : "text-partialMatch-500";
-  const darkTextColor =
-    customStatus === "perfect" ? "text-green-700" : "text-partialMatch-700";
+  const bgColor = customStatus === "perfect" ? "bg-green-100" : "bg-partialMatch-100";
+  const outlineColor = customStatus === "perfect" ? "outline-green-400" : "outline-partialMatch-400";
+  const textColor = customStatus === "perfect" ? "text-green-500" : "text-partialMatch-500";
   // Show success after successful verification
   if (chain && (customStatus === "perfect" || customStatus === "partial")) {
     return (
-      <div
-        className={`${bgColor} px-4 py-2 rounded-md outline-2 ${outlineColor} outline`}
-      >
+      <div className={`${bgColor} px-4 py-2 rounded-md outline-2 ${outlineColor} outline`}>
         <p className="break-all">
           <HiCheck className={`${textColor} inline mr-1 align-middle`} />
-          Verification successful!{" "}
-          <span className={`${darkTextColor} font-bold`}>
-            {customStatus}ly
-          </span>{" "}
-          verified at <b>{chain.title || chain.name}</b>:
-          {checkedContract.address}
+          Verification successful! verified {customStatus === "perfect" ? "(exact match) " : "(match) "}
+          at <b>{chain.title || chain.name}</b>:{checkedContract.address}
           {checkedContract?.address && (
             <RepoLinks
               chainIds={[chain.chainId.toString()]}
@@ -132,18 +105,10 @@ const Message = ({
           Contract <b>{foundMatches.address}</b> is already verified:
         </p>
         {perfectMatchChainIds.length > 0 && (
-          <RepoLinks
-            chainIds={perfectMatchChainIds}
-            status="perfect"
-            address={foundMatches.address}
-          />
+          <RepoLinks chainIds={perfectMatchChainIds} status="perfect" address={foundMatches.address} />
         )}
         {partialMatchChainIds.length > 0 && (
-          <RepoLinks
-            chainIds={partialMatchChainIds}
-            status="partial"
-            address={foundMatches.address}
-          />
+          <RepoLinks chainIds={partialMatchChainIds} status="partial" address={foundMatches.address} />
         )}
       </div>
     );

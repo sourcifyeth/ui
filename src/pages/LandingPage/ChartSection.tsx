@@ -38,7 +38,7 @@ const Chart = () => {
   useEffect(() => {
     // We are temporarily putting the stats.json file in the static folder on GCP.
     // This assumes that the file is available.
-    fetch(`/static/stats.json`)
+    fetch(`https://sourcify.dev/static/stats.json`)
       .then((res) => res.json())
       .then((json) => setStats(json))
       .catch(() => console.error("error fetching stats"));
@@ -178,8 +178,8 @@ const Chart = () => {
                     tick={{ fontSize: windowWidth < 768 ? 8 : 12 }}
                   />
                   <Legend verticalAlign="top" align="center" height={36} />
-                  <Bar name="Full Matches" dataKey="fullMatch" fill="#2B50AA" stackId="a" />
-                  <Bar name="Partial Matches" dataKey="partialMatch" fill="#7693DA" stackId="a" />
+                  <Bar name="Exact Matches" dataKey="fullMatch" fill="#2B50AA" stackId="a" />
+                  <Bar name="Matches" dataKey="partialMatch" fill="#7693DA" stackId="a" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
