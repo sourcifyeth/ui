@@ -107,10 +107,10 @@ export default function FAQ() {
               for more.
             </li>
             <li>
-              Sourcify supports "full match"es, which means the verified source-code is cryptographically guaranteed to
+              Sourcify supports "exact match"es, which means the verified source-code is cryptographically guaranteed to
               be the same as the original one, even whitespaces, comments etc. See{" "}
               <a
-                href="https://docs.sourcify.dev/docs/full-vs-partial-match/"
+                href="https://docs.sourcify.dev/docs/exact-match-vs-match/"
                 target="_blank"
                 rel="noreferrer"
                 className="underline"
