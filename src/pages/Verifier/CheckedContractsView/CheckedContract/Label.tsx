@@ -8,8 +8,8 @@ interface ILABELS {
   [key: string]: string;
 }
 const LABELS: ILABELS = {
-  perfect: "Perfect Match",
-  partial: "Partial Match",
+  perfect: "Exact Match",
+  partial: "Match",
   missing: "Files Missing",
   invalid: "Invalid Files",
   error: "Chain & Address Missing",
@@ -34,12 +34,7 @@ const LABEL_TEXT: ILABELS = {
 const Label: React.FC<LabelProps> = ({ customStatus }) => {
   return (
     <span
-      className={
-        `px-3 py-2 mr-2 text-xs rounded-full  ` +
-        LABEL_BG[customStatus] +
-        " " +
-        LABEL_TEXT[customStatus]
-      }
+      className={`px-3 py-2 mr-2 text-xs rounded-full  ` + LABEL_BG[customStatus] + " " + LABEL_TEXT[customStatus]}
       // className={`px-3 py-2 mr-2 bg-opacity-70 bg-${LABEL_BG[customStatus]} text-${LABEL_TEXT[customStatus]}  text-xs rounded-full`}
     >
       {LABELS[customStatus]}

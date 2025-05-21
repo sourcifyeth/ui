@@ -4,7 +4,7 @@ import { HiBadgeCheck, HiOutlineArrowLeft, HiOutlineInformationCircle, HiX } fro
 import { Link } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
 import Button from "../../components/Button";
-import { REPOSITORY_SERVER_URL_FULL_MATCH, REPOSITORY_SERVER_URL_PARTIAL_MATCH } from "../../constants";
+import { REPOSITORY_URL } from "../../constants";
 import { Context } from "../../Context";
 import { CheckAllByAddressResult } from "../../types";
 import { isBrowser } from "react-device-detect";
@@ -20,10 +20,9 @@ const URL_TYPE = {
 };
 
 const generateUrl = (type: string, chainId: string, address: string, status: string) => {
-  const REPO_URL = status === "partial" ? REPOSITORY_SERVER_URL_PARTIAL_MATCH : REPOSITORY_SERVER_URL_FULL_MATCH;
   if (type === URL_TYPE.REMIX)
     return `https://remix.ethereum.org/?#activate=contract-verification&call=contract-verification//lookupAndSave//sourcify//${chainId}//${address}`;
-  return `${REPO_URL}/${chainId}/${address}/`;
+  return `${REPOSITORY_URL}/${chainId}/${address}/`;
 };
 
 type NetworkRowProp = {
@@ -45,9 +44,9 @@ type MatchStatusProps = {
 };
 const PerfectMatchInfoText = (
   <span>
-    A perfect match indicates the Solidity source code does not deviate a single byte from the source code when
-    deployed. <br /> See{" "}
-    <a href="https://docs.sourcify.dev/docs/full-vs-partial-match" className="underline cursor">
+    An exact match indicates the Solidity source code does not deviate a single byte from the source code when deployed.{" "}
+    <br /> See{" "}
+    <a href="https://docs.sourcify.dev/docs/exact-match-vs-match" className="underline cursor">
       docs
     </a>{" "}
     for details.
@@ -55,9 +54,9 @@ const PerfectMatchInfoText = (
 );
 const PartialMatchInfoText = (
   <span>
-    A partial match indicates the Solidity source code functionally corresponds to the deployed contract but some
-    aspects of the source code might differ from the original source code. <br /> See{" "}
-    <a href="https://docs.sourcify.dev/docs/full-vs-partial-match" className="underline cursor">
+    A match indicates the Solidity source code functionally corresponds to the deployed contract but some aspects of the
+    source code might differ from the original source code. <br /> See{" "}
+    <a href="https://docs.sourcify.dev/docs/exact-match-vs-match" className="underline cursor">
       docs
     </a>{" "}
     for details.
@@ -74,7 +73,7 @@ const MatchStatusBadge = ({ status }: MatchStatusProps) => {
           data-tooltip-id="perfect-info"
           data-html={true}
         >
-          {status} match
+          exact match
         </span>
       </>
     );
@@ -89,7 +88,7 @@ const MatchStatusBadge = ({ status }: MatchStatusProps) => {
           data-tooltip-id="partial-info"
           data-html={true}
         >
-          {status} match
+          match
         </span>
       </>
     );
@@ -152,7 +151,7 @@ const InfoText = () => (
   <span>
     Sourcify verification means a matching Solidity source code of the <br /> contract is available on the Sourcify
     repo. <br /> See{" "}
-    <a href="https://docs.sourcify.dev/docs/full-vs-partial-match" className="underline cursor">
+    <a href="https://docs.sourcify.dev/docs/exact-match-vs-match" className="underline cursor">
       docs
     </a>{" "}
     for details.
