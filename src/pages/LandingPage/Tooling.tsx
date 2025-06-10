@@ -4,6 +4,9 @@ import bashLang from "react-syntax-highlighter/dist/esm/languages/prism/bash";
 import javascriptLang from "react-syntax-highlighter/dist/esm/languages/prism/javascript";
 import codeStyle from "react-syntax-highlighter/dist/esm/styles/prism/dracula";
 import { motion, useInView } from "framer-motion";
+import integrationsData from "../../data/integrations.json";
+import selfHostedInstancesData from "../../data/selfHostedInstances.json";
+import Button from "../../components/Button";
 
 // Register languages
 SyntaxHighlighter.registerLanguage("bash", bashLang);
@@ -13,6 +16,8 @@ export default function Tooling() {
   const [activeTab, setActiveTab] = useState("foundry");
   const integrationsRef = useRef(null);
   const areIntegrationsInView = useInView(integrationsRef, { once: true });
+  const selfHostedRef = useRef(null);
+  const areSelfHostedInView = useInView(selfHostedRef, { once: true });
   const [displayedCode, setDisplayedCode] = useState("");
   const codeRef = useRef(null);
   const isCodeInView = useInView(codeRef, { once: true });
@@ -22,63 +27,8 @@ export default function Tooling() {
   const areTabsInView = useInView(tabsRef, { once: true });
 
   const tabs = ["foundry", "hardhat", "remix"];
-  const integrations = [
-    {
-      name: "Blockscout",
-      url: "https://docs.blockscout.com/devs/verification/contracts-verification-via-sourcify",
-      logo: "/blockscout.png",
-    },
-    {
-      name: "Otterscan",
-      url: "https://docs.otterscan.io/contract-verification/sourcify/",
-      logo: "/otterscan.jpg",
-    },
-    {
-      name: "Wagmi",
-      url: "https://wagmi.sh/cli/api/plugins/sourcify#sourcify",
-      logo: "/wagmi.png",
-    },
-    {
-      name: "DexGuru Explorer",
-      url: "https://ethereum.dex.guru/verifyContract",
-      logo: "/dexGuru.svg",
-    },
-    {
-      name: "Chainlens",
-      url: "https://www.chainlens.com/documentation-articles/source-code-verification",
-      logo: "/chainlens.png",
-    },
-    {
-      name: "Hedera Hashscan",
-      url: "https://hedera.com/blog/smart-contract-verification-on-hedera",
-      logo: "/hashscan.webp",
-    },
-    {
-      name: "BuildBear",
-      url: "https://www.buildbear.io/blogs/sourcify_plugin",
-      logo: "/buildbear.jpg",
-    },
-    {
-      name: "Avalanche Explorer",
-      url: "https://support.avax.network/en/articles/6333375-explorer-how-do-i-manage-smart-contracts",
-      logo: "/avalanche.svg",
-    },
-    {
-      name: "Graph CLI",
-      url: "https://x.com/graphprotocol/status/1897291358114897929",
-      logo: "/graph-dev.jpg",
-    },
-    {
-      name: "Wake",
-      url: "https://github.com/Ackee-Blockchain/wake/releases/tag/v4.14.0",
-      logo: "/wake-logo.png",
-    },
-    {
-      name: "EVM Storage",
-      url: "https://evm-storage.codes/",
-      logo: "/evm-storage.png",
-    },
-  ];
+  const integrations = integrationsData;
+  const selfHostedInstances = selfHostedInstancesData;
 
   const foundryExample = `# Deploy and verify
 $ forge create --rpc-url <rpc-url> --private-key <private-key> src/MyContract.sol:MyContract --verify --verifier sourcify
@@ -320,6 +270,50 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">{integration.name}</div>
               </motion.a>
             ))}
+        </div>
+      </div>
+
+      <div className="text-center mx-4">
+        <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500 mb-4">Self-hosting</h2>
+        <p className="text-base md:text-lg text-gray-600 mb-12">
+          Sourcify is open-source and for self-hosting. Here are some public instances we are aware of:
+        </p>
+        <div className="flex flex-wrap justify-center gap-2 md:gap-8 mt-12 mx-2" ref={selfHostedRef}>
+          {selfHostedInstances
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((instance, index) => (
+              <motion.a
+                initial={{ opacity: 0 }}
+                animate={
+                  areSelfHostedInView
+                    ? {
+                        opacity: 1,
+                        y: [0, 0, -20],
+                        transition: { duration: 0.6, delay: index * 0.1 },
+                      }
+                    : { opacity: 0 }
+                }
+                whileHover={{ scale: 1.1, transition: { duration: 0.1, delay: 0 } }}
+                href={instance.url + "/health"}
+                target="_blank"
+                rel="noopener noreferrer"
+                key={instance.name}
+                className="w-16 flex flex-col items-center text-center"
+              >
+                <img src={instance.logo} alt={instance.name} className="w-10 h-10 md:w-14 md:h-14 rounded-full" />
+                <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">{instance.name}</div>
+              </motion.a>
+            ))}
+        </div>
+        <div className="mb-8 mt-4">
+          <div className="text-gray-500 mb-2 text-sm">Are you running a self-hosted instance?</div>
+          <a
+            href="https://github.com/ethereum/sourcify/issues/new?template=self-hosted-instance.md"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="font-semibold">Add your instance</Button>
+          </a>
         </div>
       </div>
     </section>

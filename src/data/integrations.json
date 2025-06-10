@@ -1,0 +1,57 @@
+[
+  {
+    "name": "Blockscout",
+    "url": "https://docs.blockscout.com/devs/verification/contracts-verification-via-sourcify",
+    "logo": "/blockscout.png"
+  },
+  {
+    "name": "Otterscan",
+    "url": "https://docs.otterscan.io/contract-verification/sourcify/",
+    "logo": "/otterscan.jpg"
+  },
+  {
+    "name": "Wagmi",
+    "url": "https://wagmi.sh/cli/api/plugins/sourcify#sourcify",
+    "logo": "/wagmi.png"
+  },
+  {
+    "name": "DexGuru Explorer",
+    "url": "https://ethereum.dex.guru/verifyContract",
+    "logo": "/dexGuru.svg"
+  },
+  {
+    "name": "Chainlens",
+    "url": "https://www.chainlens.com/documentation-articles/source-code-verification",
+    "logo": "/chainlens.png"
+  },
+  {
+    "name": "Hedera Hashscan",
+    "url": "https://hedera.com/blog/smart-contract-verification-on-hedera",
+    "logo": "/hashscan.webp"
+  },
+  {
+    "name": "BuildBear",
+    "url": "https://www.buildbear.io/blogs/sourcify_plugin",
+    "logo": "/buildbear.jpg"
+  },
+  {
+    "name": "Avalanche Explorer",
+    "url": "https://support.avax.network/en/articles/6333375-explorer-how-do-i-manage-smart-contracts",
+    "logo": "/avalanche.svg"
+  },
+  {
+    "name": "Graph CLI",
+    "url": "https://x.com/graphprotocol/status/1897291358114897929",
+    "logo": "/graph-dev.jpg"
+  },
+  {
+    "name": "Wake",
+    "url": "https://github.com/Ackee-Blockchain/wake/releases/tag/v4.14.0",
+    "logo": "/wake-logo.png"
+  },
+  {
+    "name": "EVM Storage",
+    "url": "https://evm-storage.codes/",
+    "logo": "/evm-storage.png"
+  }
+]
