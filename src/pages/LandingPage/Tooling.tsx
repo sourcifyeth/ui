@@ -73,6 +73,11 @@ export default function Tooling() {
       url: "https://github.com/Ackee-Blockchain/wake/releases/tag/v4.14.0",
       logo: "/wake-logo.png",
     },
+    {
+      name: "EVM Storage",
+      url: "https://evm-storage.codes/",
+      logo: "/evm-storage.png",
+    },
   ];
 
   const foundryExample = `# Deploy and verify
