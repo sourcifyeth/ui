@@ -129,13 +129,13 @@ const Chart = () => {
                 href="https://docs.sourcify.dev/docs/repository/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center text-center gap-1 px-4"
+                className="flex flex-col items-center text-center gap-1 px-2 md:px-4"
               >
                 <div className="flex items-center gap-2">
                   <FaDownload className="text-lg" />
-                  <span className="text-xl font-semibold">Download</span>
+                  <span className="text-base md:text-xl font-semibold">Download</span>
                 </div>
-                <span className="text-sm">all verified contracts</span>
+                <span className="text-xs md:text-sm">all verified contracts</span>
               </a>
             </Button>
           </div>
