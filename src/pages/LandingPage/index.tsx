@@ -8,7 +8,7 @@ import codeStyle from "react-syntax-highlighter/dist/esm/styles/prism/dracula";
 import Button from "../../components/Button";
 import Header from "../../components/Header";
 import { DOCS_URL } from "../../constants";
-import ChartSection from "./ChartSection";
+import VerifiedContracts from "./VerifiedContracts";
 import { bytecode, solidityCode } from "./example";
 import AboutSection from "./AboutSection";
 import SupportedChains from "./SupportedChains";
@@ -184,7 +184,7 @@ const LandingPage = () => {
       <SupportedChains />
       {/* Verified contract stats */}
       <section className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-16">
-        <ChartSection />
+        <VerifiedContracts />
       </section>
       <Tooling />
 
