@@ -18,5 +18,10 @@
     "name": "Parsec",
     "logo": "/parsec.jpg",
     "url": "https://sourcify.parsec.finance"
+  },
+  {
+    "name": "VeChainStats",
+    "logo": "/vestats.png",
+    "url": "https://verify-api.vechainstats.com"
   }
 ]
