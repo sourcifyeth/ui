@@ -275,7 +275,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
 
       <div className="text-center mx-4">
         <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500 mb-4">Self-hosting</h2>
-        <p className="text-base md:text-lg text-gray-600 mb-12">
+        <p className="text-sm md:text-lg text-gray-600 mb-12">
           Sourcify is open-source and for self-hosting. Here are some public instances we are aware of:
         </p>
         <div className="flex flex-wrap justify-center gap-2 md:gap-8 mt-12 mx-2" ref={selfHostedRef}>
