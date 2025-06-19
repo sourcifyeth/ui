@@ -25,11 +25,6 @@
     "logo": "/chainlens.png"
   },
   {
-    "name": "Hedera Hashscan",
-    "url": "https://hedera.com/blog/smart-contract-verification-on-hedera",
-    "logo": "/hashscan.webp"
-  },
-  {
     "name": "BuildBear",
     "url": "https://www.buildbear.io/docs/plugins/sourcify-a474f2d1f69b",
     "logo": "/buildbear.jpg"
