@@ -5,6 +5,7 @@ import { Context } from "../../Context";
 import ChainSelect from "../../components/ChainSelect";
 import { motion, useInView } from "framer-motion";
 import Button from "../../components/Button";
+import { FaDownload } from "react-icons/fa";
 
 const NUMBER_OF_TOP_CHAINS = 10;
 
@@ -124,8 +125,17 @@ const Chart = () => {
           </motion.div>
           <div className="flex flex-col items-center my-8">
             <Button type="">
-              <a href="https://docs.sourcify.dev/docs/repository/" target="_blank" rel="noopener noreferrer">
-                Download all verified contracts
+              <a
+                href="https://docs.sourcify.dev/docs/repository/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center text-center gap-1 px-2 md:px-4"
+              >
+                <div className="flex items-center gap-2">
+                  <FaDownload className="text-lg" />
+                  <span className="text-base md:text-xl font-semibold">Download</span>
+                </div>
+                <span className="text-xs md:text-sm">all verified contracts</span>
               </a>
             </Button>
           </div>

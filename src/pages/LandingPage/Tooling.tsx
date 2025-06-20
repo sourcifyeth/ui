@@ -275,7 +275,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
 
       <div className="text-center mx-4">
         <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500 mb-4">Self-hosting</h2>
-        <p className="text-base md:text-lg text-gray-600 mb-12">
+        <p className="text-sm md:text-lg text-gray-600 mb-12">
           Sourcify is open-source and for self-hosting. Here are some public instances we are aware of:
         </p>
         <div className="flex flex-wrap justify-center gap-2 md:gap-8 mt-12 mx-2" ref={selfHostedRef}>
@@ -300,7 +300,11 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 key={instance.name}
                 className="w-16 flex flex-col items-center text-center"
               >
-                <img src={instance.logo} alt={instance.name} className="w-10 h-10 md:w-14 md:h-14 rounded-full" />
+                <img
+                  src={instance.logo}
+                  alt={instance.name}
+                  className="w-10 h-10 md:w-14 md:h-14 rounded-full object-contain"
+                />
                 <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">{instance.name}</div>
               </motion.a>
             ))}

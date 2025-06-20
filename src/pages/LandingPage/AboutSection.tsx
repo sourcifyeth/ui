@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { FaDownload } from "react-icons/fa";
 
 const AboutSection = () => {
   const variants = {
@@ -69,7 +70,11 @@ const AboutSection = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Download the repository →
+                    <span className="inline-flex items-center gap-1 whitespace-nowrap">
+                      <FaDownload className="text-sm" />
+                      Download all
+                    </span>{" "}
+                    verified contracts
                   </a>
                 </p>
               </div>
