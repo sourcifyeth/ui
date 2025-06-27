@@ -77,21 +77,6 @@ export default function FAQ() {
       ),
     },
     {
-      q: "What is the Verifier Alliance?",
-      a: (
-        <>
-          The Verifier Alliance is an ecosystem collective aiming for easy, unified, and open access to the source-code
-          of EVM smart contracts. Sourcify and other verifiers collaborate to create a public shared database of
-          verified EVM contracts, open up the siloed contract data, and create standards around the verifiation process.
-          To learn more, visit{" "}
-          <a href="https://verifieralliance.org" target="_blank" rel="noreferrer" className="underline">
-            verifieralliance.org
-          </a>
-          .
-        </>
-      ),
-    },
-    {
       q: "How is Sourcify different than other verifiers?",
       a: (
         <>
@@ -133,6 +118,21 @@ export default function FAQ() {
             Argot Collective
           </a>
           . It currently does not generate any revenue.
+        </>
+      ),
+    },
+    {
+      q: "What is the Verifier Alliance?",
+      a: (
+        <>
+          The Verifier Alliance is an ecosystem collective aiming for easy, unified, and open access to the source-code
+          of EVM smart contracts. Sourcify and other verifiers collaborate to create a public shared database of
+          verified EVM contracts, open up the siloed contract data, and create standards around the verifiation process.
+          To learn more, visit{" "}
+          <a href="https://verifieralliance.org" target="_blank" rel="noreferrer" className="underline">
+            verifieralliance.org
+          </a>
+          .
         </>
       ),
     },
