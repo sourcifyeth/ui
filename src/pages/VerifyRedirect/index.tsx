@@ -1,4 +1,5 @@
 import Header from "../../components/Header";
+import Button from "../../components/Button";
 
 const VerifyRedirect: React.FC = () => {
   const handleRedirect = () => {
@@ -14,12 +15,9 @@ const VerifyRedirect: React.FC = () => {
           <p className="text-lg mb-8 text-gray-600">
             We've launched a new and improved verification interface using Sourcify's new APIv2.
           </p>
-          <button
-            onClick={handleRedirect}
-            className="bg-ceruleanBlue-500 hover:bg-ceruleanBlue-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-200"
-          >
+          <Button onClick={handleRedirect} className="text-lg">
             Go to New Verification UI
-          </button>
+          </Button>
           <p className="text-sm text-gray-400 mt-4">You will be redirected to {process.env.REACT_APP_VERIFY_URL}</p>
         </div>
       </div>
