@@ -63,15 +63,26 @@ const Header = ({ className }: { className?: string }) => {
 
           <nav
             className={`${
-              showNav || isDesktop ? "flex" : "hidden"
+              showNav || isDesktop ? "flex flex-wrap justify-end ml-4" : "hidden"
             } font-vt323 text-2xl text-gray-700 flex-col lg:flex-row`}
           >
-            <Link className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" to="/verifier">
+            <a
+              className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
+              href={process.env.REACT_APP_VERIFY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Verify
-            </Link>
+            </a>
             <Link className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" to="/lookup">
               Lookup
             </Link>
+            <a
+              className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
+              href="https://repo.sourcify.dev"
+            >
+              Contract Repo
+            </a>
             <a className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" href={DOCS_URL}>
               Docs
             </a>

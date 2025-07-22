@@ -1,6 +1,5 @@
 // AnimateOnScroll
 import { useRef, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
 import solidityLang from "react-syntax-highlighter/dist/esm/languages/prism/solidity";
@@ -168,9 +167,9 @@ const LandingPage = () => {
             className="flex flex-col items-center justify-center sm:flex-row gap-2 md:gap-4 mt-4 lg:mt-12 opacity-0 animate-fade-up"
             style={{ animationDelay: "1700ms" }}
           >
-            <Link to="/verifier">
+            <a href={process.env.REACT_APP_VERIFY_URL} target="_blank" rel="noopener noreferrer">
               <Button className="uppercase mt-4">Verify Contract</Button>
-            </Link>
+            </a>
             <a href={DOCS_URL}>
               <Button className="uppercase mt-4" type="secondary">
                 Documentation
