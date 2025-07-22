@@ -1,6 +1,5 @@
 // AnimateOnScroll
 import { useRef, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
 import solidityLang from "react-syntax-highlighter/dist/esm/languages/prism/solidity";

@@ -57,9 +57,7 @@ However pleases note that the values in the `.env` files are injected on the bui
 ```bash
 REACT_APP_SERVER_URL=https://sourcify.dev/server
 REACT_APP_REPOSITORY_SERVER_URL=https://repo.sourcify.dev
-# Use DNSLink for IPNS
-REACT_APP_IPNS=repo.sourcify.dev
-REACT_APP_TAG=master
+REACT_APP_VERIFY_URL=http://verify.sourcify.dev
 ```
 
 If you want to provide custom values for the environment variables you need to build the image yourself.
