@@ -48,5 +48,10 @@
     "name": "EVM Storage",
     "url": "https://evm-storage.codes/",
     "logo": "/evm-storage.png"
+  },
+  {
+    "name": "EVMole",
+    "url": "https://evmole.xyz",
+    "logo": "/evmole.png"
   }
 ]
