@@ -234,7 +234,7 @@ const LandingPage = () => {
               >
                 Matrix
               </a>
-              <a href="https://github.com/ethereum/sourcify" className="hover:text-ceruleanBlue-100 block">
+              <a href="https://github.com/argotorg/sourcify" className="hover:text-ceruleanBlue-100 block">
                 GitHub (main)
               </a>
               <a href="https://github.com/sourcifyeth" className="hover:text-ceruleanBlue-100 block">

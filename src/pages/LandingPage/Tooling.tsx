@@ -312,7 +312,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
         <div className="mb-8 mt-4">
           <div className="text-gray-500 mb-2 text-sm">Are you running a self-hosted instance?</div>
           <a
-            href="https://github.com/ethereum/sourcify/issues/new?template=self-hosted-instance.md"
+            href="https://github.com/argotorg/sourcify/issues/new?template=self-hosted-instance.md"
             target="_blank"
             rel="noopener noreferrer"
           >
