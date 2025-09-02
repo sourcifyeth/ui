@@ -32,7 +32,7 @@ const AboutSection = () => {
                   Sourcify is and always will be 100% open source.{" "}
                   <a
                     className="text-ceruleanBlue-500 font-medium link-underline"
-                    href="https://github.com/ethereum/sourcify"
+                    href="https://github.com/argotorg/sourcify"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

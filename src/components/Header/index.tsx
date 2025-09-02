@@ -97,7 +97,7 @@ const Header = ({ className }: { className?: string }) => {
             </a>
             <div className="flex items-center ml-2 mt-4 lg:mt-0">
               <iframe
-                src="https://ghbtns.com/github-btn.html?user=ethereum&repo=sourcify&type=star&count=true&size=large"
+                src="https://ghbtns.com/github-btn.html?user=argotorg&repo=sourcify&type=star&count=true&size=large"
                 // frameborder="0"
                 scrolling="0"
                 width="135"
