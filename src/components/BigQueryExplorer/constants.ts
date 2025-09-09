@@ -6,7 +6,11 @@ ORDER BY vc.created_at DESC
 LIMIT 1;`;
 
 // Minimal BigQuery schema context for better SQL generation
-export const SCHEMA_DOC = `
+export const SYSTEM_PROMPT = `You are a SQL assistant for Google BigQuery (Standard SQL).
+- Output ONLY executable SQL. No markdown, no commentary.
+- Only SELECT queries; avoid DDL/DML.
+- Ensure syntax is valid for BigQuery Standard SQL.
+
 You are writing SQL for BigQuery (Standard SQL) against dataset sourcify_staging.
 All tables are prefixed with public_. Only use these tables/columns and relationships:
 
@@ -80,3 +84,7 @@ Conventions:
 - Unless specified, include an explicit LIMIT 10.
 `;
 
+export const DEFAULT_PROMPT =
+  "Which contract is the most popular contract by contract name?";
+
+export const DEFAULT_MODEL = "deepseek/deepseek-chat-v3.1:free";

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { bigquery, BigQueryResponse } from "../../utils/api";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { generateText } from "ai";
-import { DEFAULT_SQL, SCHEMA_DOC } from "./constants";
+import { DEFAULT_SQL, SYSTEM_PROMPT, DEFAULT_PROMPT, DEFAULT_MODEL } from "./constants";
 import AIGenerator from "./AIGenerator";
 import SqlEditor from "./SqlEditor";
 import Results from "./Results";
@@ -13,13 +13,9 @@ const BigQueryExplorer = () => {
   const [genError, setGenError] = useState<string | null>(null);
   const [bqError, setBqError] = useState<string | null>(null);
   const [result, setResult] = useState<BigQueryResponse | null>(null);
-  const [nlPrompt, setNlPrompt] = useState<string>(
-    "Which contract is the most popular contract by contract name?"
-  );
+  const [nlPrompt, setNlPrompt] = useState<string>(DEFAULT_PROMPT);
   const [generating, setGenerating] = useState(false);
-  const [model, setModel] = useState<string>(
-    "deepseek/deepseek-chat-v3.1:free"
-  );
+  const [model, setModel] = useState<string>(DEFAULT_MODEL);
   const [apiKey, setApiKey] = useState<string>("");
 
   const handleExecute = async () => {
@@ -30,7 +26,7 @@ const BigQueryExplorer = () => {
       setResult(res);
     } catch (e: any) {
       setResult(null);
-      setBqError(e?.message || "Failed to run query");
+      setBqError(e?.message || "Unknow error executing query");
     } finally {
       setLoading(false);
     }
@@ -56,7 +52,7 @@ const BigQueryExplorer = () => {
 
   // Determine effective API key: prefer user key; fallback to app key from env
   const effectiveApiKey = useMemo(() => {
-    return (apiKey || process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY || "").trim();
+    return (apiKey || process.env.REACT_APP_OPENROUTER_API_KEY || "").trim();
   }, [apiKey]);
 
   const openrouter = useMemo(() => {
@@ -76,15 +72,11 @@ const BigQueryExplorer = () => {
     try {
       const chosenModel = model;
       // Runtime enforcement for built-in key
-      const usingAppKey = !apiKey && (process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY);
+      const usingAppKey = !apiKey && (process.env.REACT_APP_OPENROUTER_API_KEY);
       if (usingAppKey && !chosenModel.trim().endsWith(":free")) {
         throw new Error("Only :free models are supported with the built-in key");
       }
-      const system = `You are a SQL assistant for Google BigQuery (Standard SQL).\n` +
-        `- Output ONLY executable SQL. No markdown, no commentary.\n` +
-        `- Prefer SELECT queries; avoid DDL/DML.\n` +
-        `- Ensure syntax is valid for BigQuery Standard SQL.\n\n` +
-        SCHEMA_DOC;
+      const system = SYSTEM_PROMPT;
       const prompt = `User request: ${nlPrompt}\n` +
         `Return only the SQL statement that fulfills it.`;
 
