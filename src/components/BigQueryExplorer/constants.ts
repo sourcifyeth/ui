@@ -24,7 +24,9 @@ All tables are prefixed with public_. Only use these tables/columns and relation
 
 - public_compiled_contracts (
   id UUID PRIMARY KEY,
-  compiler TEXT, version TEXT, language TEXT,
+  compiler TEXT, 
+  version TEXT, -- the version is stored as: 0.8.29+commit.ab55807c
+  language TEXT,
   name TEXT, fully_qualified_name TEXT,
   compiler_settings JSONB, compilation_artifacts JSONB,
   creation_code_hash BYTEA REFERENCES public_code(code_hash),

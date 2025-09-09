@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { BigQueryResponse } from "../../utils/api";
-import { RowObject, computeColumns, formatNumber, parseRowValue } from "./utils";
+import { RowObject, computeColumns, parseRowValue } from "./utils";
 
 type Props = {
   result: BigQueryResponse | null;

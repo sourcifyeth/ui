@@ -86,6 +86,23 @@ const AIGenerator = ({
     <div className="bg-white rounded-xl shadow overflow-hidden mb-6">
       <div className="p-4">
         <label className="block text-sm text-gray-600 mb-2">Describe your query</label>
+        <div className="mb-2 flex flex-wrap items-center gap-2">
+          <span className="text-xs text-gray-500 mr-1">Examples:</span>
+          {[
+            "Give me contracts with Solidity version 0.4.26",
+            "Give me deployments of GnosisSafeProxy on Base",
+            "Which contract is the most popular contract?",
+          ].map((example) => (
+            <button
+              key={example}
+              type="button"
+              onClick={() => setNlPrompt(example)}
+              className="text-xs px-3 py-1 rounded-full border border-gray-200 text-gray-700 hover:bg-ceruleanBlue-50 hover:border-ceruleanBlue-300 hover:text-ceruleanBlue-700 transition-colors"
+            >
+              {example}
+            </button>
+          ))}
+        </div>
         <textarea
           value={nlPrompt}
           onChange={(e) => setNlPrompt(e.target.value)}
