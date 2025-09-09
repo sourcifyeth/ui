@@ -26,10 +26,9 @@ const AIGenerator = ({
 }: Props) => {
   const [validatingModel, setValidatingModel] = useState(false);
   const [modelValid, setModelValid] = useState<boolean | null>(null);
-  const [modelValidationMsg, setModelValidationMsg] = useState<string>("");
 
   const usingBuiltInAppKey = useMemo(() => {
-    return !apiKey && !!(process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY);
+    return !apiKey && !!(process.env.REACT_APP_OPENROUTER_API_KEY);
   }, [apiKey]);
 
   // Debounced model validation against OpenRouter API
@@ -37,7 +36,6 @@ const AIGenerator = ({
     let active = true;
     if (!model?.trim()) {
       setModelValid(null);
-      setModelValidationMsg("");
       return;
     }
     const trimmed = model.trim();
@@ -45,19 +43,16 @@ const AIGenerator = ({
     if (usingBuiltInAppKey) {
       if (!trimmed.endsWith(":free")) {
         setModelValid(false);
-        setModelValidationMsg("Only free models are supported with the built-in key (suffix :free)");
         return;
       }
     }
     setValidatingModel(true);
-    setModelValidationMsg("");
     const slug = trimmed.split(":")[0];
     const timer = setTimeout(async () => {
       try {
-        const usedKey = (apiKey || process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY || "").trim();
+        const usedKey = (apiKey || process.env.REACT_APP_OPENROUTER_API_KEY || "").trim();
         if (!usedKey) {
           setModelValid(null);
-          setModelValidationMsg("");
           return;
         }
         const res = await fetch(`https://openrouter.ai/api/v1/models/${slug}/endpoints`, {
@@ -68,17 +63,14 @@ const AIGenerator = ({
         if (!active) return;
         if (!res.ok) {
           setModelValid(false);
-          setModelValidationMsg(`Model not found or unauthorized (${res.status})`);
         } else {
           const data = await res.json().catch(() => null);
           const ok = data && (Array.isArray(data) ? data.length > 0 : true);
           setModelValid(!!ok);
-          if (!ok) setModelValidationMsg("No endpoints available for this model");
         }
       } catch (e: any) {
         if (!active) return;
         setModelValid(false);
-        setModelValidationMsg("Failed to validate model");
       } finally {
         if (active) setValidatingModel(false);
       }
@@ -145,7 +137,7 @@ const AIGenerator = ({
               <span className="text-green-600 text-xs">Valid</span>
             )}
             {modelValid === false && !validatingModel && (
-              <span className="text-red-600 text-xs" title={modelValidationMsg}>Invalid</span>
+              <span className="text-red-600 text-xs">Invalid</span>
             )}
           </div>
 
@@ -167,15 +159,10 @@ const AIGenerator = ({
             {generating ? "Generating…" : "Generate SQL"}
           </Button>
           <div className="text-xs text-gray-500">
-            {apiKey ? "Using your OpenRouter key: all models supported." : "Using built-in key: only free models supported"}
+            {apiKey ? "Using your OpenRouter key, all models supported" : "Using built-in key, only ':free' models supported"}
           </div>
         </div>
       </div>
-      {!apiKey && !(process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY) && (
-        <div className="px-4 py-3 bg-yellow-50 text-yellow-800 border-t border-yellow-200 text-sm">
-          Enter your OpenRouter API key above to enable all models, or configure REACT_APP_OPENROUTER_API_KEY to use free models without entering a key.
-        </div>
-      )}
       {genError && (
         <div className="px-4 py-3 bg-red-50 text-red-700 border-t border-red-200 text-sm">
           {genError}
