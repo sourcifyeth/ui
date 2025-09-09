@@ -19,17 +19,6 @@ const Results = ({ result, loading, error }: Props) => {
           <div>
             <span className="text-gray-500">Rows:</span> {result?.rowCount ?? 0}
           </div>
-          <div>
-            <span className="text-gray-500">Billed MiB:</span> {formatNumber(result?.billedMiB)}
-          </div>
-          <div>
-            <span className="text-gray-500">Estimated MiB:</span> {formatNumber(result?.estimatedMiB)}
-          </div>
-          {result?.jobId && (
-            <div className="truncate max-w-full">
-              <span className="text-gray-500">Job ID:</span> <span className="font-mono">{result.jobId}</span>
-            </div>
-          )}
         </div>
       </div>
 
