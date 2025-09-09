@@ -104,7 +104,8 @@ function parseRowValue(value: unknown): string {
 const BigQueryExplorer = () => {
   const [sql, setSql] = useState<string>(DEFAULT_SQL);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [genError, setGenError] = useState<string | null>(null);
+  const [bqError, setBqError] = useState<string | null>(null);
   const [result, setResult] = useState<BigQueryResponse | null>(null);
   const [nlPrompt, setNlPrompt] = useState<string>(
     "Show the latest 10 verified contracts with address and chainId."
@@ -137,25 +138,34 @@ const BigQueryExplorer = () => {
   // Debounced model validation against OpenRouter API
   useEffect(() => {
     let active = true;
-    if (!apiKey || !model?.trim()) {
+    if (!model?.trim()) {
       setModelValid(null);
       setModelValidationMsg("");
       return;
     }
     const trimmed = model.trim();
-    if (!trimmed.endsWith(":free")) {
-      setModelValid(false);
-      setModelValidationMsg("Only free models are supported (suffix :free)");
-      return;
+    // If using the app key (built-in), only allow :free models
+    if ((process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY) && !apiKey) {
+      if (!trimmed.endsWith(":free")) {
+        setModelValid(false);
+        setModelValidationMsg("Only free models are supported with the built-in key (suffix :free)");
+        return;
+      }
     }
     setValidatingModel(true);
     setModelValidationMsg("");
     const slug = trimmed.split(":")[0];
     const timer = setTimeout(async () => {
       try {
+        const usedKey = (apiKey || process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY || "").trim();
+        if (!usedKey) {
+          setModelValid(null);
+          setModelValidationMsg("");
+          return;
+        }
         const res = await fetch(`https://openrouter.ai/api/v1/models/${slug}/endpoints`, {
           headers: {
-            Authorization: `Bearer ${apiKey}`,
+            Authorization: `Bearer ${usedKey}`,
           },
         });
         if (!active) return;
@@ -184,27 +194,25 @@ const BigQueryExplorer = () => {
 
   const handleExecute = async () => {
     setLoading(true);
-    setError(null);
+    setBqError(null);
     try {
       const res = await bigquery(sql);
       setResult(res);
     } catch (e: any) {
       setResult(null);
-      setError(e?.message || "Failed to run query");
+      setBqError(e?.message || "Failed to run query");
     } finally {
       setLoading(false);
     }
   };
 
-  // Initialize API key from env or localStorage
+  // Initialize user-provided API key from localStorage only (keep empty by default)
   useEffect(() => {
-    const fromEnv =
-      process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY || "";
     let fromStorage = "";
     try {
       fromStorage = window.localStorage.getItem("openrouter_api_key") || "";
     } catch {}
-    const initial = (fromStorage || fromEnv).trim();
+    const initial = (fromStorage || "").trim();
     if (initial) setApiKey(initial);
   }, []);
 
@@ -216,22 +224,32 @@ const BigQueryExplorer = () => {
     } catch {}
   }, [apiKey]);
 
-  const openrouter = useMemo(() => {
-    if (!apiKey) return null;
-    return createOpenRouter({ apiKey });
+  // Determine effective API key: prefer user key; fallback to app key from env
+  const effectiveApiKey = useMemo(() => {
+    return (apiKey || process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY || "").trim();
   }, [apiKey]);
+
+  const openrouter = useMemo(() => {
+    if (!effectiveApiKey) return null;
+    return createOpenRouter({ apiKey: effectiveApiKey });
+  }, [effectiveApiKey]);
 
   const handleGenerate = async () => {
     if (!openrouter) {
-      setError(
-        "OpenRouter not configured. Set REACT_APP_OPENROUTER_API_KEY and restart."
+      setGenError(
+        "OpenRouter key missing. Add your key to use any model, or configure REACT_APP_OPENROUTER_API_KEY for free models."
       );
       return;
     }
     setGenerating(true);
-    setError(null);
+    setGenError(null);
     try {
       const chosenModel = model;
+      // Runtime enforcement for built-in key
+      const usingAppKey = !apiKey && (process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY);
+      if (usingAppKey && !chosenModel.trim().endsWith(":free")) {
+        throw new Error("Only :free models are supported with the built-in key");
+      }
       const system = `You are a SQL assistant for Google BigQuery (Standard SQL).\n` +
         `- Output ONLY executable SQL. No markdown, no commentary.\n` +
         `- Prefer SELECT queries; avoid DDL/DML.\n` +
@@ -253,7 +271,11 @@ const BigQueryExplorer = () => {
       if (!cleaned) throw new Error("Model returned an empty response");
       setSql(cleaned);
     } catch (e: any) {
-      setError(e?.message || "Failed to generate SQL");
+      try {
+        setGenError("Openrouter error: " + JSON.parse(e.responseBody).error.message);
+      }catch{
+        setGenError("Unkown error generating SQL");
+      }
     } finally {
       setGenerating(false);
     }
@@ -339,16 +361,22 @@ const BigQueryExplorer = () => {
             </div>
 
             <div className="mt-3 flex items-center gap-3">
-              <Button onClick={handleGenerate} className="uppercase" disabled={generating || !apiKey || modelValid !== true}>
+              <Button onClick={handleGenerate} className="uppercase" disabled={generating || modelValid !== true}>
                 {generating ? "Generating…" : "Generate SQL"}
               </Button>
-              <span className="text-xs text-gray-500">Only free models supported</span>
+              <div className="text-xs text-gray-500">
+                {apiKey ? "Using your OpenRouter key: all models supported." : "Using built-in key: only free models supported."}
+              </div>
             </div>
           </div>
-          {!apiKey && (
+          {!apiKey && !(process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY) && (
             <div className="px-4 py-3 bg-yellow-50 text-yellow-800 border-t border-yellow-200 text-sm">
-              Enter your OpenRouter API key above to enable AI generation.
-              Alternatively, set REACT_APP_OPENROUTER_API_KEY in the environment.
+              Enter your OpenRouter API key above to enable all models, or configure REACT_APP_OPENROUTER_API_KEY to use free models without entering a key.
+            </div>
+          )}
+          {genError && (
+            <div className="px-4 py-3 bg-red-50 text-red-700 border-t border-red-200 text-sm">
+              {genError}
             </div>
           )}
         </div>
@@ -401,12 +429,6 @@ const BigQueryExplorer = () => {
               </div>
             )}
           </div>
-
-          {error && (
-            <div className="px-4 py-3 bg-red-50 text-red-700 border-t border-red-200 text-sm">
-              {error}
-            </div>
-          )}
         </div>
 
         {/* Results */}
@@ -430,6 +452,12 @@ const BigQueryExplorer = () => {
               )}
             </div>
           </div>
+
+          {bqError && (
+            <div className="px-4 py-3 bg-red-50 text-red-700 border-t border-red-200 text-sm">
+              {bqError}
+            </div>
+          )}
 
           {loading && (
             <div className="p-6 text-sm text-gray-600">Running query...</div>
