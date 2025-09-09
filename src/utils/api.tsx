@@ -81,7 +81,7 @@ export const bigquery = async (
     } catch (e) {
       throw new Error("Cannot parse the error message");
     }
-    throw new Error(jsonError.message);
+    throw new Error(jsonError.error);
   }
 
   return await response.json();
