@@ -5,8 +5,9 @@ type ButtonProps = {
   type?: string;
   className?: string;
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  disabled?: boolean;
 };
-const Button = ({ children, type, className, onClick }: ButtonProps) => {
+const Button = ({ children, type, className, onClick, disabled }: ButtonProps) => {
   let bg = "bg-ceruleanBlue-500";
   let hoverBg = "hover:bg-ceruleanBlue-600";
   let textColor = "text-white";
@@ -23,6 +24,8 @@ const Button = ({ children, type, className, onClick }: ButtonProps) => {
 
   return (
     <button
+      disabled={disabled}
+      aria-disabled={disabled}
       className={`py-3 px-6 ${bg} ${hoverBg} disabled:hover:bg-ceruleanBlue-500 focus:ring-ceruleanBlue-300 focus:ring-offset-ceruleanBlue-100 ${textColor} transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full disabled:opacity-50 disabled:cursor-default ${className}`}
       onClick={onClick}
     >

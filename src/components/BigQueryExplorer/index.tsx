@@ -3,6 +3,7 @@ import Button from "../Button";
 import { bigquery, BigQueryResponse } from "../../utils/api";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { generateText } from "ai";
+import "./styles.css";
 
 const DEFAULT_SQL = `-- Example: Latest verified contract's chain and address
 SELECT chain_id, address
@@ -112,8 +113,10 @@ const BigQueryExplorer = () => {
   const [model, setModel] = useState<string>(
     "deepseek/deepseek-chat-v3.1:free"
   );
-  const [useCustomModel, setUseCustomModel] = useState<boolean>(false);
-  const [customModel, setCustomModel] = useState<string>("");
+  const [validatingModel, setValidatingModel] = useState(false);
+  const [modelValid, setModelValid] = useState<boolean | null>(null);
+  const [modelValidationMsg, setModelValidationMsg] = useState<string>("");
+  const [apiKey, setApiKey] = useState<string>("");
 
   // Line numbers gutter scroll sync
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -131,6 +134,54 @@ const BigQueryExplorer = () => {
     return () => ta?.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Debounced model validation against OpenRouter API
+  useEffect(() => {
+    let active = true;
+    if (!apiKey || !model?.trim()) {
+      setModelValid(null);
+      setModelValidationMsg("");
+      return;
+    }
+    const trimmed = model.trim();
+    if (!trimmed.endsWith(":free")) {
+      setModelValid(false);
+      setModelValidationMsg("Only free models are supported (suffix :free)");
+      return;
+    }
+    setValidatingModel(true);
+    setModelValidationMsg("");
+    const slug = trimmed.split(":")[0];
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`https://openrouter.ai/api/v1/models/${slug}/endpoints`, {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+          },
+        });
+        if (!active) return;
+        if (!res.ok) {
+          setModelValid(false);
+          setModelValidationMsg(`Model not found or unauthorized (${res.status})`);
+        } else {
+          const data = await res.json().catch(() => null);
+          const ok = data && (Array.isArray(data) ? data.length > 0 : true);
+          setModelValid(!!ok);
+          if (!ok) setModelValidationMsg("No endpoints available for this model");
+        }
+      } catch (e: any) {
+        if (!active) return;
+        setModelValid(false);
+        setModelValidationMsg("Failed to validate model");
+      } finally {
+        if (active) setValidatingModel(false);
+      }
+    }, 500);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [apiKey, model]);
+
   const handleExecute = async () => {
     setLoading(true);
     setError(null);
@@ -145,12 +196,30 @@ const BigQueryExplorer = () => {
     }
   };
 
-  const openrouterApiKey =
-    process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY;
+  // Initialize API key from env or localStorage
+  useEffect(() => {
+    const fromEnv =
+      process.env.REACT_APP_OPENROUTER_API_KEY || process.env.REACT_APP_OPENROUTER_KEY || "";
+    let fromStorage = "";
+    try {
+      fromStorage = window.localStorage.getItem("openrouter_api_key") || "";
+    } catch {}
+    const initial = (fromStorage || fromEnv).trim();
+    if (initial) setApiKey(initial);
+  }, []);
+
+  // Persist key locally for convenience
+  useEffect(() => {
+    try {
+      if (apiKey) window.localStorage.setItem("openrouter_api_key", apiKey);
+      else window.localStorage.removeItem("openrouter_api_key");
+    } catch {}
+  }, [apiKey]);
+
   const openrouter = useMemo(() => {
-    if (!openrouterApiKey) return null;
-    return createOpenRouter({ apiKey: openrouterApiKey });
-  }, [openrouterApiKey]);
+    if (!apiKey) return null;
+    return createOpenRouter({ apiKey });
+  }, [apiKey]);
 
   const handleGenerate = async () => {
     if (!openrouter) {
@@ -162,7 +231,7 @@ const BigQueryExplorer = () => {
     setGenerating(true);
     setError(null);
     try {
-      const chosenModel = useCustomModel && customModel ? customModel : model;
+      const chosenModel = model;
       const system = `You are a SQL assistant for Google BigQuery (Standard SQL).\n` +
         `- Output ONLY executable SQL. No markdown, no commentary.\n` +
         `- Prefer SELECT queries; avoid DDL/DML.\n` +
@@ -223,57 +292,63 @@ const BigQueryExplorer = () => {
 
         {/* AI Generator */}
         <div className="bg-white rounded-xl shadow overflow-hidden mb-6">
-          <div className="border-b border-gray-200 p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex-1">
-              <label className="block text-sm text-gray-600 mb-2">Describe your query</label>
-              <input
-                value={nlPrompt}
-                onChange={(e) => setNlPrompt(e.target.value)}
-                placeholder="e.g., List top 10 contracts by verification date"
-                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ceruleanBlue-300"
-              />
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2 md:gap-3 items-stretch md:items-center md:pl-4">
-              <div className="flex items-center gap-2">
+          <div className="p-4">
+            <label className="block text-sm text-gray-600 mb-2">Describe your query</label>
+            <textarea
+              value={nlPrompt}
+              onChange={(e) => setNlPrompt(e.target.value)}
+              placeholder="e.g., List top 10 contracts by verification date"
+              rows={4}
+              className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ceruleanBlue-300 resize-y"
+            />
+
+            <div className="mt-3 flex flex-col sm:flex-row gap-2 md:gap-3 items-stretch">
+              <div className="flex items-center gap-2 flex-1">
                 <label className="text-sm text-gray-600">Model</label>
-                <select
-                  className="border border-gray-200 rounded-md px-2 py-2 text-sm bg-white"
-                  value={useCustomModel ? "__custom__" : model}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    if (v === "__custom__") {
-                      setUseCustomModel(true);
-                    } else {
-                      setUseCustomModel(false);
-                      setModel(v);
-                    }
-                  }}
-                >
-                  <option value="google/gemini-2.0-flash-lite-preview-02-05:free">Gemini 2.0 Flash Lite (Free)</option>
-                  <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B Instruct (Free)</option>
-                  <option value="mistralai/mistral-7b-instruct:free">Mistral 7B Instruct (Free)</option>
-                  <option value="qwen/qwen2.5-7b-instruct:free">Qwen2.5 7B Instruct (Free)</option>
-                  <option value="__custom__">Custom…</option>
-                </select>
-              </div>
-              <span className="text-xs text-gray-500">Only free models supported</span>
-              {useCustomModel && (
                 <input
-                  value={customModel}
-                  onChange={(e) => setCustomModel(e.target.value)}
-                  placeholder="provider/model:free"
-                  className="border border-gray-200 rounded-md px-2 py-2 text-sm"
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  placeholder="author/slug:free (e.g., meta-llama/llama-3.1-8b-instruct:free)"
+                  className="border border-gray-200 rounded-md px-2 py-2 text-sm w-full"
                 />
-              )}
-              <Button onClick={handleGenerate} className="uppercase" >
+                {validatingModel && (
+                  <svg className="animate-spin h-4 w-4 text-gray-500" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                  </svg>
+                )}
+                {modelValid === true && !validatingModel && (
+                  <span className="text-green-600 text-xs">Valid</span>
+                )}
+                {modelValid === false && !validatingModel && (
+                  <span className="text-red-600 text-xs" title={modelValidationMsg}>Invalid</span>
+                )}
+              </div>
+
+              <div className="flex-1 flex items-center gap-2 sm:justify-end">
+                <label className="text-sm text-gray-600 shrink-0">OpenRouter key</label>
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="sk-or-..."
+                  className="border border-gray-200 rounded-md px-2 py-2 text-sm w-full sm:w-72"
+                  autoComplete="off"
+                />
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-center gap-3">
+              <Button onClick={handleGenerate} className="uppercase" disabled={generating || !apiKey || modelValid !== true}>
                 {generating ? "Generating…" : "Generate SQL"}
               </Button>
+              <span className="text-xs text-gray-500">Only free models supported</span>
             </div>
           </div>
-          {!openrouterApiKey && (
+          {!apiKey && (
             <div className="px-4 py-3 bg-yellow-50 text-yellow-800 border-t border-yellow-200 text-sm">
-              To enable AI generation, add REACT_APP_OPENROUTER_API_KEY to your environment and restart.
-              Only free models are supported.
+              Enter your OpenRouter API key above to enable AI generation.
+              Alternatively, set REACT_APP_OPENROUTER_API_KEY in the environment.
             </div>
           )}
         </div>
@@ -283,7 +358,7 @@ const BigQueryExplorer = () => {
           <div className="border-b border-gray-200 p-4 flex items-center justify-between gap-4">
             <span className="text-sm text-gray-600">SQL Editor</span>
             <div className="flex items-center gap-2">
-              <Button onClick={handleExecute} className="uppercase" >
+              <Button onClick={handleExecute} className="uppercase" disabled={generating || loading}>
                 {loading ? "Executing..." : "Execute"}
               </Button>
             </div>
@@ -293,7 +368,7 @@ const BigQueryExplorer = () => {
             {/* Gutter */}
             <div
               ref={gutterRef}
-              className="select-none text-right text-xs leading-6 px-3 py-3 bg-[#0f172a] text-gray-400 border-r border-gray-700"
+              className="select-none text-right text-xs leading-6 px-3 py-3 bg-[#0f172a] text-gray-400 border-r border-gray-700 gutter-scrollbar"
               style={{ width: 44, overflow: "hidden auto" }}
             >
               {Array.from({ length: lineCount }, (_, i) => (
@@ -307,7 +382,9 @@ const BigQueryExplorer = () => {
               value={sql}
               onChange={(e) => setSql(e.target.value)}
               spellCheck={false}
-              className="flex-1 text-sm leading-6 p-3 font-mono bg-[#111827] text-gray-100 outline-none resize-none"
+              disabled={generating}
+              aria-disabled={generating}
+              className="flex-1 text-sm leading-6 p-3 font-mono bg-[#111827] text-gray-100 outline-none resize-none disabled:opacity-60 disabled:cursor-not-allowed"
               style={{
                 tabSize: 2,
                 MozTabSize: 2 as unknown as number,
@@ -315,6 +392,14 @@ const BigQueryExplorer = () => {
               }}
               placeholder="Write your SQL here..."
             />
+            {generating && (
+              <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-10">
+                <svg className="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-label="Generating">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+              </div>
+            )}
           </div>
 
           {error && (

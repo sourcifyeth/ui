@@ -1,0 +1,10 @@
+.gutter-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.gutter-scrollbar::-webkit-scrollbar {
+  width: 0px; /* Chrome/Safari */
+  height: 0px;
+}
+
