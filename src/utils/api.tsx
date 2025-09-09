@@ -47,3 +47,42 @@ export const getSourcifyChains = async (): Promise<Chain[]> => {
   const chainsArray = await (await fetch(`${SERVER_URL}/chains`)).json();
   return chainsArray;
 };
+
+export interface BigQueryResponse {
+  ok: true;
+  jobId: string;
+  location: string;
+  estimatedBytes: string;
+  estimatedMiB: number;
+  billedBytes: string;
+  billedMiB: number;
+  capBytes: string;
+  capMiB: number;
+  rowCount: number;
+  rows: any[];
+}
+
+export const bigquery = async (
+  sql: string
+): Promise<BigQueryResponse> => {
+  const response = await fetch(`${SERVER_URL}/v2/bigquery`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ sql, maxRows: 10 }),
+  });
+
+  if (!response.ok) {
+    // e.g. HTTP 400 invalid address
+    let jsonError;
+    try {
+      jsonError = await response.json();
+    } catch (e) {
+      throw new Error("Cannot parse the error message");
+    }
+    throw new Error(jsonError.message);
+  }
+
+  return await response.json();
+};

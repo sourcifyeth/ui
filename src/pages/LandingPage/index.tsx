@@ -15,6 +15,7 @@ import Tooling from "./Tooling";
 import FAQ from "./FAQ";
 import Contact from "./Contact";
 import { IoMdClose } from "react-icons/io";
+import BigQueryExplorer from "../../components/BigQueryExplorer";
 
 SyntaxHighlighter.registerLanguage("solidity", solidityLang);
 SyntaxHighlighter.registerLanguage("json", jsonLang);
@@ -178,6 +179,8 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+
+      <BigQueryExplorer />
 
       <AboutSection />
       <SupportedChains />
