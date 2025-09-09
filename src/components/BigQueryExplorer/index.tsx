@@ -104,7 +104,7 @@ const BigQueryExplorer = () => {
   };
 
   return (
-    <section className="px-8 md:px-12 lg:px-24 bg-gray-100 py-12">
+    <section className=" md:px-12 lg:px-24 bg-gray-100 py-12">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold mb-4">BigQuery Explorer</h2>
         <p className="text-gray-600 mb-6">

@@ -77,6 +77,9 @@ const Header = ({ className }: { className?: string }) => {
             <Link className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" to="/lookup">
               Lookup
             </Link>
+            <Link className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" to="/bigquery">
+              BigQuery
+            </Link>
             <a
               className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
               href="https://repo.sourcify.dev"

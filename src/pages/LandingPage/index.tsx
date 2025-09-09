@@ -180,8 +180,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <BigQueryExplorer />
-
       <AboutSection />
       <SupportedChains />
       {/* Verified contract stats */}
