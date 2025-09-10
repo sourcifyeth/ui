@@ -4,7 +4,6 @@ import { ContextProvider } from "./Context";
 import LandingPage from "./pages/LandingPage";
 import Lookup from "./pages/Lookup";
 import VerifyRedirect from "./pages/VerifyRedirect";
-import BigQuery from "./pages/BigQuery";
 
 function App() {
   useEffect(() => {
@@ -21,7 +20,6 @@ function App() {
             <Route path="/verifier" element={<VerifyRedirect />} />
             <Route path="/lookup" element={<Lookup />} />
             <Route path="/lookup/:address" element={<Lookup />} />
-            <Route path="/bigquery" element={<BigQuery />} />
             <Route path="/" element={<LandingPage />} />
           </Routes>
         </HashRouter>
