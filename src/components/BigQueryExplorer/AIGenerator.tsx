@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Button from "../Button";
+import { OPENROUTER_API_KEY } from "../../constants";
 
 type Props = {
   nlPrompt: string;
@@ -28,7 +29,7 @@ const AIGenerator = ({
   const [modelValid, setModelValid] = useState<boolean | null>(null);
 
   const usingBuiltInAppKey = useMemo(() => {
-    return !apiKey && !!(process.env.REACT_APP_OPENROUTER_API_KEY);
+    return !apiKey && !!(OPENROUTER_API_KEY);
   }, [apiKey]);
 
   // Debounced model validation against OpenRouter API
@@ -50,7 +51,7 @@ const AIGenerator = ({
     const slug = trimmed.split(":")[0];
     const timer = setTimeout(async () => {
       try {
-        const usedKey = (apiKey || process.env.REACT_APP_OPENROUTER_API_KEY || "").trim();
+        const usedKey = (apiKey || OPENROUTER_API_KEY || "").trim();
         if (!usedKey) {
           setModelValid(null);
           return;

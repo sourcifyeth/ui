@@ -1,4 +1,4 @@
-import { SERVER_URL } from "../constants";
+import { SERVER_URL, BIGQUERY_API_URL } from "../constants";
 import { Chain, CheckAllByAddressResult } from "../types";
 
 type ChainIdsResponse = {
@@ -65,7 +65,7 @@ export interface BigQueryResponse {
 export const bigquery = async (
   sql: string
 ): Promise<BigQueryResponse> => {
-  const response = await fetch(`${SERVER_URL}/v2/bigquery`, {
+  const response = await fetch(`${BIGQUERY_API_URL}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

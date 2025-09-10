@@ -6,6 +6,7 @@ import { DEFAULT_SQL, SYSTEM_PROMPT, DEFAULT_PROMPT, DEFAULT_MODEL } from "./con
 import AIGenerator from "./AIGenerator";
 import SqlEditor from "./SqlEditor";
 import Results from "./Results";
+import { OPENROUTER_API_KEY } from "../../constants";
 
 const BigQueryExplorer = () => {
   const [sql, setSql] = useState<string>(DEFAULT_SQL);
@@ -52,7 +53,7 @@ const BigQueryExplorer = () => {
 
   // Determine effective API key: prefer user key; fallback to app key from env
   const effectiveApiKey = useMemo(() => {
-    return (apiKey || process.env.REACT_APP_OPENROUTER_API_KEY || "").trim();
+    return (apiKey || OPENROUTER_API_KEY || "").trim();
   }, [apiKey]);
 
   const openrouter = useMemo(() => {
@@ -72,7 +73,7 @@ const BigQueryExplorer = () => {
     try {
       const chosenModel = model;
       // Runtime enforcement for built-in key
-      const usingAppKey = !apiKey && (process.env.REACT_APP_OPENROUTER_API_KEY);
+      const usingAppKey = !apiKey && (OPENROUTER_API_KEY);
       if (usingAppKey && !chosenModel.trim().endsWith(":free")) {
         throw new Error("Only :free models are supported with the built-in key");
       }
