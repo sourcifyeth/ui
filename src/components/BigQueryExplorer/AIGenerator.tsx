@@ -87,8 +87,8 @@ const AIGenerator = ({
     <div className="bg-white rounded-xl shadow overflow-hidden mb-6">
       <div className="p-4">
         <label className="block text-sm text-gray-600 mb-2">Describe your query</label>
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <span className="text-xs text-gray-500 mr-1">Examples:</span>
+        <div className="mb-2 flex flex-wrap items-center gap-2 bg-ceruleanBlue-50 rounded-md px-2 py-2">
+          <span className="text-xs text-ceruleanBlue-700 mr-1 font-medium">Examples:</span>
           {[
             "Give me contracts with Solidity version 0.4.26",
             "Give me deployments of GnosisSafeProxy on Base",
@@ -98,7 +98,7 @@ const AIGenerator = ({
               key={example}
               type="button"
               onClick={() => setNlPrompt(example)}
-              className="text-xs px-3 py-1 rounded-full border border-gray-200 text-gray-700 hover:bg-ceruleanBlue-50 hover:border-ceruleanBlue-300 hover:text-ceruleanBlue-700 transition-colors"
+              className="text-xs px-3 py-1 rounded-full border bg-ceruleanBlue-100 border-ceruleanBlue-400 text-ceruleanBlue-900 hover:bg-ceruleanBlue-200 hover:border-ceruleanBlue-500 hover:text-ceruleanBlue-900 transition-colors"
             >
               {example}
             </button>
