@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { bigquery, BigQueryResponse } from "../../utils/api";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { generateText } from "ai";
@@ -7,6 +7,7 @@ import AIGenerator from "./AIGenerator";
 import SqlEditor from "./SqlEditor";
 import Results from "./Results";
 import { OPENROUTER_API_KEY } from "../../constants";
+import { motion, useInView } from "framer-motion";
 
 const BigQueryExplorer = () => {
   const [sql, setSql] = useState<string>(DEFAULT_SQL);
@@ -18,6 +19,8 @@ const BigQueryExplorer = () => {
   const [generating, setGenerating] = useState(false);
   const [model, setModel] = useState<string>(DEFAULT_MODEL);
   const [apiKey, setApiKey] = useState<string>("");
+  const titleRef = useRef(null);
+  const isTitleInView = useInView(titleRef, { once: true });
 
   const handleExecute = async () => {
     setLoading(true);
@@ -107,8 +110,16 @@ const BigQueryExplorer = () => {
   return (
     <section className=" md:px-12 lg:px-24 bg-gray-100 py-12">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold mb-4">BigQuery Explorer</h2>
-        <p className="text-gray-600 mb-6">
+        <motion.h1
+          ref={titleRef}
+          initial={{ opacity: 0, y: 20 }}
+          animate={isTitleInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6 }}
+          className="text-6xl text-ceruleanBlue-500 font-bold text-center mb-10"
+        >
+          BigQuery Explorer
+        </motion.h1>
+        <p className="text-gray-600 mb-6 text-center max-w-3xl mx-auto">
           Write a SQL query and execute it against the dataset. Results show below.
         </p>
         <AIGenerator
