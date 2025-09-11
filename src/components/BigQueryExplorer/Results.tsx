@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BigQueryResponse } from "../../utils/api";
 import { RowObject, computeColumns, parseRowValue } from "./utils";
 
@@ -9,15 +9,81 @@ type Props = {
 };
 
 const Results = ({ result, loading, error }: Props) => {
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [page, setPage] = useState<number>(0);
+
+  // Reset pagination when a new result set arrives
+  useEffect(() => {
+    setPage(0);
+  }, [result]);
+
   const columns: string[] = useMemo(() => computeColumns(result?.rows), [result]);
+
+  const totalRows = result?.rows?.length ?? 0;
+  const startIdx = page * pageSize;
+  const endIdxExclusive = Math.min(startIdx + pageSize, totalRows);
+  const paginatedRows = useMemo(
+    () => (result?.rows ?? []).slice(startIdx, endIdxExclusive),
+    [result, startIdx, endIdxExclusive]
+  );
+  const isFirstPage = page === 0;
+  const isLastPage = endIdxExclusive >= totalRows;
+  const showingFrom = totalRows === 0 ? 0 : startIdx + 1;
+  const showingTo = endIdxExclusive;
 
   return (
     <div className="bg-white rounded-xl shadow overflow-hidden">
       <div className="border-b border-gray-200 p-4">
         <h3 className="font-semibold">Results</h3>
-        <div className="mt-2 text-sm text-gray-600 flex flex-wrap gap-4">
+        <div className="mt-2 text-sm text-gray-600 flex flex-wrap items-center gap-4">
           <div>
             <span className="text-gray-500">Rows:</span> {result?.rowCount ?? 0}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-gray-500">Show:</span>
+            <select
+              className="border border-gray-300 rounded px-2 py-1 text-sm bg-white"
+              value={pageSize}
+              onChange={(e) => {
+                const newSize = parseInt(e.target.value, 10);
+                setPageSize(newSize);
+                setPage(0);
+              }}
+            >
+              <option value={10}>10</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <span className="text-gray-500">per page</span>
+          </div>
+          <div className="ml-auto flex items-center gap-3">
+            <div className="text-gray-600">
+              Showing {showingFrom}-{showingTo} of {totalRows}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                className={`px-3 py-1 rounded border text-sm ${
+                  isFirstPage
+                    ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                    : "text-gray-700 border-gray-300 hover:bg-gray-50"
+                }`}
+                disabled={isFirstPage}
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+              >
+                Previous
+              </button>
+              <button
+                className={`px-3 py-1 rounded border text-sm ${
+                  isLastPage
+                    ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                    : "text-gray-700 border-gray-300 hover:bg-gray-50"
+                }`}
+                disabled={isLastPage}
+                onClick={() => setPage((p) => (isLastPage ? p : p + 1))}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -52,11 +118,11 @@ const Results = ({ result, loading, error }: Props) => {
               </tr>
             </thead>
             <tbody>
-              {result.rows.map((row: RowObject, idx: number) => {
+              {paginatedRows.map((row: RowObject, idx: number) => {
                 const isArr = Array.isArray(row);
                 const obj = (!isArr && row && typeof row === "object") ? (row as Record<string, unknown>) : null;
                 return (
-                  <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                  <tr key={`${startIdx + idx}`} className={(startIdx + idx) % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                     {columns.map((col) => {
                       let value: unknown;
                       if (isArr) {
@@ -86,4 +152,3 @@ const Results = ({ result, loading, error }: Props) => {
 };
 
 export default Results;
-

@@ -70,7 +70,7 @@ export const bigquery = async (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ sql, maxRows: 10 }),
+    body: JSON.stringify({ sql }),
   });
 
   if (!response.ok) {
