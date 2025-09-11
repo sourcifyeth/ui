@@ -39,7 +39,7 @@ const SqlEditor = ({ sql, setSql, onExecute, loading, generating }: Props) => {
   return (
     <div className="bg-white rounded-xl shadow overflow-hidden mb-8">
       <div className="border-b border-gray-200 p-4 flex items-center justify-between gap-4">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
           <span className="text-sm text-gray-600">SQL Editor</span>
           <span className="text-xs text-gray-500">
             Playground with limits. For full capabilities, query the dataset on
