@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
+import { BIGQUERY_DATASET_NAME } from "../../constants";
 import Button from "../Button";
 import "./styles.css";
 
@@ -38,7 +39,21 @@ const SqlEditor = ({ sql, setSql, onExecute, loading, generating }: Props) => {
   return (
     <div className="bg-white rounded-xl shadow overflow-hidden mb-8">
       <div className="border-b border-gray-200 p-4 flex items-center justify-between gap-4">
-        <span className="text-sm text-gray-600">SQL Editor</span>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+          <span className="text-sm text-gray-600">SQL Editor</span>
+          <span className="text-xs text-gray-500">
+            Playground with limits. For full capabilities, query the dataset on
+              <a
+                href={`https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1ssourcify-project!2s${BIGQUERY_DATASET_NAME}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-1 text-blue-600 hover:underline"
+              >
+                BigQuery
+              </a>
+            .
+          </span>
+        </div>
         <div className="flex items-center gap-2">
           <Button onClick={onExecute} className="uppercase" disabled={generating || loading}>
             {loading ? "Executing..." : "Execute"}
