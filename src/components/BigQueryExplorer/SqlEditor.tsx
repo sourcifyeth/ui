@@ -47,11 +47,20 @@ const SqlEditor = ({ sql, setSql, onExecute, loading, generating }: Props) => {
                 href={`https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1ssourcify-project!2s${BIGQUERY_DATASET_NAME}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-1 text-blue-600 hover:underline"
+                className="ml-1 mr-1 text-blue-600 hover:underline"
               >
                 BigQuery
               </a>
-            .
+            or open the 
+            <a
+                href={`https://colab.research.google.com/drive/19g-wOgVmEdxhOF159Qh-93g1xVlpOoZ3?usp=sharing`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-1 text-blue-600 hover:underline"
+              >
+                Colab notebook
+              </a>
+              .
           </span>
         </div>
         <div className="flex items-center gap-2">
