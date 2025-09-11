@@ -1,7 +1,9 @@
+import { BIGQUERY_DATASET_NAME } from "../../constants";
+
 export const DEFAULT_SQL = `-- Example: Latest verified contract's chain and address
 SELECT chain_id, address
-FROM sourcify_staging.public_verified_contracts vc
-JOIN sourcify_staging.public_contract_deployments cd ON vc.deployment_id = cd.id
+FROM ${BIGQUERY_DATASET_NAME}.public_verified_contracts vc
+JOIN ${BIGQUERY_DATASET_NAME}.public_contract_deployments cd ON vc.deployment_id = cd.id
 ORDER BY vc.created_at DESC
 LIMIT 1;`;
 
@@ -11,7 +13,7 @@ export const SYSTEM_PROMPT = `You are a SQL assistant for Google BigQuery (Stand
 - Only SELECT queries; avoid DDL/DML.
 - Ensure syntax is valid for BigQuery Standard SQL.
 
-You are writing SQL for BigQuery (Standard SQL) against dataset sourcify_staging.
+You are writing SQL for BigQuery (Standard SQL) against dataset ${BIGQUERY_DATASET_NAME}.
 All tables are prefixed with public_. Only use these tables/columns and relationships:
 
 - public_code (code_hash BYTEA PRIMARY KEY, code_hash_keccak BYTEA, code BYTEA)
@@ -81,7 +83,7 @@ Foreign keys:
 
 Conventions:
 - Addresses and hashes are stored as BYTEA; for display, hex-encode as needed.
-- Only in FROM and JOIN clauses, use full table names (e.g., sourcify_staging.public_contracts).
+- Only in FROM and JOIN clauses, use full table names (e.g., ${BIGQUERY_DATASET_NAME}.public_contracts).
 - Prefer using verified_contracts joined with contract_deployments for chain_id/address queries.
 - Unless specified, include an explicit LIMIT 10.
 `;
