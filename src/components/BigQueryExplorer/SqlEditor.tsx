@@ -16,6 +16,15 @@ const SqlEditor = ({ sql, setSql, onExecute, loading, generating }: Props) => {
 
   const lineCount = useMemo(() => (sql ? sql.split("\n").length : 1), [sql]);
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      if (!generating && !loading) {
+        onExecute();
+      }
+    }
+  };
+
   useEffect(() => {
     const onScroll = () => {
       if (!textareaRef.current || !gutterRef.current) return;
@@ -54,6 +63,7 @@ const SqlEditor = ({ sql, setSql, onExecute, loading, generating }: Props) => {
           ref={textareaRef}
           value={sql}
           onChange={(e) => setSql(e.target.value)}
+          onKeyDown={handleKeyDown}
           spellCheck={false}
           disabled={generating}
           aria-disabled={generating}
@@ -63,7 +73,7 @@ const SqlEditor = ({ sql, setSql, onExecute, loading, generating }: Props) => {
             MozTabSize: 2 as unknown as number,
             overflow: "auto",
           }}
-          placeholder="Write your SQL here..."
+          placeholder="Write your SQL here... (Cmd+Enter to execute)"
         />
         {generating && (
           <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-10">
