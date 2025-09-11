@@ -64,7 +64,8 @@ const BigQueryExplorer = () => {
     return createOpenRouter({ apiKey: effectiveApiKey });
   }, [effectiveApiKey]);
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (e: React.FormEvent<HTMLFormElement> | undefined) => {
+    e?.preventDefault();
     if (!openrouter) {
       setGenError(
         "OpenRouter key missing. Add your key to use any model, or configure REACT_APP_OPENROUTER_API_KEY for free models."
@@ -76,13 +77,12 @@ const BigQueryExplorer = () => {
     try {
       const chosenModel = model;
       // Runtime enforcement for built-in key
-      const usingAppKey = !apiKey && (OPENROUTER_API_KEY);
+      const usingAppKey = !apiKey && OPENROUTER_API_KEY;
       if (usingAppKey && !chosenModel.trim().endsWith(":free")) {
         throw new Error("Only :free models are supported with the built-in key");
       }
       const system = SYSTEM_PROMPT;
-      const prompt = `User request: ${nlPrompt}\n` +
-        `Return only the SQL statement that fulfills it.`;
+      const prompt = `User request: ${nlPrompt}\n Return only the SQL statement that fulfills it.`;
 
       const { text } = await generateText({
         model: openrouter.chat(chosenModel),
@@ -99,7 +99,7 @@ const BigQueryExplorer = () => {
     } catch (e: any) {
       try {
         setGenError("Openrouter error: " + JSON.parse(e.responseBody).error.message);
-      }catch{
+      } catch {
         setGenError("Unkown error generating SQL");
       }
     } finally {
@@ -108,19 +108,19 @@ const BigQueryExplorer = () => {
   };
 
   return (
-    <section className=" md:px-12 lg:px-24 bg-gray-100 py-12">
+    <section className=" md:px-12 lg:px-24 bg-gray-100 mb-12">
       <div className="max-w-7xl mx-auto">
         <motion.h1
           ref={titleRef}
           initial={{ opacity: 0, y: 20 }}
           animate={isTitleInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
-          className="text-6xl text-ceruleanBlue-500 font-bold text-center mb-10"
+          className="text-6xl text-ceruleanBlue-500 font-bold text-center mb-4"
         >
-          BigQuery Explorer
+          Dataset Playground
         </motion.h1>
         <p className="text-gray-600 mb-6 text-center max-w-3xl mx-auto">
-          Write a SQL query and execute it against the dataset. Results show below.
+          Write a SQL query and execute it against the Sourcify dataset in BigQuery.
         </p>
         <AIGenerator
           nlPrompt={nlPrompt}
@@ -134,13 +134,7 @@ const BigQueryExplorer = () => {
           genError={genError}
         />
 
-        <SqlEditor
-          sql={sql}
-          setSql={setSql}
-          onExecute={handleExecute}
-          loading={loading}
-          generating={generating}
-        />
+        <SqlEditor sql={sql} setSql={setSql} onExecute={handleExecute} loading={loading} generating={generating} />
 
         <Results result={result} loading={loading} error={bqError} />
       </div>

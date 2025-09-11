@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { RiCodeAiLine } from "react-icons/ri";
 import Button from "../Button";
 import { OPENROUTER_API_KEY } from "../../constants";
 
@@ -10,7 +11,7 @@ type Props = {
   apiKey: string;
   setApiKey: (v: string) => void;
   generating: boolean;
-  onGenerate: () => void;
+  onGenerate: (e: React.FormEvent<HTMLFormElement> | undefined) => void;
   genError: string | null;
 };
 
@@ -29,8 +30,17 @@ const AIGenerator = ({
   const [modelValid, setModelValid] = useState<boolean | null>(null);
 
   const usingBuiltInAppKey = useMemo(() => {
-    return !apiKey && !!(OPENROUTER_API_KEY);
+    return !apiKey && !!OPENROUTER_API_KEY;
   }, [apiKey]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      if (!generating && modelValid === true) {
+        onGenerate(undefined);
+      }
+    }
+  };
 
   // Debounced model validation against OpenRouter API
   useEffect(() => {
@@ -84,10 +94,13 @@ const AIGenerator = ({
   }, [apiKey, model, usingBuiltInAppKey]);
 
   return (
-    <div className="bg-white rounded-xl shadow overflow-hidden mb-6">
+    <form onSubmit={onGenerate} className="bg-white rounded-xl shadow overflow-hidden mb-6">
       <div className="p-4">
-        <label className="block text-sm text-gray-600 mb-2">Describe your query</label>
-        <div className="mb-2 flex flex-wrap items-center gap-2 bg-ceruleanBlue-50 rounded-md px-2 py-2">
+        <label className="text-ceruleanBlue-500 mb-2 font-semibold flex items-center justify-center gap-2 text-lg">
+          <RiCodeAiLine className="text-lg" />
+          AI query generator
+        </label>
+        <div className="mb-2 flex flex-wrap gap-2 bg-ceruleanBlue-50 rounded-md px-2 py-2 items-center justify-center">
           <span className="text-xs text-ceruleanBlue-700 mr-1 font-medium">Examples:</span>
           {[
             "Give me contracts with Solidity version 0.4.26",
@@ -107,7 +120,8 @@ const AIGenerator = ({
         <textarea
           value={nlPrompt}
           onChange={(e) => setNlPrompt(e.target.value)}
-          placeholder="e.g., List top 10 contracts by verification date"
+          onKeyDown={handleKeyDown}
+          placeholder="e.g., List top 10 contracts by verification date (Cmd+Enter to submit)"
           rows={4}
           className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ceruleanBlue-300 resize-y"
         />
@@ -151,12 +165,8 @@ const AIGenerator = ({
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
               </svg>
             )}
-            {modelValid === true && !validatingModel && (
-              <span className="text-green-600 text-xs">Valid</span>
-            )}
-            {modelValid === false && !validatingModel && (
-              <span className="text-red-600 text-xs">Invalid</span>
-            )}
+            {modelValid === true && !validatingModel && <span className="text-green-600 text-xs">Valid</span>}
+            {modelValid === false && !validatingModel && <span className="text-red-600 text-xs">Invalid</span>}
           </div>
 
           <div className="flex-1 flex items-center gap-2 sm:justify-end">
@@ -173,20 +183,18 @@ const AIGenerator = ({
         </div>
 
         <div className="mt-3 flex items-center gap-3">
-          <Button onClick={onGenerate} className="uppercase" disabled={generating || modelValid !== true}>
+          <Button className="uppercase" disabled={generating || modelValid !== true} htmlType="submit">
             {generating ? "Generating…" : "Generate SQL"}
           </Button>
           <div className="text-xs text-gray-500">
-            {apiKey ? "Using your OpenRouter key, all models supported" : "Using built-in key, only ':free' models supported"}
+            {apiKey
+              ? "Using your OpenRouter key, all models supported"
+              : "Using built-in key, only ':free' models supported"}
           </div>
         </div>
       </div>
-      {genError && (
-        <div className="px-4 py-3 bg-red-50 text-red-700 border-t border-red-200 text-sm">
-          {genError}
-        </div>
-      )}
-    </div>
+      {genError && <div className="px-4 py-3 bg-red-50 text-red-700 border-t border-red-200 text-sm">{genError}</div>}
+    </form>
   );
 };
 
