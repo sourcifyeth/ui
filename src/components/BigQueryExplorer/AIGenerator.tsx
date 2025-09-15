@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { RiCodeAiLine } from "react-icons/ri";
+import { FiExternalLink } from "react-icons/fi";
 import Button from "../Button";
 import { OPENROUTER_API_KEY } from "../../constants";
 
@@ -127,7 +128,7 @@ const AIGenerator = ({
         />
 
         <div className="mt-3 flex flex-col md:flex-row gap-2 md:gap-3 items-start">
-          <div className="flex items-center gap-2 flex-1">
+          <div className="flex items-center gap-1 flex-1">
             <label className="text-sm text-gray-600">Model</label>
             <a
               href="https://openrouter.ai/models?order=newest&q=%3Afree"
@@ -137,19 +138,7 @@ const AIGenerator = ({
               aria-label="Find more free models"
               className="text-gray-400 hover:text-ceruleanBlue-600 transition-colors"
             >
-              <svg
-                className="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <rect x="3" y="7" width="18" height="10" rx="5" />
-                <circle cx="9" cy="12" r="3" fill="currentColor" stroke="none" />
-              </svg>
+              <FiExternalLink className="h-4 w-4" aria-hidden="true" />
             </a>
             <div className="w-full">
               <input
