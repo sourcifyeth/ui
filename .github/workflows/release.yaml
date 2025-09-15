@@ -57,13 +57,45 @@ jobs:
       - name: "setup-gcloud"
         uses: "google-github-actions/setup-gcloud@v2"
 
-      - name: Clear Staging bucket
+      - name: Clear Staging bucket (preserve stats.json and manifest.json)
         if: github.ref == 'refs/heads/staging'
-        run: gsutil -m rm gs://sourcify-staging-ui-bucket/** || true
+        run: |
+          # Create temporary directory to backup files
+          mkdir -p temp_backup
+          # Backup the files we want to preserve
+          gsutil cp gs://sourcify-staging-ui-bucket/static/stats.json temp_backup/ 2>/dev/null || echo "stats.json not found, skipping backup"
+          gsutil cp gs://sourcify-staging-ui-bucket/static/manifest.json temp_backup/ 2>/dev/null || echo "manifest.json not found, skipping backup"
+          # Clear the bucket
+          gsutil -m rm gs://sourcify-staging-ui-bucket/** || true
+          # Restore the preserved files
+          if [ -f temp_backup/stats.json ]; then
+            gsutil cp temp_backup/stats.json gs://sourcify-staging-ui-bucket/static/
+          fi
+          if [ -f temp_backup/manifest.json ]; then
+            gsutil cp temp_backup/manifest.json gs://sourcify-staging-ui-bucket/static/
+          fi
+          # Clean up temporary directory
+          rm -rf temp_backup
 
-      - name: Clear Main bucket
+      - name: Clear Main bucket (preserve stats.json and manifest.json)
         if: github.ref == 'refs/heads/main'
-        run: gsutil -m rm gs://sourcify-ui-bucket/** || true
+        run: |
+          # Create temporary directory to backup files
+          mkdir -p temp_backup
+          # Backup the files we want to preserve
+          gsutil cp gs://sourcify-ui-bucket/static/stats.json temp_backup/ 2>/dev/null || echo "stats.json not found, skipping backup"
+          gsutil cp gs://sourcify-ui-bucket/static/manifest.json temp_backup/ 2>/dev/null || echo "manifest.json not found, skipping backup"
+          # Clear the bucket
+          gsutil -m rm gs://sourcify-ui-bucket/** || true
+          # Restore the preserved files
+          if [ -f temp_backup/stats.json ]; then
+            gsutil cp temp_backup/stats.json gs://sourcify-ui-bucket/static/
+          fi
+          if [ -f temp_backup/manifest.json ]; then
+            gsutil cp temp_backup/manifest.json gs://sourcify-ui-bucket/static/
+          fi
+          # Clean up temporary directory
+          rm -rf temp_backup
 
       - name: Upload files to Staging bucket
         if: github.ref == 'refs/heads/staging'
