@@ -36,8 +36,8 @@ $ forge create --rpc-url <rpc-url> --private-key <private-key> src/MyContract.so
 # Verify an already deployed contract
 $ forge verify-contract --verifier sourcify --chain <chain-id> 0xB4239c86440d6C39d518D6457038cB404451529b MyContract 
 
-# Check if a contract is verified
-$ forge verify-check 0x1F98431c8aD98523631AE4a59f267346ea31F984 --verifier sourcify
+# Check if a verification job was successful
+$ forge verify-check 64f6f3bb-2b93-40ec-b6e8-b6e90510e6b0 --verifier sourcify
   `;
 
   const hardhatExampleJS = `// Enable Sourcify in your hardhat.config.js
@@ -86,10 +86,19 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
 
       return () => clearInterval(typingInterval);
     }
-  }, [isCodeInView, activeTab, foundryExample, hardhatExampleJS, hardhatExampleBash]);
+  }, [
+    isCodeInView,
+    activeTab,
+    foundryExample,
+    hardhatExampleJS,
+    hardhatExampleBash,
+  ]);
 
   return (
-    <section className="w-full flex flex-col items-center text-gray-700" id="tooling">
+    <section
+      className="w-full flex flex-col items-center text-gray-700 mt-8"
+      id="tooling"
+    >
       <motion.h1
         ref={titleRef}
         initial={{ opacity: 0, y: 20 }}
@@ -199,7 +208,9 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 className: "break-all sm:break-normal",
               }}
             >
-              {isCodeInView ? displayedCode.slice(0, hardhatExampleJS.length) : hardhatExampleJS}
+              {isCodeInView
+                ? displayedCode.slice(0, hardhatExampleJS.length)
+                : hardhatExampleJS}
             </SyntaxHighlighter>
           </>
         )}
@@ -213,7 +224,9 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
               className: "break-all sm:break-normal",
             }}
           >
-            {isCodeInView ? displayedCode.slice(hardhatExampleJS.length) : hardhatExampleBash}
+            {isCodeInView
+              ? displayedCode.slice(hardhatExampleJS.length)
+              : hardhatExampleBash}
           </SyntaxHighlighter>
         )}
         {activeTab === "remix" && (
@@ -229,16 +242,29 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
               </a>
             </div>
             <div className="my-2 text-xl text-center">
-              Use the "Contract Verification" plugin to verify on Sourcify and others.
+              Use the "Contract Verification" plugin to verify on Sourcify and
+              others.
             </div>
-            <video src="/remix-plugin.mp4" autoPlay loop muted playsInline className="" />
+            <video
+              src="/remix-plugin.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className=""
+            />
           </div>
         )}
       </motion.div>
 
       <div className="my-24 text-center">
-        <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500">Who's using</h2>
-        <div className="flex flex-wrap justify-center gap-2 md:gap-8 mt-12 mx-2" ref={integrationsRef}>
+        <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500">
+          Who's using
+        </h2>
+        <div
+          className="flex flex-wrap justify-center gap-2 md:gap-8 mt-12 mx-2"
+          ref={integrationsRef}
+        >
           {integrations
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((integration, index) => (
@@ -253,7 +279,10 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                       }
                     : { opacity: 0 }
                 }
-                whileHover={{ scale: 1.1, transition: { duration: 0.1, delay: 0 } }}
+                whileHover={{
+                  scale: 1.1,
+                  transition: { duration: 0.1, delay: 0 },
+                }}
                 href={integration.url}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -263,22 +292,30 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 <img
                   src={integration.logo}
                   alt={integration.name}
-                  className={`w-10 md:w-14 ${integration.name !== "Blockscout" ? "rounded-full" : ""} ${
-                    integration.name === "Wake" ? "bg-[#0000ff] p-2" : ""
-                  }`}
+                  className={`w-10 md:w-14 ${
+                    integration.name !== "Blockscout" ? "rounded-full" : ""
+                  } ${integration.name === "Wake" ? "bg-[#0000ff] p-2" : ""}`}
                 />
-                <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">{integration.name}</div>
+                <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">
+                  {integration.name}
+                </div>
               </motion.a>
             ))}
         </div>
       </div>
 
       <div className="text-center mx-4">
-        <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500 mb-4">Self-hosting</h2>
+        <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500 mb-4">
+          Self-hosting
+        </h2>
         <p className="text-sm md:text-lg text-gray-600 mb-12">
-          Sourcify is open-source and for self-hosting. Here are some public instances we are aware of:
+          Sourcify is open-source and for self-hosting. Here are some public
+          instances we are aware of:
         </p>
-        <div className="flex flex-wrap justify-center gap-2 md:gap-8 mt-12 mx-2" ref={selfHostedRef}>
+        <div
+          className="flex flex-wrap justify-center gap-2 md:gap-8 mt-12 mx-2"
+          ref={selfHostedRef}
+        >
           {selfHostedInstances
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((instance, index) => (
@@ -293,7 +330,10 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                       }
                     : { opacity: 0 }
                 }
-                whileHover={{ scale: 1.1, transition: { duration: 0.1, delay: 0 } }}
+                whileHover={{
+                  scale: 1.1,
+                  transition: { duration: 0.1, delay: 0 },
+                }}
                 href={instance.url + "/health"}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -305,12 +345,16 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                   alt={instance.name}
                   className="w-10 h-10 md:w-14 md:h-14 rounded-full object-contain"
                 />
-                <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">{instance.name}</div>
+                <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">
+                  {instance.name}
+                </div>
               </motion.a>
             ))}
         </div>
         <div className="mb-8 mt-4">
-          <div className="text-gray-500 mb-2 text-sm">Are you running a self-hosted instance?</div>
+          <div className="text-gray-500 mb-2 text-sm">
+            Are you running a self-hosted instance?
+          </div>
           <a
             href="https://github.com/argotorg/sourcify/issues/new?template=self-hosted-instance.md"
             target="_blank"

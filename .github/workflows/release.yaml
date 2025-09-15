@@ -9,6 +9,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
     permissions:
       contents: read
       packages: write
@@ -48,7 +50,20 @@ jobs:
         run: cp .env.build.main .env
 
       - name: Build
+        env:
+          REACT_APP_OPENROUTER_API_KEY: ${{ secrets.REACT_APP_OPENROUTER_API_KEY }}
         run: npm run build
+
+      - name: "setup-gcloud"
+        uses: "google-github-actions/setup-gcloud@v2"
+
+      - name: Clear Staging bucket
+        if: github.ref == 'refs/heads/staging'
+        run: gsutil -m rm gs://sourcify-staging-ui-bucket/** || true
+
+      - name: Clear Main bucket
+        if: github.ref == 'refs/heads/main'
+        run: gsutil -m rm gs://sourcify-ui-bucket/** || true
 
       - name: Upload files to Staging bucket
         if: github.ref == 'refs/heads/staging'
