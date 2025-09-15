@@ -96,7 +96,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
 
   return (
     <section
-      className="w-full flex flex-col items-center text-gray-700"
+      className="w-full flex flex-col items-center text-gray-700 mt-8"
       id="tooling"
     >
       <motion.h1

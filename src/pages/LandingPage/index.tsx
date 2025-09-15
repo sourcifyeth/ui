@@ -15,6 +15,7 @@ import Tooling from "./Tooling";
 import FAQ from "./FAQ";
 import Contact from "./Contact";
 import { IoMdClose } from "react-icons/io";
+import BigQueryExplorer from "../../components/BigQueryExplorer";
 
 SyntaxHighlighter.registerLanguage("solidity", solidityLang);
 SyntaxHighlighter.registerLanguage("json", jsonLang);
@@ -185,6 +186,9 @@ const LandingPage = () => {
       <section className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-16">
         <VerifiedContracts />
       </section>
+
+      <BigQueryExplorer />
+
       <Tooling />
 
       <Contact />

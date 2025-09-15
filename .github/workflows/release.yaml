@@ -9,6 +9,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment:
+      name: '${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}'
     permissions:
       contents: read
       packages: write
@@ -48,6 +50,8 @@ jobs:
         run: cp .env.build.main .env
 
       - name: Build
+        env:
+          REACT_APP_OPENROUTER_API_KEY: ${{ secrets.REACT_APP_OPENROUTER_API_KEY }}
         run: npm run build
 
       - name: "setup-gcloud"
