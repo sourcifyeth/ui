@@ -1,11 +1,14 @@
 export type RowObject = Record<string, unknown> | unknown[] | null | undefined;
 
-export function parseRowValue(value: unknown): string {
+export function parseRowValue(value: any): string {
   if (value === null || value === undefined) return "";
   if (typeof value === "object") {
     if ((value as any).type === "Buffer" && Array.isArray((value as any).data)) {
       // Special case for Buffer objects
       return `0x${(value as any).data.map((b: number) => b.toString(16).padStart(2, "0")).join("")}`;
+    }
+    if (value?.value) {
+      return value.value;
     }
     return JSON.stringify(value);
   }
@@ -31,6 +34,4 @@ export function computeColumns(rows: RowObject[] | undefined | null): string[] {
   return [];
 }
 
-export const formatNumber = (n?: number) =>
-  typeof n === "number" && Number.isFinite(n) ? n.toFixed(2) : "-";
-
+export const formatNumber = (n?: number) => (typeof n === "number" && Number.isFinite(n) ? n.toFixed(2) : "-");

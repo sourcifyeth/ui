@@ -1,11 +1,11 @@
 import { BIGQUERY_DATASET_NAME } from "../../constants";
 
-export const DEFAULT_SQL = `-- Example: Latest verified contract's chain and address
-SELECT chain_id, address
+export const DEFAULT_SQL = `-- Example: Latest 25 verified contract's chain and addresses
+SELECT chain_id, address, vc.created_at
 FROM ${BIGQUERY_DATASET_NAME}.public_verified_contracts vc
 JOIN ${BIGQUERY_DATASET_NAME}.public_contract_deployments cd ON vc.deployment_id = cd.id
 ORDER BY vc.created_at DESC
-LIMIT 1;`;
+LIMIT 25;`;
 
 // Minimal BigQuery schema context for better SQL generation
 export const SYSTEM_PROMPT = `You are a SQL assistant for Google BigQuery (Standard SQL).
@@ -88,7 +88,6 @@ Conventions:
 - Unless specified, include an explicit LIMIT 10.
 `;
 
-export const DEFAULT_PROMPT =
-  "Which contract is the most popular contract by contract name?";
+export const DEFAULT_PROMPT = "Which contract is the most popular contract by contract name?";
 
 export const DEFAULT_MODEL = "deepseek/deepseek-chat-v3.1:free";
