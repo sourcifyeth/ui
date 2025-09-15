@@ -10,7 +10,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     environment:
-      name: '${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}'
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
     permissions:
       contents: read
       packages: write
