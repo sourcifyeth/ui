@@ -126,7 +126,7 @@ const AIGenerator = ({
           className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ceruleanBlue-300 resize-y"
         />
 
-        <div className="mt-3 flex flex-col sm:flex-row gap-2 md:gap-3 items-stretch">
+        <div className="mt-3 flex flex-col md:flex-row gap-2 md:gap-3 items-start">
           <div className="flex items-center gap-2 flex-1">
             <label className="text-sm text-gray-600">Model</label>
             <a
@@ -169,16 +169,25 @@ const AIGenerator = ({
             {modelValid === false && !validatingModel && <span className="text-red-600 text-xs">Invalid</span>}
           </div>
 
-          <div className="flex-1 flex items-center gap-2 sm:justify-end">
-            <label className="text-sm text-gray-600 shrink-0">OpenRouter key</label>
-            <input
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="sk-or-..."
-              className="border border-gray-200 rounded-md px-2 py-2 text-sm w-full sm:w-72"
-              autoComplete="off"
-            />
+          <div className="flex-1 flex flex-col gap-1 items-start md:items-end justify-center">
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600 shrink-0">OpenRouter key</label>
+              <input
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="sk-or-..."
+                className="border border-gray-200 rounded-md px-2 py-2 text-sm w-full sm:w-72"
+                autoComplete="off"
+              />
+            </div>
+            <div>
+              <div className="text-xs text-gray-500">
+                {apiKey
+                  ? "Using your OpenRouter key, all models supported"
+                  : "No key provided, only ':free' models supported"}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -186,11 +195,6 @@ const AIGenerator = ({
           <Button className="uppercase" disabled={generating || modelValid !== true} htmlType="submit">
             {generating ? "Generating…" : "Generate SQL"}
           </Button>
-          <div className="text-xs text-gray-500">
-            {apiKey
-              ? "Using your OpenRouter key, all models supported"
-              : "Using built-in key, only ':free' models supported"}
-          </div>
         </div>
       </div>
       {genError && <div className="px-4 py-3 bg-red-50 text-red-700 border-t border-red-200 text-sm">{genError}</div>}
