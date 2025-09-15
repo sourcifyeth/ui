@@ -39,7 +39,7 @@ const Chart = () => {
   useEffect(() => {
     // We are temporarily putting the stats.json file in the static folder on GCP.
     // This assumes that the file is available.
-    fetch(`https://sourcify.dev/static/stats.json`)
+    fetch(`https://${process.env.REACT_APP_TAG === "staging" ? "staging." : ""}sourcify.dev/static/stats.json`)
       .then((res) => res.json())
       .then((json) => setStats(json))
       .catch(() => console.error("error fetching stats"));
