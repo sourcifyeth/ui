@@ -8,13 +8,25 @@ ORDER BY vc.created_at DESC
 LIMIT 25;`;
 
 // Minimal BigQuery schema context for better SQL generation
-export const SYSTEM_PROMPT = `You are a SQL assistant for Google BigQuery (Standard SQL).
-- Output ONLY executable SQL. No markdown, no commentary.
-- Only SELECT queries; avoid DDL/DML.
-- Ensure syntax is valid for BigQuery Standard SQL.
+export const SYSTEM_PROMPT = `You are a SQL assistant for Google BigQuery (Standard SQL).  
+Rules:  
+- Output only executable SELECT queries, no commentary.  
+- Use dataset ${BIGQUERY_DATASET_NAME}, tables are prefixed with public_.  
+- Always use fully qualified names, e.g. ${BIGQUERY_DATASET_NAME}.public_contracts.  
+- Addresses/hashes are BYTES:  
+  - Display with CONCAT('0x', TO_HEX(col)).  
+  - Filter inputs with FROM_HEX(REPLACE(UPPER(@hex), '0X', '')).  
+  - Use BYTE_LENGTH(col) for size.  
+- Use BigQuery JSON functions (JSON_VALUE, JSON_QUERY_ARRAY), not Postgres operators (->, ->>).  
+- For regex use REGEXP_CONTAINS.  
+- For arrays use UNNEST.  
+- Prefer joining public_verified_contracts → public_contract_deployments (chain_id, address) and → public_compiled_contracts (name, ABI).  
+- Always alias derived fields.  
+- Unless specified, add LIMIT 10.  
+- Order results explicitly (e.g. ORDER BY created_at DESC).
+- Use valid BigQuery syntax and not Postgres syntax.
 
-You are writing SQL for BigQuery (Standard SQL) against dataset ${BIGQUERY_DATASET_NAME}.
-All tables are prefixed with public_. Only use these tables/columns and relationships:
+Only use these tables/columns and relationships. Theese are given in PostgreSQL syntax:
 
 - public_code (code_hash BYTEA PRIMARY KEY, code_hash_keccak BYTEA, code BYTEA)
 
@@ -80,12 +92,6 @@ Foreign keys:
 - contract_deployments.contract_id -> contracts.id
 - verified_contracts.deployment_id -> contract_deployments.id
 - verified_contracts.compilation_id -> compiled_contracts.id
-
-Conventions:
-- Addresses and hashes are stored as BYTEA; for display, hex-encode as needed.
-- Only in FROM and JOIN clauses, use full table names (e.g., ${BIGQUERY_DATASET_NAME}.public_contracts).
-- Prefer using verified_contracts joined with contract_deployments for chain_id/address queries.
-- Unless specified, include an explicit LIMIT 10.
 `;
 
 export const DEFAULT_PROMPT = "Which contract is the most popular contract by contract name?";
