@@ -1,5 +1,6 @@
 // AnimateOnScroll
 import { useRef, useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
 import solidityLang from "react-syntax-highlighter/dist/esm/languages/prism/solidity";
@@ -32,6 +33,7 @@ const LandingPage = () => {
   const velocityRef = useRef({ x: MAX_VELOCITY, y: MAX_VELOCITY }); // Store velocity
   const positionRef = useRef({ x: 50, y: 50 }); // Store position
   const [isVisible, setIsVisible] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     const element = document.querySelector(".spotlight-effect") as HTMLElement;
@@ -77,6 +79,18 @@ const LandingPage = () => {
       }
     };
   }, [isHovering]);
+
+  useEffect(() => {
+    // Handle direct route to dataset-playground
+    if (location.pathname === '/dataset-playground') {
+      const element = document.getElementById('dataset-playground');
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', });
+        }, 100);
+      }
+    }
+  }, [location.pathname]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 w-full">
@@ -187,7 +201,9 @@ const LandingPage = () => {
         <VerifiedContracts />
       </section>
 
-      <BigQueryExplorer />
+      <div id="dataset-playground">
+        <BigQueryExplorer />
+      </div>
 
       <Tooling />
 
