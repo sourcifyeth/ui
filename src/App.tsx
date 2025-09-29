@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { ContextProvider } from "./Context";
 import LandingPage from "./pages/LandingPage";
@@ -20,6 +20,7 @@ function App() {
             <Route path="/verifier" element={<VerifyRedirect />} />
             <Route path="/lookup" element={<Lookup />} />
             <Route path="/lookup/:address" element={<Lookup />} />
+            <Route path="/dataset-playground" element={<LandingPage />} />
             <Route path="/" element={<LandingPage />} />
           </Routes>
         </HashRouter>
