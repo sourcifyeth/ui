@@ -41,7 +41,7 @@ const SupportedChains = () => {
   }, [chainCount, isTitleInView]);
 
   return (
-    <section className="px-8 md:px-12 lg:px-24 bg-gray-100 py-8 text-center" id="supported-chains">
+    <section className="px-8 md:px-12 lg:px-24 bg-gray-100 pt-8 pb-2 text-center" id="supported-chains">
       <motion.div
         ref={titleRef}
         initial={{ opacity: 0, y: 20 }}
@@ -69,10 +69,10 @@ const SupportedChains = () => {
               animate={
                 areChainsInView
                   ? {
-                      opacity: 1,
-                      y: [0, 0, -20],
-                      transition: { duration: 0.6, delay: (index + Math.ceil(chains.length / 2)) * 0.1 },
-                    }
+                    opacity: 1,
+                    y: [0, 0, -20],
+                    transition: { duration: 0.6, delay: (index + Math.ceil(chains.length / 2)) * 0.1 },
+                  }
                   : { opacity: 0 }
               }
               whileHover={{ scale: 1.1, transition: { duration: 0.1, delay: 0 } }}

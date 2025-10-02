@@ -33,7 +33,7 @@ const LandingPage = () => {
   const velocityRef = useRef({ x: MAX_VELOCITY, y: MAX_VELOCITY }); // Store velocity
   const positionRef = useRef({ x: 50, y: 50 }); // Store position
   const [isVisible, setIsVisible] = useState(true);
-  const location = useLocation();
+  const { pathname, hash, key } = useLocation()
 
   useEffect(() => {
     const element = document.querySelector(".spotlight-effect") as HTMLElement;
@@ -82,7 +82,7 @@ const LandingPage = () => {
 
   useEffect(() => {
     // Handle direct route to dataset-playground
-    if (location.pathname === '/dataset-playground') {
+    if (pathname === '/dataset-playground') {
       const element = document.getElementById('dataset-playground');
       if (element) {
         setTimeout(() => {
@@ -90,7 +90,21 @@ const LandingPage = () => {
         }, 100);
       }
     }
-  }, [location.pathname]);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (hash !== '') {
+      setTimeout(() => {
+        const id = hash.replace('#', '')
+        const element = document.getElementById(id)
+        if (element) {
+          element.scrollIntoView({
+            behavior: 'smooth',
+          })
+        }
+      }, 100)
+    }
+  }, [pathname, hash, key])
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 w-full">
@@ -197,7 +211,7 @@ const LandingPage = () => {
       <AboutSection />
       <SupportedChains />
       {/* Verified contract stats */}
-      <section className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-16">
+      <section className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 pt-24 pb-16" id="contract-stats">
         <VerifiedContracts />
       </section>
 
