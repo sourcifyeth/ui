@@ -94,6 +94,7 @@ Foreign keys:
 - verified_contracts.compilation_id -> compiled_contracts.id
 `;
 
-export const DEFAULT_PROMPT = "Which contract is the most popular contract by contract name?";
+export const DEFAULT_PROMPT =
+  "Which contract is the most popular contract by contract name?";
 
-export const DEFAULT_MODEL = "deepseek/deepseek-chat-v3.1:free";
+export const DEFAULT_MODEL = "tngtech/deepseek-r1t2-chimera:free";
