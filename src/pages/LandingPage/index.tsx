@@ -15,7 +15,6 @@ import SupportedChains from "./SupportedChains";
 import Tooling from "./Tooling";
 import FAQ from "./FAQ";
 import Contact from "./Contact";
-import { IoMdClose } from "react-icons/io";
 import BigQueryExplorer from "../../components/BigQueryExplorer";
 
 SyntaxHighlighter.registerLanguage("solidity", solidityLang);
@@ -32,7 +31,6 @@ const LandingPage = () => {
   const MIN_VELOCITY = 0.1;
   const velocityRef = useRef({ x: MAX_VELOCITY, y: MAX_VELOCITY }); // Store velocity
   const positionRef = useRef({ x: 50, y: 50 }); // Store position
-  const [isVisible, setIsVisible] = useState(true);
   const { pathname, hash, key } = useLocation();
 
   useEffect(() => {
