@@ -33,7 +33,7 @@ const LandingPage = () => {
   const velocityRef = useRef({ x: MAX_VELOCITY, y: MAX_VELOCITY }); // Store velocity
   const positionRef = useRef({ x: 50, y: 50 }); // Store position
   const [isVisible, setIsVisible] = useState(true);
-  const { pathname, hash, key } = useLocation()
+  const { pathname, hash, key } = useLocation();
 
   useEffect(() => {
     const element = document.querySelector(".spotlight-effect") as HTMLElement;
@@ -82,56 +82,32 @@ const LandingPage = () => {
 
   useEffect(() => {
     // Handle direct route to dataset-playground
-    if (pathname === '/dataset-playground') {
-      const element = document.getElementById('dataset-playground');
+    if (pathname === "/dataset-playground") {
+      const element = document.getElementById("dataset-playground");
       if (element) {
         setTimeout(() => {
-          element.scrollIntoView({ behavior: 'smooth', });
+          element.scrollIntoView({ behavior: "smooth" });
         }, 100);
       }
     }
   }, [pathname]);
 
   useEffect(() => {
-    if (hash !== '') {
+    if (hash !== "") {
       setTimeout(() => {
-        const id = hash.replace('#', '')
-        const element = document.getElementById(id)
+        const id = hash.replace("#", "");
+        const element = document.getElementById(id);
         if (element) {
           element.scrollIntoView({
-            behavior: 'smooth',
-          })
+            behavior: "smooth",
+          });
         }
-      }, 100)
+      }, 100);
     }
-  }, [pathname, hash, key])
+  }, [pathname, hash, key]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 w-full">
-      {isVisible && (
-        <div className="bg-ceruleanBlue-500 text-white py-3 px-4 relative">
-          <div className="max-w-7xl mx-auto flex items-center justify-center gap-3">
-            <p className="text-sm sm:text-base text-center">
-              🚀 APIv2 is now available! Make the most of the information-rich responses{" "}
-              <a
-                href="https://docs.sourcify.dev/blog/apiv2-lookup-endpoints/"
-                className="underline font-semibold hover:text-ceruleanBlue-100"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Learn more →
-              </a>
-            </p>
-            <button
-              onClick={() => setIsVisible(false)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-ceruleanBlue-400 rounded-full transition-colors"
-              aria-label="Close banner"
-            >
-              <IoMdClose className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-      )}
       <Header />
       <section className="min-h-screen flex flex-col justify-center px-8 md:px-12 -mt-20 pt-20 max-w-7xl mx-auto">
         <div className="flex flex-col justify-center items-center">
@@ -211,7 +187,10 @@ const LandingPage = () => {
       <AboutSection />
       <SupportedChains />
       {/* Verified contract stats */}
-      <section className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 pt-24 pb-16" id="contract-stats">
+      <section
+        className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 pt-24 pb-16"
+        id="contract-stats"
+      >
         <VerifiedContracts />
       </section>
 
