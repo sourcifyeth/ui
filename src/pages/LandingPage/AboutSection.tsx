@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { FaDownload } from "react-icons/fa";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 const AboutSection = () => {
   const variants = {
@@ -111,6 +112,81 @@ const AboutSection = () => {
                   source code verifiers.
                 </p>
               </div>
+            </div>
+          </motion.div>
+
+          {/* Services Grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-16"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* 4byte.sourcify.dev */}
+              <a
+                href="https://4byte.sourcify.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-ceruleanBlue-500"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-xl font-bold text-ceruleanBlue-500 group-hover:text-ceruleanBlue-600">
+                    4byte.sourcify.dev
+                  </h3>
+                  <FaExternalLinkAlt className="text-gray-400 group-hover:text-ceruleanBlue-500 transition-colors" />
+                </div>
+                <p className="text-gray-600">Function and event selector database and openchain.xyz compatible API</p>
+              </a>
+
+              {/* verify.sourcify.dev */}
+              <a
+                href="https://verify.sourcify.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-ceruleanBlue-500"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-xl font-bold text-ceruleanBlue-500 group-hover:text-ceruleanBlue-600">
+                    verify.sourcify.dev
+                  </h3>
+                  <FaExternalLinkAlt className="text-gray-400 group-hover:text-ceruleanBlue-500 transition-colors" />
+                </div>
+                <p className="text-gray-600">Contract verification and verification jobs UI</p>
+              </a>
+
+              {/* repo.sourcify.dev */}
+              <a
+                href="https://repo.sourcify.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-ceruleanBlue-500"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-xl font-bold text-ceruleanBlue-500 group-hover:text-ceruleanBlue-600">
+                    repo.sourcify.dev
+                  </h3>
+                  <FaExternalLinkAlt className="text-gray-400 group-hover:text-ceruleanBlue-500 transition-colors" />
+                </div>
+                <p className="text-gray-600">Explorer for verified contracts</p>
+              </a>
+
+              {/* playground.sourcify.dev */}
+              <a
+                href="https://playground.sourcify.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-ceruleanBlue-500"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-xl font-bold text-ceruleanBlue-500 group-hover:text-ceruleanBlue-600">
+                    playground.sourcify.dev
+                  </h3>
+                  <FaExternalLinkAlt className="text-gray-400 group-hover:text-ceruleanBlue-500 transition-colors" />
+                </div>
+                <p className="text-gray-600">Solidity CBOR metadata decoder</p>
+              </a>
             </div>
           </motion.div>
         </div>
