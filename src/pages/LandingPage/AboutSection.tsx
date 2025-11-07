@@ -36,7 +36,7 @@ const AboutSection = () => {
                 <div className="text-center">
                   <div className="text-5xl mb-4">📋</div>
                   <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-ceruleanBlue-500 transition-colors">
-                    ABI
+                    ABIs
                   </h3>
                   <p className="text-gray-600">Fetch verified contract ABIs</p>
                   <p className="text-gray-600 text-sm">
