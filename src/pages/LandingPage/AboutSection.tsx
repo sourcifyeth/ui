@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FaDownload } from "react-icons/fa";
+import { FaDownload, FaCheckCircle } from "react-icons/fa";
 
 const AboutSection = () => {
   const variants = {
@@ -11,6 +11,72 @@ const AboutSection = () => {
     <section className=" bg-gray-100 py-16" id="about">
       <div className="max-w-7xl mx-auto px-4 md:text-left text-center">
         <div className="space-y-12">
+          {/* What You Can Do Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mb-16"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Verify Contracts */}
+              <div className="group bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-ceruleanBlue-500">
+                <div className="text-center">
+                  <FaCheckCircle className="text-5xl mb-4 text-green-500 mx-auto" />
+                  <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-ceruleanBlue-500 transition-colors">
+                    Verify Contracts
+                  </h3>
+                  <p className="text-gray-600">Verify Solidity and Vyper contracts with full metadata support</p>
+                </div>
+              </div>
+
+              {/* Get ABIs */}
+              <div className="group bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-ceruleanBlue-500">
+                <div className="text-center">
+                  <div className="text-5xl mb-4">📋</div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-ceruleanBlue-500 transition-colors">
+                    ABIs
+                  </h3>
+                  <p className="text-gray-600">Fetch verified contract ABIs</p>
+                  <p className="text-gray-600 text-sm">
+                    {" "}
+                    <a
+                      href="https://sourcify.dev/server/v2/contract/1/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48?fields=abi"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-ceruleanBlue-500 font-medium link-underline"
+                    >
+                      (Example) →
+                    </a>
+                  </p>
+                </div>
+              </div>
+
+              {/* 4byte Selectors */}
+              <div className="group bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-ceruleanBlue-500">
+                <div className="text-center">
+                  <div className="text-5xl mb-4">🔍</div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-ceruleanBlue-500 transition-colors">
+                    4byte Selectors
+                  </h3>
+                  <p className="text-gray-600">
+                    Extensive signature database including signatures from verified contracts
+                  </p>
+                  <p className="text-gray-600 text-sm"></p>
+                  <a
+                    href="https://4byte.sourcify.dev/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-ceruleanBlue-500 font-medium link-underline"
+                  >
+                    4byte.sourcify.dev →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Feature 1 */}
           <motion.div
             initial="hidden"
