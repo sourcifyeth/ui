@@ -26,7 +26,7 @@ export default function Tooling() {
   const isTitleInView = useInView(titleRef, { once: true });
   const areTabsInView = useInView(tabsRef, { once: true });
 
-  const tabs = ["foundry", "hardhat", "remix"];
+  const tabs = ["foundry", "hardhat v2", "hardhat v3", "remix"];
   const integrations = integrationsData;
   const selfHostedInstances = selfHostedInstancesData;
 
@@ -40,7 +40,7 @@ $ forge verify-contract --verifier sourcify --chain <chain-id> 0xB4239c86440d6C3
 $ forge verify-check 64f6f3bb-2b93-40ec-b6e8-b6e90510e6b0 --verifier sourcify
   `;
 
-  const hardhatExampleJS = `// Enable Sourcify in your hardhat.config.js
+  const hardhatV2ExampleJS = `// Enable Sourcify in your hardhat.config.js
 module.exports = {
   sourcify: {
     // Doesn't need an API key
@@ -68,9 +68,11 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
       const codeToType =
         activeTab === "foundry"
           ? foundryExample
-          : activeTab === "hardhat"
-          ? hardhatExampleJS + hardhatExampleBash // Combined JS and Bash examples. We'll split the string in the code component.
-          : "";
+          : activeTab === "hardhat v2"
+            ? hardhatV2ExampleJS + hardhatExampleBash // Combined JS and Bash examples. We'll split the string in the code component.
+            : activeTab === "hardhat v3"
+              ? hardhatExampleBash
+              : "";
 
       let i = -1;
       setDisplayedCode("");
@@ -90,7 +92,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
     isCodeInView,
     activeTab,
     foundryExample,
-    hardhatExampleJS,
+    hardhatV2ExampleJS,
     hardhatExampleBash,
   ]);
 
@@ -126,14 +128,13 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
             className={`px-6 py-2 text-lg transition-colors flex items-center gap-2 relative
               ${index === 0 ? "rounded-l-full" : ""}
               ${index === tabs.length - 1 ? "rounded-r-full" : ""}
-              ${
-                activeTab === tab
-                  ? "font-bold transform -translate-y-0.5"
-                  : "font-medium text-gray-500 hover:text-gray-700"
+              ${activeTab === tab
+                ? "font-bold transform -translate-y-0.5"
+                : "font-medium text-gray-500 hover:text-gray-700"
               }`}
           >
             <motion.img
-              src={`/${tab}.png`}
+              src={`/${tab.startsWith("hardhat") ? "hardhat" : tab}.png`}
               alt={`${tab} logo`}
               initial={{ scale: 0.8 }}
               animate={{ scale: activeTab === tab ? 1 : 0.8 }}
@@ -187,7 +188,34 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
             </SyntaxHighlighter>
           </>
         )}
-        {activeTab === "hardhat" && (
+        {activeTab === "hardhat v3" && (
+          <>
+            <div className="mb-4 text-center">
+              <a
+                href="https://hardhat.org/docs/plugins/hardhat-verify"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
+              >
+                Hardhat Documentation →
+              </a>
+            </div>
+            <SyntaxHighlighter
+              language="bash"
+              style={codeStyle}
+              customStyle={{ background: "#111827" }}
+              className="text-xs lg:text-base w-full min-h-24"
+              codeTagProps={{
+                className: "break-all sm:break-normal",
+              }}
+            >
+              {isCodeInView
+                ? displayedCode
+                : hardhatExampleBash}
+            </SyntaxHighlighter>
+          </>
+        )}
+        {activeTab === "hardhat v2" && (
           <>
             <div className="mb-4 text-center">
               <a
@@ -196,7 +224,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 rel="noopener noreferrer"
                 className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
               >
-                Hardhat Documentation →
+                Hardhat v2 Documentation →
               </a>
             </div>
             <SyntaxHighlighter
@@ -209,25 +237,23 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
               }}
             >
               {isCodeInView
-                ? displayedCode.slice(0, hardhatExampleJS.length)
-                : hardhatExampleJS}
+                ? displayedCode.slice(0, hardhatV2ExampleJS.length)
+                : hardhatV2ExampleJS}
+            </SyntaxHighlighter>
+            <SyntaxHighlighter
+              language="bash"
+              style={codeStyle}
+              customStyle={{ background: "#111827" }}
+              className="text-xs lg:text-base w-full min-h-24"
+              codeTagProps={{
+                className: "break-all sm:break-normal",
+              }}
+            >
+              {isCodeInView
+                ? displayedCode.slice(hardhatV2ExampleJS.length)
+                : hardhatExampleBash}
             </SyntaxHighlighter>
           </>
-        )}
-        {activeTab === "hardhat" && (
-          <SyntaxHighlighter
-            language="bash"
-            style={codeStyle}
-            customStyle={{ background: "#111827" }}
-            className="text-xs lg:text-base w-full min-h-24"
-            codeTagProps={{
-              className: "break-all sm:break-normal",
-            }}
-          >
-            {isCodeInView
-              ? displayedCode.slice(hardhatExampleJS.length)
-              : hardhatExampleBash}
-          </SyntaxHighlighter>
         )}
         {activeTab === "remix" && (
           <div className="flex flex-col justify-center">
@@ -273,10 +299,10 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 animate={
                   areIntegrationsInView
                     ? {
-                        opacity: 1,
-                        y: [0, 0, -20],
-                        transition: { duration: 0.6, delay: index * 0.1 },
-                      }
+                      opacity: 1,
+                      y: [0, 0, -20],
+                      transition: { duration: 0.6, delay: index * 0.1 },
+                    }
                     : { opacity: 0 }
                 }
                 whileHover={{
@@ -292,9 +318,8 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 <img
                   src={integration.logo}
                   alt={integration.name}
-                  className={`w-10 md:w-14 ${
-                    integration.name !== "Blockscout" ? "rounded-full" : ""
-                  } ${integration.name === "Wake" ? "bg-[#0000ff] p-2" : ""}`}
+                  className={`w-10 md:w-14 ${integration.name !== "Blockscout" ? "rounded-full" : ""
+                    } ${integration.name === "Wake" ? "bg-[#0000ff] p-2" : ""}`}
                 />
                 <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">
                   {integration.name}
@@ -324,10 +349,10 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
                 animate={
                   areSelfHostedInView
                     ? {
-                        opacity: 1,
-                        y: [0, 0, -20],
-                        transition: { duration: 0.6, delay: index * 0.1 },
-                      }
+                      opacity: 1,
+                      y: [0, 0, -20],
+                      transition: { duration: 0.6, delay: index * 0.1 },
+                    }
                     : { opacity: 0 }
                 }
                 whileHover={{
