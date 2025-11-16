@@ -192,7 +192,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
           <>
             <div className="mb-4 text-center">
               <a
-                href="https://hardhat.org/docs/plugins/hardhat-verify"
+                href="https://hardhat.org/docs/guides/smart-contract-verification#verifying-a-contract"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
