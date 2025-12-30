@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">SlotScan favicon</title>
+  <desc id="desc">Minimal EVM mark showing opcode 0x55 on black, split into two lines</desc>
+  <rect width="64" height="64" fill="#fff" />
+  <rect x="4" y="4" width="56" height="56" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="6 4" />
+  <text x="32" y="28" font-family="SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace"
+        font-size="24" fill="#000" text-anchor="middle" letter-spacing="0.5">
+    0x
+  </text>
+  <text x="32" y="54" font-family="SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace"
+        font-size="24" fill="#000" text-anchor="middle" letter-spacing="0.5">
+    55
+  </text>
+</svg>

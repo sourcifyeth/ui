@@ -63,5 +63,10 @@
     "name": "OpenZeppelin UI Builder",
     "url": "https://x.com/OpenZeppelin/status/1975168809506943080",
     "logo": "/oz.png"
+  },
+  {
+    "name": "SlotScan",
+    "url": "https://github.com/wavey0x/slotscan/blob/bd4d422078043383a200a49b547c9e261e85c06a/requirements/00-INDEX.md?plain=1#L22",
+    "logo": "/slotscan-logo.svg"
   }
 ]
