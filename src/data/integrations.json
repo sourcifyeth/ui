@@ -78,5 +78,15 @@
     "name": "Echidna",
     "url": "https://github.com/crytic/echidna/releases/tag/v2.3.1",
     "logo": "/echidna.png"
+  },
+  {
+    "name": "Enscribe",
+    "url": "https://www.enscribe.xyz/blog/contracts-verification#what-youll-see",
+    "logo": "/enscribe.svg"
+  },
+  {
+    "name": "Nethereum",
+    "url": "https://github.com/Nethereum/Nethereum/commit/312c258b7a2a73209834767d02722d4aabd13530",
+    "logo": "/nethereum.png"
   }
 ]

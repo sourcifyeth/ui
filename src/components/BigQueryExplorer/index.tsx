@@ -89,6 +89,7 @@ const BigQueryExplorer = () => {
         system,
         prompt,
         maxTokens: 800,
+        maxRetries: 0
       });
       const cleaned = text
         .replace(/```sql/gi, "")
@@ -98,7 +99,7 @@ const BigQueryExplorer = () => {
       setSql(cleaned);
     } catch (e: any) {
       try {
-        setGenError("Openrouter error: " + JSON.parse(e.responseBody).error.message);
+        setGenError("Openrouter error: " + JSON.stringify(JSON.parse(e.responseBody).error));
       } catch {
         setGenError("Unkown error generating SQL");
       }

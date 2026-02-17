@@ -186,7 +186,7 @@ const AIGenerator = ({
           </Button>
         </div>
       </div>
-      {genError && <div className="px-4 py-3 bg-red-50 text-red-700 border-t border-red-200 text-sm">{genError}</div>}
+      {genError && <div className="px-4 py-3 bg-red-50 text-red-700 border-t border-red-200 text-sm break-words">{genError}</div>}
     </form>
   );
 };

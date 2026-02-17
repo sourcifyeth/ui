@@ -283,7 +283,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
         )}
       </motion.div>
 
-      <div className="my-24 text-center">
+      <div className="my-24 text-center max-w-6xl">
         <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500">
           Who's using
         </h2>
