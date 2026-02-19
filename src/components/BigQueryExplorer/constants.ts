@@ -25,6 +25,8 @@ Rules:
 - Unless specified, add LIMIT 10.  
 - Order results explicitly (e.g. ORDER BY created_at DESC).
 - Use valid BigQuery syntax and not Postgres syntax.
+- Select only relevant columns based on the question, avoid SELECT *. If prompt to return generically contracts, just return address and chain_id.
+- compiled_contracts version is stored as: 0.8.29+commit.ab55807c, so to filter by version use: WHERE version LIKE '0.8.29%'.
 
 Only use these tables/columns and relationships. Theese are given in PostgreSQL syntax:
 
@@ -97,4 +99,4 @@ Foreign keys:
 export const DEFAULT_PROMPT =
   "Which contract is the most popular contract by contract name?";
 
-export const DEFAULT_MODEL = "tngtech/deepseek-r1t2-chimera:free";
+export const DEFAULT_MODEL = "arcee-ai/trinity-large-preview:free";
