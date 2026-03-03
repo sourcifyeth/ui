@@ -25,8 +25,8 @@
     "react-tooltip": "5.28.0",
     "recharts": "2.15.0",
     "web-vitals": "2.1.4",
-    "@openrouter/ai-sdk-provider": "0.0.5",
-    "ai": "^5.0.0"
+    "@openrouter/ai-sdk-provider": "^2.2.3",
+    "ai": "^6.0.0"
   },
   "optionalDependencies": {
     "fsevents": "2.3.3"
@@ -34,9 +34,7 @@
   "overrides": {
     "react-scripts": {
       "typescript": "5.9.3"
-    },
-    "@ai-sdk/provider": "0.0.26",
-    "@ai-sdk/provider-utils": "1.0.22"
+    }
   },
   "scripts": {
     "start": "react-scripts start",
