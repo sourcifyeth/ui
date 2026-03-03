@@ -88,7 +88,7 @@ const BigQueryExplorer = () => {
         model: openrouter.chat(chosenModel),
         system,
         prompt,
-        maxTokens: 800,
+        maxOutputTokens: 800,
         maxRetries: 0
       });
       const cleaned = text
