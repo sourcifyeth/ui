@@ -122,6 +122,14 @@ const Chart = () => {
           >
             <h2 className="text-5xl md:text-8xl font-bold text-ceruleanBlue-500">{displayTotal.toLocaleString()}</h2>
             <h2 className="text-2xl md:text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
+            <a
+              href="https://stats.sourcify.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-block text-base md:text-lg text-ceruleanBlue-400 hover:text-ceruleanBlue-600 underline underline-offset-4"
+            >
+              📊 stats.sourcify.dev
+            </a>
           </motion.div>
           <div className="flex flex-col items-center my-8">
             <Button type="">
