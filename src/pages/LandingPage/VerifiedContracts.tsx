@@ -80,7 +80,7 @@ const Chart = () => {
   }, []);
 
   useEffect(() => {
-    fetch("https://export.sourcify.dev/v2/stats.json")
+    fetch(`https://export.${process.env.REACT_APP_TAG === "staging" ? "staging." : ""}sourcify.dev/v2/stats.json`)
       .then((res) => res.json())
       .then((json) => setDatasetStats(json))
       .catch(() => console.error("error fetching dataset stats"));
