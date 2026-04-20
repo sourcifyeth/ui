@@ -6,6 +6,8 @@ import ChainSelect from "../../components/ChainSelect";
 import { motion, useInView } from "framer-motion";
 import Button from "../../components/Button";
 import { FaDownload } from "react-icons/fa";
+import { FiInfo } from "react-icons/fi";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const NUMBER_OF_TOP_CHAINS = 10;
 
@@ -16,6 +18,36 @@ type statsType = {
   };
 };
 
+type TableParquetStats = { bytes: number; fileCount: number };
+type TableDbStats = { bytes: number };
+type DatasetStatsType = {
+  generatedAt: string;
+  schemaVersion: string;
+  parquet: {
+    totalBytes: number;
+    fileCount: number;
+    tables: Record<string, TableParquetStats>;
+  };
+  database: {
+    totalBytes: number;
+    tables: Record<string, TableDbStats>;
+  };
+};
+
+function formatBytes(bytes: number): string {
+  if (bytes >= 1e12) return (bytes / 1e12).toFixed(1) + " TB";
+  if (bytes >= 1e9) return (bytes / 1e9).toFixed(1) + " GB";
+  if (bytes >= 1e6) return (bytes / 1e6).toFixed(1) + " MB";
+  return (bytes / 1e3).toFixed(1) + " KB";
+}
+
+function timeAgo(isoDate: string): string {
+  const diff = Math.floor((Date.now() - new Date(isoDate).getTime()) / 1000);
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
+
 const Chart = () => {
   const { sourcifyChainMap, sourcifyChains } = useContext(Context);
   const [selectedChain, setSelectedChain] = useState<string>("1");
@@ -23,6 +55,8 @@ const Chart = () => {
   const sectionRef = useRef(null);
   const isSectionInView = useInView(sectionRef, { once: true });
   const [stats, setStats] = useState<statsType | undefined>(undefined);
+
+  const [datasetStats, setDatasetStats] = useState<DatasetStatsType | null>(null);
 
   // Window width to make the chart responsive. We'll change the font sizes and tick width based on this
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -43,6 +77,13 @@ const Chart = () => {
       .then((res) => res.json())
       .then((json) => setStats(json))
       .catch(() => console.error("error fetching stats"));
+  }, []);
+
+  useEffect(() => {
+    fetch(`https://export.${process.env.REACT_APP_TAG === "staging" ? "staging." : ""}sourcify.dev/v2/stats.json`)
+      .then((res) => res.json())
+      .then((json) => setDatasetStats(json))
+      .catch(() => console.error("error fetching dataset stats"));
   }, []);
 
   useEffect(() => {
@@ -131,6 +172,114 @@ const Chart = () => {
               📊 stats.sourcify.dev
             </a>
           </motion.div>
+
+          {datasetStats && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="flex flex-col sm:flex-row gap-8 mt-8 justify-center"
+            >
+              {/* Parquet export size */}
+              <div className="flex flex-col items-center">
+                <div className="flex items-center gap-1">
+                  <span className="text-3xl md:text-4xl font-bold text-ceruleanBlue-500">
+                    {formatBytes(datasetStats.parquet.totalBytes)}
+                  </span>
+                  <FiInfo
+                    className="text-ceruleanBlue-300 hover:text-ceruleanBlue-500 cursor-pointer text-lg"
+                    data-tooltip-id="parquet-size-tooltip"
+                  />
+                </div>
+                <span className="text-sm md:text-base text-gray-600 mt-1">parquet export size</span>
+                <span className="text-xs text-gray-400 mt-0.5">updated {timeAgo(datasetStats.generatedAt)}</span>
+              </div>
+
+              {/* Database size */}
+              <div className="flex flex-col items-center">
+                <div className="flex items-center gap-1">
+                  <span className="text-3xl md:text-4xl font-bold text-ceruleanBlue-500">
+                    {formatBytes(datasetStats.database.totalBytes)}
+                  </span>
+                  <FiInfo
+                    className="text-ceruleanBlue-300 hover:text-ceruleanBlue-500 cursor-pointer text-lg"
+                    data-tooltip-id="db-size-tooltip"
+                  />
+                </div>
+                <span className="text-sm md:text-base text-gray-600 mt-1">database size</span>
+              </div>
+
+              <ReactTooltip
+                id="parquet-size-tooltip"
+                clickable
+                className="max-w-xs z-50"
+                render={() => (
+                  <div className="text-sm">
+                    <p className="mb-2">
+                      We export our complete Postgres database daily into Apache Parquet format.
+                      Sizes shown are with parquet (zstd) compression.
+                    </p>
+                    <a
+                      href="https://docs.sourcify.dev/docs/repository/download-dataset/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-ceruleanBlue-300 underline"
+                    >
+                      Learn more →
+                    </a>
+                    <table className="mt-3 w-full text-xs border-collapse">
+                      <thead>
+                        <tr className="border-b border-gray-600">
+                          <th className="text-left pr-3 pb-1">Table</th>
+                          <th className="text-right pr-3 pb-1">Size</th>
+                          <th className="text-right pb-1">Files</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(datasetStats.parquet.tables).map(([table, data]) => (
+                          <tr key={table} className="border-b border-gray-700">
+                            <td className="pr-3 py-0.5 font-mono">{table}</td>
+                            <td className="text-right pr-3 py-0.5">{formatBytes(data.bytes)}</td>
+                            <td className="text-right py-0.5">{data.fileCount}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              />
+
+              <ReactTooltip
+                id="db-size-tooltip"
+                clickable
+                className="max-w-xs z-50"
+                render={() => (
+                  <div className="text-sm">
+                    <p className="mb-3">
+                      Live sizes of the Sourcify Postgres database on Google Cloud. Includes indexes and TOAST.
+                      The total also includes system catalogs, so it is slightly larger than the sum of the tables below.
+                    </p>
+                    <table className="w-full text-xs border-collapse">
+                      <thead>
+                        <tr className="border-b border-gray-600">
+                          <th className="text-left pr-3 pb-1">Table</th>
+                          <th className="text-right pb-1">Size</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(datasetStats.database.tables).map(([table, data]) => (
+                          <tr key={table} className="border-b border-gray-700">
+                            <td className="pr-3 py-0.5 font-mono">{table}</td>
+                            <td className="text-right py-0.5">{formatBytes(data.bytes)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              />
+            </motion.div>
+          )}
           <div className="flex flex-col items-center my-8">
             <Button type="">
               <a
