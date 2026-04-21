@@ -122,6 +122,23 @@ export default function FAQ() {
       ),
     },
     {
+      q: "Isn't Sourcify a block explorer?",
+      a: (
+        <>
+          <p className="mb-2">No. Sourcify's focus is contract verification only.</p>
+          <p className="mb-2">
+            Block explorers like Etherscan or Blockscout let users view all activity on the chain (transactions,
+            blocks, accounts, and more), which requires significant infrastructure and indexing the chains,
+            particularly difficult for chains with low block times.
+          </p>
+          <p className="mb-2">
+            Sourcify is only concerned with deployed contracts and their source code. In fact, block explorers can use
+            Sourcify as their verification backend, which is what Blockscout does.
+          </p>
+        </>
+      ),
+    },
+    {
       q: "What is the Verifier Alliance?",
       a: (
         <>
