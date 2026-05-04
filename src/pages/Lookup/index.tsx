@@ -28,7 +28,7 @@ const Lookup = () => {
       );
       const currentAddressMatches = result.find((match) => (match.address = _address));
       setResponse(currentAddressMatches);
-      navigate(`/lookup/${_address}`);
+      navigate(`/address/${_address}`);
     } catch (err: any) {
       setErrorMessage(err.message || "An error occurred, try again!");
       <Toast message={errorMessage} isShown={!!errorMessage} dismiss={() => setErrorMessage("")} />;
