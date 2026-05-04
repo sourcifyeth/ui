@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
+import { Tooltip } from "react-tooltip";
 import { ContextProvider } from "./Context";
 import LandingPage from "./pages/LandingPage";
 import Lookup from "./pages/Lookup";
@@ -19,6 +20,7 @@ function App() {
 
   return (
     <div className="flex min-h-screen text-gray-800 bg-gray-50">
+      <Tooltip id="global-tooltip" delayHide={300} clickable style={{ zIndex: 9999 }} />
       <ContextProvider>
         <BrowserRouter>
           <Routes>

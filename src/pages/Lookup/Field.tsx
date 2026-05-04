@@ -1,76 +1,68 @@
 import { isAddress, getAddress } from "@ethersproject/address";
-import { ChangeEventHandler, FormEventHandler, useState } from "react";
-import Input from "../../components/Input";
+import { FormEventHandler, useState } from "react";
 import LoadingOverlay from "../../components/LoadingOverlay";
-import Toast from "../../components/Toast";
 
 type FieldProp = {
   loading: boolean;
   handleRequest: (address: string) => void;
 };
 
-const Field = ({ loading, handleRequest }: FieldProp) => {
-  const [address, setAddress] = useState<any>("");
-  const [error, setError] = useState<string>("");
+const EXAMPLE_ADDRESS = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
 
-  const checkAndSendRequest = (address: string) => {
-    setAddress(address)
-    if (!isAddress(address)) {
-      setError("Invalid Address");
-      return;
-    }
-    // Get checksummed format
-    const checksummedAddress = getAddress(address);
-    setAddress(checksummedAddress)
-    handleRequest(checksummedAddress);
-  }
+const Field = ({ loading, handleRequest }: FieldProp) => {
+  const [value, setValue] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    checkAndSendRequest(address)
-  };
-
-  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const newAddress = e.currentTarget.value;
-    checkAndSendRequest(newAddress)
+    if (!isAddress(value)) {
+      setError("Invalid contract address");
+      return;
+    }
+    setError("");
+    handleRequest(getAddress(value));
   };
 
   const handleExample = () => {
-    const exampleAddress = "0x1F98431c8aD98523631AE4a59f267346ea31F984"; // Uniswap
-    checkAndSendRequest(exampleAddress);
+    setValue(EXAMPLE_ADDRESS);
+    setError("");
+    handleRequest(EXAMPLE_ADDRESS);
   };
 
   return (
-    <div className="flex flex-col py-16 px-12 flex-grow rounded-lg transition-all ease-in-out duration-300 bg-white overflow-hidden shadow-md">
-      <div className="flex flex-col text-left relative">
-        {loading && <LoadingOverlay message="Looking up the contract" />}
-        <form onSubmit={handleSubmit}>
-          <label
-            htmlFor="contract-address"
-            className="font-bold mb-8 text-xl block text-center"
-          >
-            Contract Address
-          </label>
-          <Input
+    <div className="relative">
+      {loading && <LoadingOverlay message="Looking up the contract" />}
+      <form onSubmit={handleSubmit}>
+        <div className="flex gap-2">
+          <input
             id="contract-address"
-            value={address}
-            onChange={handleChange}
-            placeholder="0xcaaf6B2ad74003502727e8b8Da046Fab40D6c035"
+            type="text"
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value);
+              if (error) setError("");
+            }}
+            placeholder="0x…"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm font-mono text-sm focus:outline-none focus:ring-2 focus:ring-ceruleanBlue-500 focus:border-ceruleanBlue-500"
           />
-          {!!error && (
-            <Toast
-              message={error}
-              isShown={!!error}
-              dismiss={() => setError("")}
-            />
-          )}{" "}
-          <div className="flex justify-end">
-            <button onClick={handleExample} className="text-gray-400">
-              Example Contract
-            </button>
-          </div>
-        </form>
-      </div>
+          <button
+            type="submit"
+            className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-ceruleanBlue-500 hover:bg-ceruleanBlue-600 focus:outline-none focus:ring-2 focus:ring-ceruleanBlue-500 focus:ring-offset-2 transition-colors"
+          >
+            Look up
+          </button>
+        </div>
+        {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={handleExample}
+            className="text-sm text-gray-500 hover:text-ceruleanBlue-500 underline"
+          >
+            Try an example contract
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

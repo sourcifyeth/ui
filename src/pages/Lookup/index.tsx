@@ -1,9 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Header from "../../components/Header";
+import PageLayout from "../../components/PageLayout";
 import Toast from "../../components/Toast";
 import { Context } from "../../Context";
-import { CheckAllByAddressResult } from "../../types";
-import { checkAllByAddresses } from "../../utils/api";
+import { AllChainsResponse } from "../../types";
+import { getVerifiedContractAllChains } from "../../utils/api";
 import Field from "./Field";
 import Result from "./Result";
 import { useParams, useNavigate } from "react-router-dom";
@@ -12,67 +13,62 @@ import { isAddress, getAddress } from "@ethersproject/address";
 const Lookup = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
-  const [response, setResponse] = useState<CheckAllByAddressResult | undefined>(undefined);
+  const [response, setResponse] = useState<AllChainsResponse | undefined>(undefined);
+  const [displayAddress, setDisplayAddress] = useState<string | undefined>(undefined);
+  const queriedAddressRef = useRef<string | undefined>(undefined);
   const { address } = useParams();
-  const { sourcifyChains, errorMessage, setErrorMessage } = useContext(Context);
+  const { errorMessage, setErrorMessage } = useContext(Context);
 
-  const handleRequest = async (_address: string) => {
-    if (!sourcifyChains?.length) {
-      return;
-    }
-    setLoading(true);
-    try {
-      const result = await checkAllByAddresses(
-        _address,
-        `0,${sourcifyChains.map((c) => c.chainId.toString()).join(",")}`
-      );
-      const currentAddressMatches = result.find((match) => (match.address = _address));
-      setResponse(currentAddressMatches);
-      navigate(`/address/${_address}`);
-    } catch (err: any) {
-      setErrorMessage(err.message || "An error occurred, try again!");
-      <Toast message={errorMessage} isShown={!!errorMessage} dismiss={() => setErrorMessage("")} />;
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleRequest = useCallback(
+    async (_address: string) => {
+      queriedAddressRef.current = _address;
+      setLoading(true);
+      try {
+        const result = await getVerifiedContractAllChains(_address);
+        setResponse(result);
+        setDisplayAddress(_address);
+        navigate(`/address/${_address}`);
+      } catch (err: any) {
+        queriedAddressRef.current = undefined;
+        setErrorMessage(err.message || "An error occurred, try again!");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [navigate, setErrorMessage]
+  );
 
   const goBack = () => {
+    queriedAddressRef.current = undefined;
     setResponse(undefined);
-    navigate(`/address`);
+    setDisplayAddress(undefined);
+    navigate("/address");
   };
 
+  // Only depends on the URL param — state changes from goBack cannot re-trigger this.
   useEffect(() => {
-    if (address && address !== response?.address) {
-      if (!isAddress(address)) {
-        return;
-      }
-      // Get checksummed format
-      const checksummedAddress = getAddress(address);
-      handleRequest(checksummedAddress);
+    if (!address) return;
+    if (queriedAddressRef.current === address) return;
+    if (!isAddress(address)) {
+      setErrorMessage("Invalid contract address in URL");
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sourcifyChains, address]);
+    const checksummedAddress = getAddress(address);
+    queriedAddressRef.current = checksummedAddress;
+    handleRequest(checksummedAddress);
+  }, [address, handleRequest, setErrorMessage]);
 
   return (
-    <div className="flex flex-col flex-1 bg-gray-100">
+    <div className="flex flex-col flex-1">
       <Header />
-      <div className="flex flex-col flex-grow max-w-[100rem] w-full mx-auto pb-8 px-8 md:px-12 lg:px-24 bg-gray-100">
-        <Toast message={errorMessage} isShown={!!errorMessage} dismiss={() => setErrorMessage("")} />
-        <div className="text-center">
-          <h1 className="text-3xl md:text-4xl font-bold">Contract Lookup</h1>
-          <p className="mt-2">Look for verified contracts in the Sourcify repository</p>
-        </div>
-        <div className="flex flex-col flex-grow items-center justify-center mt-6">
-          <div className="pt-1 bg-ceruleanBlue-500 flex h-full w-full  rounded-xl mx-2 mb-4 md:mb-0">
-            {!!response ? (
-              <Result response={response} goBack={goBack} />
-            ) : (
-              <Field loading={loading} handleRequest={handleRequest} />
-            )}
-          </div>
-        </div>
-      </div>
+      <Toast message={errorMessage} isShown={!!errorMessage} dismiss={() => setErrorMessage("")} />
+      <PageLayout title="Contract Lookup" subtitle="Look up verified contracts in the Sourcify repository" maxWidth="max-w-6xl">
+        {response ? (
+          <Result address={displayAddress!} response={response} goBack={goBack} />
+        ) : (
+          <Field loading={loading} handleRequest={handleRequest} />
+        )}
+      </PageLayout>
     </div>
   );
 };
