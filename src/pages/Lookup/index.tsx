@@ -39,7 +39,7 @@ const Lookup = () => {
 
   const goBack = () => {
     setResponse(undefined);
-    navigate(`/lookup`);
+    navigate(`/address`);
   };
 
   useEffect(() => {

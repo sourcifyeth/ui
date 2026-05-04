@@ -74,7 +74,7 @@ const Header = ({ className }: { className?: string }) => {
             >
               Verify
             </a>
-            <Link className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" to="/lookup">
+            <Link className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" to="/address">
               Lookup
             </Link>
             <a

@@ -7,7 +7,7 @@ import VerifyRedirect from "./pages/VerifyRedirect";
 
 const LegacyLookupRedirect = () => {
   const { address } = useParams();
-  return <Navigate to={`/address/${address}`} replace />;
+  return <Navigate to={address ? `/address/${address}` : "/address"} replace />;
 };
 
 function App() {
@@ -23,8 +23,9 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/verifier" element={<VerifyRedirect />} />
-            <Route path="/lookup" element={<Lookup />} />
+            <Route path="/lookup" element={<LegacyLookupRedirect />} />
             <Route path="/lookup/:address" element={<LegacyLookupRedirect />} />
+            <Route path="/address" element={<Lookup />} />
             <Route path="/address/:address" element={<Lookup />} />
             <Route path="/dataset-playground" element={<LandingPage />} />
             <Route path="/" element={<LandingPage />} />

@@ -7,13 +7,13 @@
     <meta name="theme-color" content="#000000" />
     <script>
       // Migrate legacy hash-router URLs (#/...) to clean paths.
-      // #/lookup/<address> → /address/<address>; everything else: #/<rest> → /<rest>.
+      // /lookup[/<rest>] → /address[/<rest>]; everything else: #/<rest> → /<rest>.
       (function () {
         var hash = window.location.hash;
         if (hash.indexOf("#/") !== 0) return;
         var path = hash.slice(1);
-        var match = path.match(/^\/lookup\/(.+)$/);
-        if (match) path = "/address/" + match[1];
+        var match = path.match(/^\/lookup(\/.*)?$/);
+        if (match) path = "/address" + (match[1] || "");
         window.history.replaceState(null, "", path + window.location.search);
       })();
     </script>
