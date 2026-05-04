@@ -20,7 +20,7 @@ function App() {
 
   return (
     <div className="flex min-h-screen text-gray-800 bg-gray-50">
-      <Tooltip id="global-tooltip" delayHide={300} clickable style={{ zIndex: 9999 }} />
+      <Tooltip id="global-tooltip" delayHide={300} clickable style={{ zIndex: 9999, maxWidth: "16rem", fontSize: "0.75rem" }} />
       <ContextProvider>
         <BrowserRouter>
           <Routes>

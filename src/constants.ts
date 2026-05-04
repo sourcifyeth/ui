@@ -1,4 +1,5 @@
 export const REPOSITORY_URL = process.env.REACT_APP_REPOSITORY_URL;
+export const VERIFY_URL = process.env.REACT_APP_VERIFY_URL;
 export const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 export const BIGQUERY_API_URL = process.env.REACT_APP_BIGQUERY_API_URL;
 export const BIGQUERY_DATASET_NAME =

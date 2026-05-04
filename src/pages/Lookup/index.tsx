@@ -47,7 +47,12 @@ const Lookup = () => {
 
   // Only depends on the URL param — state changes from goBack cannot re-trigger this.
   useEffect(() => {
-    if (!address) return;
+    if (!address) {
+      queriedAddressRef.current = undefined;
+      setResponse(undefined);
+      setDisplayAddress(undefined);
+      return;
+    }
     if (queriedAddressRef.current === address) return;
     if (!isAddress(address)) {
       setErrorMessage("Invalid contract address in URL");
@@ -59,7 +64,7 @@ const Lookup = () => {
   }, [address, handleRequest, setErrorMessage]);
 
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 overflow-x-hidden">
       <Header />
       <Toast message={errorMessage} isShown={!!errorMessage} dismiss={() => setErrorMessage("")} />
       <PageLayout title="Contract Lookup" subtitle="Look up verified contracts in the Sourcify repository" maxWidth="max-w-6xl">
