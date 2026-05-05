@@ -12,7 +12,8 @@ const EXAMPLE_ADDRESS = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
 const Field = ({ loading, handleRequest }: FieldProp) => {
   const [value, setValue] = useState<string>("");
   const [touched, setTouched] = useState<boolean>(false);
-  const invalid = touched && value.length > 0 && !isAddress(value);
+  // Show error once they've typed enough to be attempting an address, or after blur
+  const invalid = value.length > 0 && !isAddress(value) && (touched || value.length >= 42);
 
   const handleChange = (input: string) => {
     setValue(input);

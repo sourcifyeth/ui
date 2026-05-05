@@ -43,12 +43,12 @@ const ChainRow = ({ contract }: ChainRowProps) => {
       </td>
       <td className="px-6 py-4 text-xs text-gray-500 whitespace-nowrap">{verifiedDate}</td>
       <td className="px-6 py-4">
-        <div className="flex items-center justify-center gap-2 flex-wrap">
+        <div className="flex flex-col items-stretch gap-2">
           <a
             href={repoUrl(contract.chainId, contract.address)}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium text-white bg-ceruleanBlue-500 hover:bg-ceruleanBlue-600 transition-colors whitespace-nowrap"
+            className="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium text-white bg-ceruleanBlue-500 hover:bg-ceruleanBlue-600 transition-colors whitespace-nowrap"
           >
             Sourcify Repo <IoOpenOutline className="w-3.5 h-3.5" />
           </a>
@@ -56,13 +56,12 @@ const ChainRow = ({ contract }: ChainRowProps) => {
             href={remixUrl(contract.chainId, contract.address)}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium text-ceruleanBlue-600 border border-ceruleanBlue-200 hover:bg-ceruleanBlue-50 transition-colors"
+            className="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium text-ceruleanBlue-600 border border-ceruleanBlue-200 hover:bg-ceruleanBlue-50 transition-colors whitespace-nowrap"
           >
             Remix <IoOpenOutline className="w-3.5 h-3.5" />
           </a>
         </div>
       </td>
-      <td className="px-6 py-4 text-xs text-gray-700 font-mono">{contract.matchId}</td>
     </tr>
   );
 };
@@ -95,7 +94,6 @@ const Result = ({ address, response, goBack }: ResultProp) => {
                   <th className="px-6 py-4 text-left font-semibold text-gray-900 min-w-[10rem]">Runtime Match</th>
                   <th className="px-6 py-4 text-left font-semibold text-gray-900">Verified At</th>
                   <th className="px-6 py-4 text-center font-semibold text-gray-900 w-px">Source</th>
-                  <th className="px-6 py-4 text-left font-semibold text-gray-900">Match ID</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
