@@ -5,6 +5,18 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    <script>
+      // Migrate legacy hash-router URLs (#/...) to clean paths.
+      // /lookup[/<rest>] → /address[/<rest>]; everything else: #/<rest> → /<rest>.
+      (function () {
+        var hash = window.location.hash;
+        if (hash.indexOf("#/") !== 0) return;
+        var path = hash.slice(1);
+        var match = path.match(/^\/lookup(\/.*)?$/);
+        if (match) path = "/address" + (match[1] || "");
+        window.history.replaceState(null, "", path + window.location.search);
+      })();
+    </script>
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@sourcifyeth" />
     <meta name="og:title" content="sourcify.eth" />

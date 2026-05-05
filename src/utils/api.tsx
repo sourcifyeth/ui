@@ -1,48 +1,13 @@
 import { SERVER_URL, BIGQUERY_API_URL } from "../constants";
-import { Chain, CheckAllByAddressResult } from "../types";
+import { AllChainsResponse, Chain } from "../types";
 
-type ChainIdsResponse = {
-  chainId: string;
-  status: string;
+export const getVerifiedContractAllChains = async (address: string): Promise<AllChainsResponse> => {
+  const response = await fetch(`${SERVER_URL}/v2/contract/all-chains/${address}`);
+  if (response.status === 404) return { results: [] };
+  if (!response.ok) throw new Error(`Lookup failed: ${response.status} ${response.statusText}`);
+  return response.json();
 };
 
-export type ServersideAddressCheck = {
-  address: string;
-  status: string;
-  chainIds?: ChainIdsResponse[];
-};
-
-export const checkAllByAddresses = async (
-  addresses: string,
-  chainIds: string
-): Promise<CheckAllByAddressResult[]> => {
-  const response = await fetch(
-    `${SERVER_URL}/checkAllByAddresses?addresses=${addresses}&chainIds=${chainIds}`,
-    {
-      method: "GET",
-    }
-  );
-
-  if (!response.ok) {
-    // e.g. HTTP 400 invalid address
-    let jsonError;
-    try {
-      jsonError = await response.json();
-    } catch (e) {
-      throw new Error("Cannot parse the error message");
-    }
-    throw new Error(jsonError.message);
-  }
-
-  return await response.json();
-};
-
-/**
- * @function to fetch Sourcify's chains array and return as an object with the chainId as keys.
- *
- * The Ethereum networks are placed on top, the rest of the networks are sorted alphabetically.
- *
- */
 export const getSourcifyChains = async (): Promise<Chain[]> => {
   const chainsArray = await (await fetch(`${SERVER_URL}/chains`)).json();
   return chainsArray;
@@ -62,9 +27,7 @@ export interface BigQueryResponse {
   rows: any[];
 }
 
-export const bigquery = async (
-  sql: string
-): Promise<BigQueryResponse> => {
+export const bigquery = async (sql: string): Promise<BigQueryResponse> => {
   const response = await fetch(`${BIGQUERY_API_URL}`, {
     method: "POST",
     headers: {
@@ -74,7 +37,6 @@ export const bigquery = async (
   });
 
   if (!response.ok) {
-    // e.g. HTTP 400 invalid address
     let jsonError;
     try {
       jsonError = await response.json();

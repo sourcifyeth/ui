@@ -1,15 +1,20 @@
-export type CheckAllByAddressResult = {
+export interface VerifiedContractMinimal {
+  match: "match" | "exact_match" | null;
+  creationMatch: "match" | "exact_match" | null;
+  runtimeMatch: "match" | "exact_match" | null;
+  chainId: string;
   address: string;
-  status?: string;
-  chainIds: {
-    chainId: string;
-    status: string;
-  }[];
-};
+  verifiedAt: string;
+  matchId: string;
+}
+
+export interface AllChainsResponse {
+  results: VerifiedContractMinimal[];
+}
 
 export type Chain = {
   name: string;
-  title?: string; // Longer name for some networks
+  title?: string;
   chainId: number;
   shortName: string;
   network: string;
