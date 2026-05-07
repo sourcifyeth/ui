@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       colors: {
         ceruleanBlue: {
+          50: "#f3f6ff",
           100: "#E8EFFF",
           200: "#A9BDEE",
           300: "#7693DA",

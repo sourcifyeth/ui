@@ -5,7 +5,7 @@ import { Tooltip } from "react-tooltip";
 import { SiMatrix } from "react-icons/si";
 import { RiTwitterXFill } from "react-icons/ri";
 import logoText from "../../assets/logo-rounded.svg";
-import { DOCS_URL, PLAYGROUND_URL } from "../../constants";
+import { DOCS_URL, PLAYGROUND_URL, REPOSITORY_URL } from "../../constants";
 
 const Header = ({ className }: { className?: string }) => {
   const [showNav, setShowNav] = useState(false);
@@ -74,12 +74,12 @@ const Header = ({ className }: { className?: string }) => {
             >
               Verify
             </a>
-            <Link className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" to="/lookup">
+            <Link className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" to="/address">
               Lookup
             </Link>
             <a
               className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
-              href="https://repo.sourcify.dev"
+              href={REPOSITORY_URL}
             >
               Contract Repo
             </a>
