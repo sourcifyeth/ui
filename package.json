@@ -26,7 +26,7 @@
     "recharts": "2.15.4",
     "web-vitals": "2.1.4",
     "@openrouter/ai-sdk-provider": "2.9.0",
-    "ai": "6.0.185"
+    "ai": "6.0.191"
   },
   "optionalDependencies": {
     "fsevents": "2.3.3"
@@ -64,11 +64,11 @@
     "@types/aos": "3.0.8",
     "@types/bytes": "3.1.5",
     "@types/node": "20.19.41",
-    "@types/react": "19.2.14",
+    "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
     "@types/react-syntax-highlighter": "13.5.2",
     "autoprefixer": "10.5.0",
-    "postcss": "8.5.14",
+    "postcss": "8.5.15",
     "react-scripts": "5.0.1",
     "tailwindcss": "3.4.19"
   },
