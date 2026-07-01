@@ -5,11 +5,6 @@
     "url": "https://sourcify.roninchain.com/server"
   },
   {
-    "name": "Hashscan",
-    "logo": "/hashscan.webp",
-    "url": "https://server-verify.hashscan.io"
-  },
-  {
     "name": "MonVision Explorer",
     "logo": "/monvision.svg",
     "url": "https://sourcify-api-monad.blockvision.org"
