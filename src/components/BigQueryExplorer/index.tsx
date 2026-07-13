@@ -3,7 +3,7 @@ import { bigquery, BigQueryResponse } from "../../utils/api";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { generateText } from "ai";
 import { DEFAULT_SQL, SYSTEM_PROMPT, DEFAULT_PROMPT, DEFAULT_MODEL } from "./constants";
-import AIGenerator from "./AIGenerator";
+import AIGenerator, { FREE_ROUTER_MODEL } from "./AIGenerator";
 import SqlEditor from "./SqlEditor";
 import Results from "./Results";
 import { OPENROUTER_API_KEY } from "../../constants";
@@ -78,8 +78,10 @@ const BigQueryExplorer = () => {
       const chosenModel = model;
       // Runtime enforcement for built-in key
       const usingAppKey = !apiKey && OPENROUTER_API_KEY;
-      if (usingAppKey && !chosenModel.trim().endsWith(":free")) {
-        throw new Error("Only :free models are supported with the built-in key");
+      const trimmedModel = chosenModel.trim();
+      const isFree = trimmedModel === FREE_ROUTER_MODEL || trimmedModel.endsWith(":free");
+      if (usingAppKey && !isFree) {
+        throw new Error("Only free models are supported with the built-in key");
       }
       const system = SYSTEM_PROMPT;
       const prompt = `User request: ${nlPrompt}\n Return only the SQL statement that fulfills it.`;
