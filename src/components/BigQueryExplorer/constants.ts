@@ -99,4 +99,7 @@ Foreign keys:
 export const DEFAULT_PROMPT =
   "Which contract is the most popular contract by contract name?";
 
-export const DEFAULT_MODEL = "arcee-ai/trinity-large-preview:free";
+// Stable OpenRouter meta-model that auto-routes to whatever free models are
+// currently available, so this default never goes stale as free models rotate.
+// See: https://openrouter.ai/openrouter/free
+export const DEFAULT_MODEL = "openrouter/free";
