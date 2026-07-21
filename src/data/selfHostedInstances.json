@@ -5,19 +5,9 @@
     "url": "https://sourcify.roninchain.com/server"
   },
   {
-    "name": "Hashscan",
-    "logo": "/hashscan.webp",
-    "url": "https://server-verify.hashscan.io"
-  },
-  {
     "name": "MonVision Explorer",
     "logo": "/monvision.svg",
     "url": "https://sourcify-api-monad.blockvision.org"
-  },
-  {
-    "name": "Parsec",
-    "logo": "/parsec.jpg",
-    "url": "https://sourcify.parsec.finance"
   },
   {
     "name": "VeChainStats",
