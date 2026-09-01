@@ -1,10 +1,5 @@
 [
   {
-    "name": "Ronin Chain",
-    "logo": "/ronin.svg",
-    "url": "https://sourcify.roninchain.com/server"
-  },
-  {
     "name": "MonVision Explorer",
     "logo": "/monvision.svg",
     "url": "https://sourcify-api-monad.blockvision.org"
@@ -13,11 +8,6 @@
     "name": "VeChainStats",
     "logo": "/vestats.png",
     "url": "https://verify-api.vechainstats.com"
-  },
-  {
-    "name": "Reactive Network",
-    "logo": "/reactive-network.png",
-    "url": "https://sourcify.rnk.dev"
   },
   {
     "name": "Walnut",
