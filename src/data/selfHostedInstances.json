@@ -1,5 +1,10 @@
 [
   {
+    "name": "Conduit",
+    "logo": "/conduit.png",
+    "url": "https://contracts.conduit.xyz"
+  },
+  {
     "name": "MonVision Explorer",
     "logo": "/monvision.svg",
     "url": "https://sourcify-api-monad.blockvision.org"
