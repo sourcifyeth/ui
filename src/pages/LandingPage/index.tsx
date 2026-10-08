@@ -258,6 +258,19 @@ const LandingPage = () => {
           </div>
         </nav>
         <div className="text-center text-sm mt-8 text-ceruleanBlue-300">
+          <a
+            href="https://drpc.org?ref=7ef756"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mb-4"
+          >
+            <img
+              width={218}
+              height={54}
+              src="https://drpc.org/images/external/powered-by-drpc-light.svg"
+              alt="Powered by dRPC"
+            />
+          </a>
           <div className="text-base mb-1">
             Made with ❤️ by{" "}
             <a

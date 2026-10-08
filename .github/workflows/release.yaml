@@ -63,16 +63,16 @@ jobs:
           # Create temporary directory to backup files
           mkdir -p temp_backup
           # Backup the files we want to preserve
-          gsutil cp gs://sourcify-staging-ui-bucket/static/stats.json temp_backup/ 2>/dev/null || echo "stats.json not found, skipping backup"
-          gsutil cp gs://sourcify-staging-ui-bucket/static/manifest.json temp_backup/ 2>/dev/null || echo "manifest.json not found, skipping backup"
+          gcloud storage cp gs://sourcify-staging-ui-bucket/static/stats.json temp_backup/ 2>/dev/null || echo "stats.json not found, skipping backup"
+          gcloud storage cp gs://sourcify-staging-ui-bucket/static/manifest.json temp_backup/ 2>/dev/null || echo "manifest.json not found, skipping backup"
           # Clear the bucket
-          gsutil -m rm gs://sourcify-staging-ui-bucket/** || true
+          gcloud storage rm "gs://sourcify-staging-ui-bucket/**" || true
           # Restore the preserved files
           if [ -f temp_backup/stats.json ]; then
-            gsutil cp temp_backup/stats.json gs://sourcify-staging-ui-bucket/static/
+            gcloud storage cp temp_backup/stats.json gs://sourcify-staging-ui-bucket/static/
           fi
           if [ -f temp_backup/manifest.json ]; then
-            gsutil cp temp_backup/manifest.json gs://sourcify-staging-ui-bucket/static/
+            gcloud storage cp temp_backup/manifest.json gs://sourcify-staging-ui-bucket/static/
           fi
           # Clean up temporary directory
           rm -rf temp_backup
@@ -83,16 +83,16 @@ jobs:
           # Create temporary directory to backup files
           mkdir -p temp_backup
           # Backup the files we want to preserve
-          gsutil cp gs://sourcify-ui-bucket/static/stats.json temp_backup/ 2>/dev/null || echo "stats.json not found, skipping backup"
-          gsutil cp gs://sourcify-ui-bucket/static/manifest.json temp_backup/ 2>/dev/null || echo "manifest.json not found, skipping backup"
+          gcloud storage cp gs://sourcify-ui-bucket/static/stats.json temp_backup/ 2>/dev/null || echo "stats.json not found, skipping backup"
+          gcloud storage cp gs://sourcify-ui-bucket/static/manifest.json temp_backup/ 2>/dev/null || echo "manifest.json not found, skipping backup"
           # Clear the bucket
-          gsutil -m rm gs://sourcify-ui-bucket/** || true
+          gcloud storage rm "gs://sourcify-ui-bucket/**" || true
           # Restore the preserved files
           if [ -f temp_backup/stats.json ]; then
-            gsutil cp temp_backup/stats.json gs://sourcify-ui-bucket/static/
+            gcloud storage cp temp_backup/stats.json gs://sourcify-ui-bucket/static/
           fi
           if [ -f temp_backup/manifest.json ]; then
-            gsutil cp temp_backup/manifest.json gs://sourcify-ui-bucket/static/
+            gcloud storage cp temp_backup/manifest.json gs://sourcify-ui-bucket/static/
           fi
           # Clean up temporary directory
           rm -rf temp_backup
