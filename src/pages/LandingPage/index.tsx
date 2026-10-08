@@ -267,7 +267,7 @@ const LandingPage = () => {
             <img
               width={218}
               height={54}
-              src="https://drpc.org/images/external/powered-by-drpc-dark.svg"
+              src="https://drpc.org/images/external/powered-by-drpc-light.svg"
               alt="Powered by dRPC"
             />
           </a>
