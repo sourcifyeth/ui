@@ -86,12 +86,6 @@ const Header = ({ className }: { className?: string }) => {
             <a className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" href={DOCS_URL}>
               Docs
             </a>
-            <a
-              className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
-              href="https://docs.sourcify.dev/blog/"
-            >
-              Blog
-            </a>
             <div className="flex items-center ml-2 mt-4 lg:mt-0">
               <iframe
                 src="https://ghbtns.com/github-btn.html?user=argotorg&repo=sourcify&type=star&count=true&size=large"
