@@ -1,18 +1,15 @@
 import { useContext, useEffect, useState, useRef } from "react";
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { Context } from "../../Context";
-import ChainSelect from "../../components/ChainSelect";
 import { animate, motion, useInView, useReducedMotion } from "framer-motion";
 import Button from "../../components/Button";
 import { FaDownload } from "react-icons/fa";
-import { FiInfo } from "react-icons/fi";
+import { FiBarChart2, FiInfo } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import useLiveStats from "./useLiveStats";
 import LiveFeed from "./LiveFeed";
 import { formatRelativeTime } from "./liveStats";
 
-const NUMBER_OF_TOP_CHAINS = 10;
 // The live total usually arrives within a few hundred ms. Waiting avoids a count-up to the stats.json total and then a jump.
 const LIVE_TOTAL_WAIT_MS = 1000;
 
@@ -80,8 +77,7 @@ function useAnimatedNumber(target: number | null, reduceMotion: boolean): number
 }
 
 const Chart = () => {
-  const { sourcifyChainMap, sourcifyChains } = useContext(Context);
-  const [selectedChain, setSelectedChain] = useState<string>("1");
+  const { sourcifyChainMap } = useContext(Context);
   const sectionRef = useRef(null);
   const isSectionInView = useInView(sectionRef, { once: true });
   // Separate from the one above: the live stream is only open while the section is on screen.
@@ -91,18 +87,6 @@ const Chart = () => {
   const live = useLiveStats(isSectionOnScreen);
 
   const [datasetStats, setDatasetStats] = useState<DatasetStatsType | null>(null);
-
-  // Window width to make the chart responsive. We'll change the font sizes and tick width based on this
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     // We are temporarily putting the stats.json file in the static folder on GCP.
@@ -133,33 +117,6 @@ const Chart = () => {
   const targetTotal = live.total ?? (isFallbackReady ? fallbackTotal : null);
   const displayTotal = useAnimatedNumber(isSectionInView ? targetTotal : null, reduceMotion);
 
-  const getFormattedChainData = (key: string) => {
-    const keyInt = parseInt(key);
-    if (!stats) {
-      return {
-        name: "",
-        fullMatch: 0,
-        partialMatch: 0,
-        total: 0,
-      };
-    }
-    return {
-      name:
-        sourcifyChainMap?.[keyInt] &&
-        (sourcifyChainMap[keyInt]?.name || sourcifyChainMap[keyInt].title) + ` (${keyInt})`, // Shorter name takes precedence
-      fullMatch: stats[key]?.full_match ?? 0,
-      partialMatch: stats[key]?.partial_match ?? 0,
-      total: (stats[key]?.full_match ?? 0) + (stats[key]?.partial_match ?? 0),
-    };
-  };
-
-  const formattedData = Object.entries(stats || {})
-    .sort(([aKey, aStats], [bKey, bStats]) => {
-      return bStats.full_match + bStats.partial_match - (aStats.full_match + aStats.partial_match);
-    })
-    .slice(0, NUMBER_OF_TOP_CHAINS)
-    .map(([key, chainStats]) => getFormattedChainData(key));
-
   return (
     <section
       className="w-full flex flex-col items-center justify-center text-center"
@@ -170,10 +127,6 @@ const Chart = () => {
       {!stats ? (
         <div className="h-72 md:h-96 lg:h-[36rem] w-full relative">
           <LoadingOverlay message="Getting stats" />
-        </div>
-      ) : !Object.keys(sourcifyChainMap).length ? (
-        <div className="h-72 md:h-96 lg:h-[36rem] w-full relative">
-          <LoadingOverlay message="Getting Sourcify chains" />
         </div>
       ) : (
         <>
@@ -192,9 +145,10 @@ const Chart = () => {
               href="https://stats.sourcify.dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 inline-block text-base md:text-lg text-ceruleanBlue-400 hover:text-ceruleanBlue-600 underline underline-offset-4"
+              className="mt-6 inline-flex items-center gap-2 text-base md:text-lg text-ceruleanBlue-400 hover:text-ceruleanBlue-600 underline underline-offset-4"
             >
-              📊 stats.sourcify.dev
+              <FiBarChart2 aria-hidden="true" />
+              stats.sourcify.dev
             </a>
           </motion.div>
 
@@ -305,7 +259,7 @@ const Chart = () => {
               />
             </motion.div>
           )}
-          <div className="flex flex-col items-center my-8">
+          <div className="flex flex-col items-center mt-8">
             <Button type="">
               <a
                 href="https://docs.sourcify.dev/docs/repository/"
@@ -320,61 +274,6 @@ const Chart = () => {
                 <span className="text-xs md:text-sm">all verified contracts</span>
               </a>
             </Button>
-          </div>
-          <div className="w-full flex flex-col items-center justify-center">
-            <div className="my-4 flex md:flex-row flex-col items-center text-gray-700">
-              <span className="text-nowrap ml-2">
-                {getFormattedChainData(selectedChain).total.toLocaleString()} contracts on
-              </span>
-              <ChainSelect
-                value={selectedChain}
-                handleChainIdChange={(newChainId) => setSelectedChain(newChainId.toString())}
-                availableChains={sourcifyChains.map((chain) => chain.chainId)}
-                className="font-medium"
-                transparent
-              />
-            </div>
-            <div className="h-[30rem] w-11/12 max-w-2xl mb-12 text-sm lg:text-base">
-              <ResponsiveContainer>
-                <BarChart
-                  data={formattedData}
-                  {...{
-                    overflow: "visible",
-                  }}
-                  layout="vertical"
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <Tooltip cursor={{ fill: "rgba(232, 239, 255, 0.4)" }} />
-                  <YAxis
-                    dataKey="name"
-                    type="category"
-                    tick={{
-                      fontSize: windowWidth < 768 ? 8 : 12,
-                      width: windowWidth < 768 ? 100 : 300,
-                    }}
-                  />
-                  <XAxis
-                    domain={[
-                      0,
-                      (dataMax: number) => {
-                        const digits = dataMax.toString().length - 1;
-                        const roundedMax = Math.ceil(dataMax / 10 ** digits) * 10 ** digits;
-                        return roundedMax;
-                      },
-                    ]}
-                    angle={windowWidth < 768 ? 45 : 0}
-                    textAnchor={windowWidth < 768 ? "start" : "middle"}
-                    dataKey="total"
-                    type="number"
-                    tickFormatter={(tick) => tick.toLocaleString()}
-                    tick={{ fontSize: windowWidth < 768 ? 8 : 12 }}
-                  />
-                  <Legend verticalAlign="top" align="center" height={36} />
-                  <Bar name="Exact Matches" dataKey="fullMatch" fill="#2B50AA" stackId="a" />
-                  <Bar name="Matches" dataKey="partialMatch" fill="#7693DA" stackId="a" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
           </div>
         </>
       )}
