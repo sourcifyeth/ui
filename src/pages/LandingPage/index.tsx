@@ -10,7 +10,7 @@ import Header from "../../components/Header";
 import { DOCS_URL } from "../../constants";
 import VerifiedContracts from "./VerifiedContracts";
 import { bytecode, solidityCode } from "./example";
-import AboutSection from "./AboutSection";
+import WhatWeSolve from "./WhatWeSolve";
 import SupportedChains from "./SupportedChains";
 import Tooling from "./Tooling";
 import FAQ from "./FAQ";
@@ -182,7 +182,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <AboutSection />
+      <WhatWeSolve />
       <SupportedChains />
       {/* Verified contract stats */}
       <section
