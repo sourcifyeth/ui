@@ -3,11 +3,13 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { Context } from "../../Context";
 import ChainSelect from "../../components/ChainSelect";
-import { motion, useInView } from "framer-motion";
+import { animate, motion, useInView, useReducedMotion } from "framer-motion";
 import Button from "../../components/Button";
 import { FaDownload } from "react-icons/fa";
 import { FiInfo } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import useLiveStats from "./useLiveStats";
+import LiveFeed from "./LiveFeed";
 
 const NUMBER_OF_TOP_CHAINS = 10;
 
@@ -48,13 +50,49 @@ function timeAgo(isoDate: string): string {
   return `${Math.floor(diff / 86400)}d ago`;
 }
 
+/**
+ * Animates the shown number towards `target`. The first value counts up from 0 (as before);
+ * later values (live updates) use a short tween from the current shown value.
+ */
+function useAnimatedNumber(target: number | null, reduceMotion: boolean): number {
+  const [display, setDisplay] = useState(0);
+  const displayRef = useRef(0);
+  const hasAnimatedRef = useRef(false);
+
+  useEffect(() => {
+    if (target === null) return;
+    const set = (value: number) => {
+      displayRef.current = value;
+      setDisplay(value);
+    };
+    if (reduceMotion) {
+      set(target);
+      hasAnimatedRef.current = true;
+      return;
+    }
+    const isFirst = !hasAnimatedRef.current;
+    hasAnimatedRef.current = true;
+    const controls = animate(displayRef.current, target, {
+      duration: isFirst ? 1 : 0.6,
+      ease: isFirst ? "linear" : "easeOut",
+      onUpdate: (value) => set(Math.round(value)),
+    });
+    return () => controls.stop();
+  }, [target, reduceMotion]);
+
+  return display;
+}
+
 const Chart = () => {
   const { sourcifyChainMap, sourcifyChains } = useContext(Context);
   const [selectedChain, setSelectedChain] = useState<string>("1");
-  const [displayTotal, setDisplayTotal] = useState(0);
   const sectionRef = useRef(null);
   const isSectionInView = useInView(sectionRef, { once: true });
+  // Separate from the one above: the live stream is only open while the section is on screen.
+  const isSectionOnScreen = useInView(sectionRef);
+  const reduceMotion = !!useReducedMotion();
   const [stats, setStats] = useState<statsType | undefined>(undefined);
+  const live = useLiveStats(isSectionOnScreen);
 
   const [datasetStats, setDatasetStats] = useState<DatasetStatsType | null>(null);
 
@@ -86,31 +124,13 @@ const Chart = () => {
       .catch(() => console.error("error fetching dataset stats"));
   }, []);
 
-  useEffect(() => {
-    if (stats && isSectionInView) {
-      const total = Object.values(stats || {}).reduce((prev, curr, i) => {
-        return prev + curr.full_match + curr.partial_match;
-      }, 0);
-      setDisplayTotal(total);
-
-      const duration = 1000; // 1 second animation
-      const steps = 60; // Number of steps
-      const increment = total / steps;
-      let current = 0;
-
-      const timer = setInterval(() => {
-        current += increment;
-        if (current >= total) {
-          setDisplayTotal(total);
-          clearInterval(timer);
-        } else {
-          setDisplayTotal(Math.floor(current));
-        }
-      }, duration / steps);
-
-      return () => clearInterval(timer);
-    }
-  }, [stats, isSectionInView]);
+  // stats.json total: used only when the live stream is not available (see useLiveStats).
+  const fallbackTotal = stats
+    ? Object.values(stats).reduce((prev, curr) => prev + curr.full_match + curr.partial_match, 0)
+    : null;
+  // Once a live value has arrived, the fallback is never used again, so the counter does not jump back.
+  const targetTotal = live.total ?? (live.useFallback ? fallbackTotal : null);
+  const displayTotal = useAnimatedNumber(isSectionInView ? targetTotal : null, reduceMotion);
 
   const getFormattedChainData = (key: string) => {
     const keyInt = parseInt(key);
@@ -160,9 +180,13 @@ const Chart = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={isSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6 }}
+            className="w-full"
           >
-            <h2 className="text-5xl md:text-8xl font-bold text-ceruleanBlue-500">{displayTotal.toLocaleString()}</h2>
+            <h2 className="text-5xl md:text-8xl font-bold text-ceruleanBlue-500 tabular-nums">{displayTotal.toLocaleString()}</h2>
             <h2 className="text-2xl md:text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
+            {live.total !== null && live.items.length > 0 && (
+              <LiveFeed items={live.items} isLive={live.isLive} chainMap={sourcifyChainMap} />
+            )}
             <a
               href="https://stats.sourcify.dev"
               target="_blank"

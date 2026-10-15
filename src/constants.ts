@@ -6,6 +6,8 @@ export const BIGQUERY_DATASET_NAME =
   process.env.REACT_APP_BIGQUERY_DATASET_NAME;
 export const OPENROUTER_API_KEY = process.env.REACT_APP_OPENROUTER_API_KEY;
 export const UMAMI_WEBSITE_ID = process.env.REACT_APP_UMAMI_WEBSITE_ID;
+// Server-Sent Events stream with the live verified-contract count. Same-origin path on sourcify.dev and staging.sourcify.dev.
+export const LIVE_STATS_URL = process.env.REACT_APP_LIVE_STATS_URL || "/live/stream";
 export const DOCS_URL = "https://docs.sourcify.dev";
 export const PLAYGROUND_URL = "https://playground.sourcify.dev";
 
