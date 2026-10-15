@@ -213,6 +213,9 @@ const LandingPage = () => {
               <a href="https://docs.sourcify.dev" className="hover:text-ceruleanBlue-100 block">
                 Documentation
               </a>
+              <a href="https://docs.sourcify.dev/blog/" className="hover:text-ceruleanBlue-100 block">
+                Blog
+              </a>
               <a href="https://docs.sourcify.dev/docs/repository/" className="hover:text-ceruleanBlue-100 block">
                 Contract Repository
               </a>
