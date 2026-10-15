@@ -9,6 +9,7 @@ const item = (matchId: string, overrides: Partial<LiveItem> = {}): LiveItem => (
   address: "0x0d89Cb4f4220B7BECB5A54f9e16De41a615987FC",
   match: "exact_match",
   verifiedAt: "2026-10-15T09:57:56.579Z",
+  name: null,
   ...overrides,
 });
 
@@ -32,6 +33,23 @@ describe("parseLiveEvent", () => {
     expect(parseLiveEvent("null")).toBeNull();
     expect(parseLiveEvent('{"total":"5"}')).toBeNull();
     expect(parseLiveEvent('{"items":[]}')).toBeNull();
+  });
+});
+
+describe("parseLiveEvent name", () => {
+  const base = { matchId: "1", chainId: "1", address: "0x1", match: "match", verifiedAt: "2026-10-15T09:57:56Z" };
+  const parseName = (name: unknown) =>
+    parseLiveEvent(JSON.stringify({ total: 1, items: [{ ...base, name }] }))?.items[0].name;
+
+  it("keeps a contract name", () => {
+    expect(parseName("MyToken")).toBe("MyToken");
+  });
+
+  it("uses null for a missing or invalid name", () => {
+    expect(parseLiveEvent(JSON.stringify({ total: 1, items: [base] }))?.items[0].name).toBeNull();
+    expect(parseName(null)).toBeNull();
+    expect(parseName("")).toBeNull();
+    expect(parseName(42)).toBeNull();
   });
 });
 

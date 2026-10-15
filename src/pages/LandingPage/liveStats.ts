@@ -9,6 +9,8 @@ export type LiveItem = {
   address: string;
   match: LiveMatch;
   verifiedAt: string;
+  /** Contract name. Missing for matches from older server log lines. */
+  name?: string | null;
 };
 
 export type LiveEvent = {
@@ -46,7 +48,12 @@ export function parseLiveEvent(data: string): LiveEvent | null {
   if (typeof total !== "number" || !Number.isFinite(total) || total < 0) return null;
   return {
     total,
-    items: Array.isArray(items) ? items.filter(isLiveItem) : [],
+    items: Array.isArray(items)
+      ? items.filter(isLiveItem).map((item) => ({
+          ...item,
+          name: typeof item.name === "string" && item.name !== "" ? item.name : null,
+        }))
+      : [],
   };
 }
 

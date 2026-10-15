@@ -76,12 +76,7 @@ const FeedRow = ({ item, chainName, now, animateIn: animateInProp }: FeedRowProp
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.35, ease: "easeOut" }}
         >
-          {/* <code> gets the app's monospace font (index.css). Tailwind's font-mono is not set up in this app. */}
-          <code className="truncate text-[13px] text-ceruleanBlue-500">
-            <span className="hidden md:inline">{item.address}</span>
-            <span className="md:hidden">{shortenAddress(item.address)}</span>
-          </code>
-          <span className="mt-0.5 truncate text-xs text-gray-500">{chainName}</span>
+          <RowText item={item} chainName={chainName} />
         </motion.span>
         <span className="flex-shrink-0 flex flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-2">
           <motion.span
@@ -99,6 +94,25 @@ const FeedRow = ({ item, chainName, now, animateIn: animateInProp }: FeedRowProp
     </motion.li>
   );
 };
+
+// <code> gets the app's monospace font (index.css). Tailwind's font-mono is not set up in this app.
+const Address = ({ address, className }: { address: string; className: string }) => (
+  <code className={`truncate text-ceruleanBlue-500 ${className}`}>
+    <span className="hidden md:inline">{address}</span>
+    <span className="md:hidden">{shortenAddress(address)}</span>
+  </code>
+);
+
+// Line 1: the address. Line 2: the contract name (if the server sent one) and the chain.
+const RowText = ({ item, chainName }: { item: LiveItem; chainName: string }) => (
+  <>
+    <Address address={item.address} className="text-[13px]" />
+    <span className="mt-0.5 truncate text-xs text-gray-500">
+      {item.name && <span className="font-medium text-gray-700">{item.name} · </span>}
+      {chainName}
+    </span>
+  </>
+);
 
 const PlaceholderRow = () => (
   <li aria-hidden className={`flex items-center gap-3 px-3 ${ROW_HEIGHT_CLASS}`}>
