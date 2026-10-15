@@ -11,9 +11,9 @@ type LiveFeedProps = {
   chainMap: ChainMap;
 };
 
-// The list always shows 6 full rows and about three quarters of the 7th row. A new item never moves the rest of the page,
+// The list always shows 6 full rows and about 60% of the 7th row. A new item never moves the rest of the page,
 // and the cut row shows that the list scrolls.
-const VISIBLE_ROWS = 6.75;
+const VISIBLE_ROWS = 6.6;
 
 // Every row has the same height. Small screens use two lines per row.
 const ROW_HEIGHT_CLASS = "h-14 sm:h-11";
@@ -53,19 +53,10 @@ const FeedRow = ({ item, chainName, now, animateIn: animateInProp }: FeedRowProp
       transition={{ height: { type: "spring", stiffness: 260, damping: 30 }, opacity: { duration: 0.25 } }}
     >
       {animateIn && (
-        // A short blue glow that fades out marks the new row.
+        // A green line on the left edge marks the new row and then fades out.
         <motion.span
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ceruleanBlue-200/70 via-ceruleanBlue-100/60 to-transparent"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 0 }}
-          transition={{ delay: 0.8, duration: 2.2, ease: "easeOut" }}
-        />
-      )}
-      {animateIn && (
-        <motion.span
-          aria-hidden
-          className="pointer-events-none absolute left-0 top-0 h-full w-1 bg-ceruleanBlue-500"
+          className="pointer-events-none absolute left-0 top-0 h-full w-1 bg-green-500"
           initial={{ scaleY: 0, opacity: 1 }}
           animate={{ scaleY: 1, opacity: 0 }}
           transition={{ scaleY: { duration: 0.35 }, opacity: { delay: 1.2, duration: 1.5 } }}
