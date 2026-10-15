@@ -2,9 +2,7 @@ import arbitrumLogo from "./logos/arbitrum.svg";
 import optimismLogo from "./logos/optimism.svg";
 import gnosisLogo from "./logos/gnosis.svg";
 import baseLogo from "./logos/base.svg";
-import scrollLogo from "./logos/scroll.svg";
 import lineaLogo from "./logos/linea.svg";
-import hederaLogo from "./logos/hedera.svg";
 import ethereumLogo from "./logos/ethereum.svg";
 
 export const chains = [
@@ -41,16 +39,16 @@ export const chains = [
     logo: baseLogo,
   },
   {
-    name: "Scroll",
-    logo: scrollLogo,
-  },
-  {
     name: "Linea",
     logo: lineaLogo,
   },
   {
-    name: "Hedera",
-    logo: hederaLogo,
+    name: "Robinhood Chain",
+    logo: new URL("./logos/robinhood.png", import.meta.url).href,
+  },
+  {
+    name: "Zora",
+    logo: new URL("./logos/zora.png", import.meta.url).href,
   },
 ];
 

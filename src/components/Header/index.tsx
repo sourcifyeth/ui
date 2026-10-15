@@ -5,7 +5,7 @@ import { Tooltip } from "react-tooltip";
 import { SiMatrix } from "react-icons/si";
 import { RiTwitterXFill } from "react-icons/ri";
 import logoText from "../../assets/logo-rounded.svg";
-import { DOCS_URL, PLAYGROUND_URL, REPOSITORY_URL } from "../../constants";
+import { DOCS_URL } from "../../constants";
 
 const Header = ({ className }: { className?: string }) => {
   const [showNav, setShowNav] = useState(false);
@@ -79,12 +79,6 @@ const Header = ({ className }: { className?: string }) => {
             </Link>
             <a
               className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
-              href={REPOSITORY_URL}
-            >
-              Contract Repo
-            </a>
-            <a
-              className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
               href="https://4byte.sourcify.dev"
             >
               4byte
@@ -97,9 +91,6 @@ const Header = ({ className }: { className?: string }) => {
               href="https://docs.sourcify.dev/blog/"
             >
               Blog
-            </a>
-            <a className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" href={PLAYGROUND_URL}>
-              Playground
             </a>
             <div className="flex items-center ml-2 mt-4 lg:mt-0">
               <iframe
