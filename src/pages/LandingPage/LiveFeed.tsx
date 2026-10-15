@@ -15,9 +15,9 @@ type LiveFeedProps = {
 // and the cut row shows that the list scrolls.
 const VISIBLE_ROWS = 6.6;
 
-// Every row has the same height. Small screens use two lines per row.
-const ROW_HEIGHT_CLASS = "h-14 sm:h-11";
-const LIST_HEIGHT_CLASS = "h-[375px] sm:h-[294px]"; // VISIBLE_ROWS x row height (56px / 44px) + 2px border
+// Every row has the same height and two lines: the address, and the chain below it.
+const ROW_HEIGHT_CLASS = "h-[52px]";
+const LIST_HEIGHT_CLASS = "h-[345px]"; // VISIBLE_ROWS x row height (52px) + 2px border
 // Scrolls with the wheel, touch and keyboard, but shows no scroll bar.
 const HIDE_SCROLLBAR_CLASS = "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 // The browser must not move the scroll position by itself when a row grows. LiveFeed does that (see useLayoutEffect).
@@ -69,15 +69,19 @@ const FeedRow = ({ item, chainName, now, animateIn: animateInProp }: FeedRowProp
         className={`relative flex items-center gap-2 px-3 text-sm hover:bg-ceruleanBlue-50 ${ROW_HEIGHT_CLASS}`}
         title={`${item.address} on ${chainName}`}
       >
-        {/* On small screens the chain name goes on a second line, so the address is never cut. */}
+        {/* The full address fits from the md breakpoint. Smaller screens show the short form. */}
         <motion.span
-          className="flex-1 min-w-0 flex flex-col sm:flex-row sm:gap-1 text-gray-700"
+          className="flex-1 min-w-0 flex flex-col leading-tight"
           initial={animateIn ? { x: -12, opacity: 0 } : false}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.35, ease: "easeOut" }}
         >
-          <span className="font-mono text-ceruleanBlue-500 whitespace-nowrap">{shortenAddress(item.address)}</span>
-          <span className="truncate text-xs sm:text-sm text-gray-500 sm:text-gray-700">on {chainName}</span>
+          {/* <code> gets the app's monospace font (index.css). Tailwind's font-mono is not set up in this app. */}
+          <code className="truncate text-[13px] text-ceruleanBlue-500">
+            <span className="hidden md:inline">{item.address}</span>
+            <span className="md:hidden">{shortenAddress(item.address)}</span>
+          </code>
+          <span className="mt-0.5 truncate text-xs text-gray-500">{chainName}</span>
         </motion.span>
         <span className="flex-shrink-0 flex flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-2">
           <motion.span
