@@ -36,9 +36,9 @@ describe("parseLiveEvent", () => {
 });
 
 describe("mergeLiveItems", () => {
-  it("puts newest first, removes duplicates and keeps at most 5", () => {
+  it("puts newest first, removes duplicates and keeps at most max items", () => {
     const current = [item("5"), item("4"), item("3"), item("2"), item("1")];
-    const merged = mergeLiveItems(current, [item("6"), item("5")]);
+    const merged = mergeLiveItems(current, [item("6"), item("5")], 5);
     expect(merged.map((i) => i.matchId)).toEqual(["6", "5", "4", "3", "2"]);
   });
 

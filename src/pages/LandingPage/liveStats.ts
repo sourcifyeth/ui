@@ -16,7 +16,7 @@ export type LiveEvent = {
   items: LiveItem[];
 };
 
-export const MAX_FEED_ITEMS = 5;
+export const MAX_FEED_ITEMS = 30;
 
 function isLiveItem(value: unknown): value is LiveItem {
   if (!value || typeof value !== "object") return false;

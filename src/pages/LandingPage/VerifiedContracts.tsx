@@ -182,7 +182,7 @@ const Chart = () => {
             transition={{ duration: 0.6 }}
             className="w-full"
           >
-            <h2 className="text-5xl md:text-8xl font-bold text-ceruleanBlue-500">{displayTotal.toLocaleString()}</h2>
+            <h2 className="text-5xl md:text-8xl font-bold text-ceruleanBlue-500 tabular-nums">{displayTotal.toLocaleString()}</h2>
             <h2 className="text-2xl md:text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
             {live.total !== null && live.items.length > 0 && (
               <LiveFeed items={live.items} isLive={live.isLive} chainMap={sourcifyChainMap} />
