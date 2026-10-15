@@ -11,13 +11,13 @@ type LiveFeedProps = {
   chainMap: ChainMap;
 };
 
-// The list always shows 8 full rows and half of the 9th row. A new item never moves the rest of the page,
+// The list always shows 6 full rows and half of the 7th row. A new item never moves the rest of the page,
 // and the cut row shows that the list scrolls.
-const VISIBLE_ROWS = 8.5;
+const VISIBLE_ROWS = 6.5;
 
 // Every row has the same height. Small screens use two lines per row.
 const ROW_HEIGHT_CLASS = "h-14 sm:h-11";
-const LIST_HEIGHT_CLASS = "h-[478px] sm:h-[376px]"; // VISIBLE_ROWS x row height (56px / 44px) + 2px border
+const LIST_HEIGHT_CLASS = "h-[366px] sm:h-[288px]"; // VISIBLE_ROWS x row height (56px / 44px) + 2px border
 // Scrolls with the wheel, touch and keyboard, but shows no scroll bar.
 const HIDE_SCROLLBAR_CLASS = "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 // The browser must not move the scroll position by itself when a row grows. LiveFeed does that (see useLayoutEffect).
