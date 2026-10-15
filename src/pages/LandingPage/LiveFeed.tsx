@@ -17,7 +17,7 @@ const VISIBLE_ROWS = 6.75;
 
 // Every row has the same height. Small screens use two lines per row.
 const ROW_HEIGHT_CLASS = "h-14 sm:h-11";
-const LIST_HEIGHT_CLASS = "h-[380px] sm:h-[299px]"; // VISIBLE_ROWS x row height (56px / 44px) + 2px border
+const LIST_HEIGHT_CLASS = "h-[375px] sm:h-[294px]"; // VISIBLE_ROWS x row height (56px / 44px) + 2px border
 // Scrolls with the wheel, touch and keyboard, but shows no scroll bar.
 const HIDE_SCROLLBAR_CLASS = "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 // The browser must not move the scroll position by itself when a row grows. LiveFeed does that (see useLayoutEffect).
