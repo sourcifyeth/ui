@@ -10,22 +10,14 @@ import { DOCS_URL } from "../../constants";
 const Header = ({ className }: { className?: string }) => {
   const [showNav, setShowNav] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 1024); // tailwind md=768px
-  const [isScrolled, setIsScrolled] = useState(false);
-
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-
     const handleResize = () => {
       setIsDesktop(window.innerWidth > 1024);
     };
 
-    window.addEventListener("scroll", handleScroll);
     window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
     };
   }, []);
@@ -34,11 +26,7 @@ const Header = ({ className }: { className?: string }) => {
     setShowNav((prev) => !prev);
   };
   return (
-    <div
-      className={`flex w-full p-4 sticky top-0 backdrop-filter backdrop-blur-sm bg-gray-100 bg-opacity-70 ${
-        isScrolled ? "first:shadow-md" : ""
-      } z-10 ${className}`}
-    >
+    <div className={`flex w-full p-4 relative bg-gray-100 z-10 ${className}`}>
       <div className="flex flex-wrap lg:flex-nowrap items-center justify-between max-w-[100rem] w-full mx-auto px-8 md:px-12 lg:px-12 xl:px-24 ">
         <Tooltip id="social-tooltip" />
         <div className="flex items-center">
