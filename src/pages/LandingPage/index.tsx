@@ -10,7 +10,7 @@ import Header from "../../components/Header";
 import { DOCS_URL } from "../../constants";
 import VerifiedContracts from "./VerifiedContracts";
 import { bytecode, solidityCode } from "./example";
-import AboutSection from "./AboutSection";
+import WhatWeSolve from "./WhatWeSolve";
 import SupportedChains from "./SupportedChains";
 import Tooling from "./Tooling";
 import FAQ from "./FAQ";
@@ -182,7 +182,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <AboutSection />
+      <WhatWeSolve />
       <SupportedChains />
       {/* Verified contract stats */}
       <section
@@ -212,6 +212,9 @@ const LandingPage = () => {
             <div className="text-ceruleanBlue-200 flex flex-col md:flex-row flex-wrap justify-center gap-x-8">
               <a href="https://docs.sourcify.dev" className="hover:text-ceruleanBlue-100 block">
                 Documentation
+              </a>
+              <a href="https://docs.sourcify.dev/blog/" className="hover:text-ceruleanBlue-100 block">
+                Blog
               </a>
               <a href="https://docs.sourcify.dev/docs/repository/" className="hover:text-ceruleanBlue-100 block">
                 Contract Repository

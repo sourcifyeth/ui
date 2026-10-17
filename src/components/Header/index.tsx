@@ -5,27 +5,19 @@ import { Tooltip } from "react-tooltip";
 import { SiMatrix } from "react-icons/si";
 import { RiTwitterXFill } from "react-icons/ri";
 import logoText from "../../assets/logo-rounded.svg";
-import { DOCS_URL, PLAYGROUND_URL, REPOSITORY_URL } from "../../constants";
+import { DOCS_URL } from "../../constants";
 
 const Header = ({ className }: { className?: string }) => {
   const [showNav, setShowNav] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 1024); // tailwind md=768px
-  const [isScrolled, setIsScrolled] = useState(false);
-
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-
     const handleResize = () => {
       setIsDesktop(window.innerWidth > 1024);
     };
 
-    window.addEventListener("scroll", handleScroll);
     window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
     };
   }, []);
@@ -34,11 +26,7 @@ const Header = ({ className }: { className?: string }) => {
     setShowNav((prev) => !prev);
   };
   return (
-    <div
-      className={`flex w-full p-4 sticky top-0 backdrop-filter backdrop-blur-sm bg-gray-100 bg-opacity-70 ${
-        isScrolled ? "first:shadow-md" : ""
-      } z-10 ${className}`}
-    >
+    <div className={`flex w-full p-4 relative bg-gray-100 z-10 ${className}`}>
       <div className="flex flex-wrap lg:flex-nowrap items-center justify-between max-w-[100rem] w-full mx-auto px-8 md:px-12 lg:px-12 xl:px-24 ">
         <Tooltip id="social-tooltip" />
         <div className="flex items-center">
@@ -79,27 +67,12 @@ const Header = ({ className }: { className?: string }) => {
             </Link>
             <a
               className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
-              href={REPOSITORY_URL}
-            >
-              Contract Repo
-            </a>
-            <a
-              className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
               href="https://4byte.sourcify.dev"
             >
               4byte
             </a>
             <a className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" href={DOCS_URL}>
               Docs
-            </a>
-            <a
-              className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
-              href="https://docs.sourcify.dev/blog/"
-            >
-              Blog
-            </a>
-            <a className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500" href={PLAYGROUND_URL}>
-              Playground
             </a>
             <div className="flex items-center ml-2 mt-4 lg:mt-0">
               <iframe

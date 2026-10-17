@@ -85,3 +85,13 @@ html {
 .hover-to-fill:hover > svg {
   fill: var(--color-primary);
 }
+
+/* Timer bar of the "What problems we solve" card stack */
+@keyframes wws-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
