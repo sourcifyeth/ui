@@ -4,9 +4,11 @@ interface MatchBadgeProps {
   match: "match" | "exact_match" | null;
   className?: string;
   small?: boolean;
+  /** Shows an explanation of the match level on hover. */
+  showTooltip?: boolean;
 }
 
-const MatchBadge = ({ match, className = "", small = false }: MatchBadgeProps) => {
+const MatchBadge = ({ match, className = "", small = false, showTooltip = true }: MatchBadgeProps) => {
   const sizeClasses = small ? "px-2 py-1 text-xs md:text-sm whitespace-nowrap" : "px-2 py-1 md:px-3 md:py-1 text-sm md:text-base whitespace-nowrap";
   const iconSize = small ? "text-xl" : "text-2xl md:text-3xl";
 
@@ -28,9 +30,9 @@ const MatchBadge = ({ match, className = "", small = false }: MatchBadgeProps) =
 
   return (
     <span
-      className={`inline-flex items-center ${sizeClasses} rounded-md font-semibold border bg-green-100 text-green-800 border-green-200 cursor-help flex-shrink-0 ${className}`}
-      data-tooltip-id="global-tooltip"
-      data-tooltip-content={tooltipContent}
+      className={`inline-flex items-center ${sizeClasses} rounded-md font-semibold border bg-green-100 text-green-800 border-green-200 ${showTooltip ? "cursor-help" : ""} flex-shrink-0 ${className}`}
+      data-tooltip-id={showTooltip ? "global-tooltip" : undefined}
+      data-tooltip-content={showTooltip ? tooltipContent : undefined}
     >
       <span className={`mr-1 ${iconSize}`}>
         {isExactMatch ? <IoCheckmarkDoneCircle /> : <IoCheckmarkCircle />}

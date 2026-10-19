@@ -3,13 +3,18 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { Context } from "../../Context";
 import ChainSelect from "../../components/ChainSelect";
-import { motion, useInView } from "framer-motion";
+import { animate, motion, useInView, useReducedMotion } from "framer-motion";
 import Button from "../../components/Button";
 import { FaDownload } from "react-icons/fa";
 import { FiInfo } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import useLiveStats from "./useLiveStats";
+import LiveFeed from "./LiveFeed";
+import { formatRelativeTime } from "./liveStats";
 
 const NUMBER_OF_TOP_CHAINS = 10;
+// The live total usually arrives within a few hundred ms. Waiting avoids a count-up to the stats.json total and then a jump.
+const LIVE_TOTAL_WAIT_MS = 1000;
 
 type statsType = {
   [key: string]: {
@@ -41,20 +46,49 @@ function formatBytes(bytes: number): string {
   return (bytes / 1e3).toFixed(1) + " KB";
 }
 
-function timeAgo(isoDate: string): string {
-  const diff = Math.floor((Date.now() - new Date(isoDate).getTime()) / 1000);
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+/**
+ * Animates the shown number towards `target`. The first value counts up from 0 (as before);
+ * later values (live updates) use a short tween from the current shown value.
+ */
+function useAnimatedNumber(target: number | null, reduceMotion: boolean): number {
+  const [display, setDisplay] = useState(0);
+  const displayRef = useRef(0);
+  const hasAnimatedRef = useRef(false);
+
+  useEffect(() => {
+    if (target === null) return;
+    const set = (value: number) => {
+      displayRef.current = value;
+      setDisplay(value);
+    };
+    if (reduceMotion) {
+      set(target);
+      hasAnimatedRef.current = true;
+      return;
+    }
+    const isFirst = !hasAnimatedRef.current;
+    hasAnimatedRef.current = true;
+    const controls = animate(displayRef.current, target, {
+      duration: isFirst ? 1 : 0.6,
+      ease: isFirst ? "linear" : "easeOut",
+      onUpdate: (value) => set(Math.round(value)),
+    });
+    return () => controls.stop();
+  }, [target, reduceMotion]);
+
+  return display;
 }
 
 const Chart = () => {
   const { sourcifyChainMap, sourcifyChains } = useContext(Context);
   const [selectedChain, setSelectedChain] = useState<string>("1");
-  const [displayTotal, setDisplayTotal] = useState(0);
   const sectionRef = useRef(null);
   const isSectionInView = useInView(sectionRef, { once: true });
+  // Separate from the one above: the live stream is only open while the section is on screen.
+  const isSectionOnScreen = useInView(sectionRef);
+  const reduceMotion = !!useReducedMotion();
   const [stats, setStats] = useState<statsType | undefined>(undefined);
+  const live = useLiveStats(isSectionOnScreen);
 
   const [datasetStats, setDatasetStats] = useState<DatasetStatsType | null>(null);
 
@@ -86,31 +120,18 @@ const Chart = () => {
       .catch(() => console.error("error fetching dataset stats"));
   }, []);
 
+  // Wait briefly for the live total, then show the daily stats.json total until the live one arrives.
+  const [isFallbackReady, setIsFallbackReady] = useState(false);
   useEffect(() => {
-    if (stats && isSectionInView) {
-      const total = Object.values(stats || {}).reduce((prev, curr, i) => {
-        return prev + curr.full_match + curr.partial_match;
-      }, 0);
-      setDisplayTotal(total);
-
-      const duration = 1000; // 1 second animation
-      const steps = 60; // Number of steps
-      const increment = total / steps;
-      let current = 0;
-
-      const timer = setInterval(() => {
-        current += increment;
-        if (current >= total) {
-          setDisplayTotal(total);
-          clearInterval(timer);
-        } else {
-          setDisplayTotal(Math.floor(current));
-        }
-      }, duration / steps);
-
-      return () => clearInterval(timer);
-    }
-  }, [stats, isSectionInView]);
+    if (!isSectionInView) return;
+    const timer = setTimeout(() => setIsFallbackReady(true), LIVE_TOTAL_WAIT_MS);
+    return () => clearTimeout(timer);
+  }, [isSectionInView]);
+  const fallbackTotal = stats
+    ? Object.values(stats).reduce((prev, curr) => prev + curr.full_match + curr.partial_match, 0)
+    : null;
+  const targetTotal = live.total ?? (isFallbackReady ? fallbackTotal : null);
+  const displayTotal = useAnimatedNumber(isSectionInView ? targetTotal : null, reduceMotion);
 
   const getFormattedChainData = (key: string) => {
     const keyInt = parseInt(key);
@@ -160,9 +181,13 @@ const Chart = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={isSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6 }}
+            className="w-full"
           >
-            <h2 className="text-5xl md:text-8xl font-bold text-ceruleanBlue-500">{displayTotal.toLocaleString()}</h2>
+            <h2 className="text-5xl md:text-8xl font-bold text-ceruleanBlue-500 tabular-nums">{displayTotal.toLocaleString()}</h2>
             <h2 className="text-2xl md:text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
+            {live.total !== null && live.items.length > 0 && (
+              <LiveFeed items={live.items} isLive={live.isLive} chainMap={sourcifyChainMap} />
+            )}
             <a
               href="https://stats.sourcify.dev"
               target="_blank"
@@ -192,7 +217,7 @@ const Chart = () => {
                   />
                 </div>
                 <span className="text-sm md:text-base text-gray-600 mt-1">parquet export size</span>
-                <span className="text-xs text-gray-400 mt-0.5">updated {timeAgo(datasetStats.generatedAt)}</span>
+                <span className="text-xs text-gray-400 mt-0.5">updated {formatRelativeTime(datasetStats.generatedAt, Date.now())}</span>
               </div>
 
               {/* Database size */}
