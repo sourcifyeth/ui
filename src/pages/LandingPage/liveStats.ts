@@ -72,9 +72,12 @@ export function mergeLiveItems(current: LiveItem[], incoming: LiveItem[], max = 
   const byId = new Map<string, LiveItem>();
   for (const item of current) byId.set(item.matchId, item);
   for (const item of incoming) byId.set(item.matchId, item);
-  return Array.from(byId.values())
+  const merged = Array.from(byId.values())
     .sort((a, b) => compareMatchIds(b.matchId, a.matchId))
     .slice(0, max);
+  // Keep the same array if nothing changed (e.g. a reconnect snapshot), so React does not render again.
+  const unchanged = merged.length === current.length && merged.every((item, i) => item.matchId === current[i].matchId);
+  return unchanged ? current : merged;
 }
 
 /** 0x0d89Cb4f4220B7BECB5A54f9e16De41a615987FC -> 0x0d89…87FC */

@@ -10,8 +10,11 @@ import { FiInfo } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import useLiveStats from "./useLiveStats";
 import LiveFeed from "./LiveFeed";
+import { formatRelativeTime } from "./liveStats";
 
 const NUMBER_OF_TOP_CHAINS = 10;
+// The live total usually arrives within a few hundred ms. Waiting avoids a count-up to the stats.json total and then a jump.
+const LIVE_TOTAL_WAIT_MS = 1000;
 
 type statsType = {
   [key: string]: {
@@ -41,13 +44,6 @@ function formatBytes(bytes: number): string {
   if (bytes >= 1e9) return (bytes / 1e9).toFixed(1) + " GB";
   if (bytes >= 1e6) return (bytes / 1e6).toFixed(1) + " MB";
   return (bytes / 1e3).toFixed(1) + " KB";
-}
-
-function timeAgo(isoDate: string): string {
-  const diff = Math.floor((Date.now() - new Date(isoDate).getTime()) / 1000);
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
 }
 
 /**
@@ -124,12 +120,17 @@ const Chart = () => {
       .catch(() => console.error("error fetching dataset stats"));
   }, []);
 
-  // stats.json total: used only when the live stream is not available (see useLiveStats).
+  // Wait briefly for the live total, then show the daily stats.json total until the live one arrives.
+  const [isFallbackReady, setIsFallbackReady] = useState(false);
+  useEffect(() => {
+    if (!isSectionInView) return;
+    const timer = setTimeout(() => setIsFallbackReady(true), LIVE_TOTAL_WAIT_MS);
+    return () => clearTimeout(timer);
+  }, [isSectionInView]);
   const fallbackTotal = stats
     ? Object.values(stats).reduce((prev, curr) => prev + curr.full_match + curr.partial_match, 0)
     : null;
-  // Once a live value has arrived, the fallback is never used again, so the counter does not jump back.
-  const targetTotal = live.total ?? (live.useFallback ? fallbackTotal : null);
+  const targetTotal = live.total ?? (isFallbackReady ? fallbackTotal : null);
   const displayTotal = useAnimatedNumber(isSectionInView ? targetTotal : null, reduceMotion);
 
   const getFormattedChainData = (key: string) => {
@@ -216,7 +217,7 @@ const Chart = () => {
                   />
                 </div>
                 <span className="text-sm md:text-base text-gray-600 mt-1">parquet export size</span>
-                <span className="text-xs text-gray-400 mt-0.5">updated {timeAgo(datasetStats.generatedAt)}</span>
+                <span className="text-xs text-gray-400 mt-0.5">updated {formatRelativeTime(datasetStats.generatedAt, Date.now())}</span>
               </div>
 
               {/* Database size */}

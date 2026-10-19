@@ -2,9 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { LIVE_STATS_URL } from "../../constants";
 import { LiveItem, mergeLiveItems, parseLiveEvent } from "./liveStats";
 
-// If the stream sends nothing within this time after the first connect, the caller shows the fallback total.
-const FIRST_EVENT_TIMEOUT_MS = 5000;
-
 export type LiveStats = {
   /** Latest live total, or null if no live event has arrived yet. */
   total: number | null;
@@ -12,8 +9,6 @@ export type LiveStats = {
   items: LiveItem[];
   /** True while the stream is open and has delivered at least one event. */
   isLive: boolean;
-  /** True if the stream failed or timed out before the first event. Stays false once live data has arrived. */
-  useFallback: boolean;
 };
 
 function useIsPageVisible(): boolean {
@@ -35,51 +30,38 @@ export default function useLiveStats(enabled: boolean): LiveStats {
   const [total, setTotal] = useState<number | null>(null);
   const [items, setItems] = useState<LiveItem[]>([]);
   const [isConnected, setIsConnected] = useState(false);
-  const [useFallback, setUseFallback] = useState(false);
   const hasReceivedRef = useRef(false);
 
   const shouldConnect = enabled && isPageVisible;
 
   useEffect(() => {
-    if (!shouldConnect || typeof EventSource === "undefined") {
-      if (typeof EventSource === "undefined") setUseFallback(true);
-      return;
-    }
+    if (!shouldConnect || typeof EventSource === "undefined") return;
 
     let source: EventSource;
     try {
       source = new EventSource(LIVE_STATS_URL);
     } catch {
-      setUseFallback(true);
       return;
     }
 
-    // Until the first event arrives, fall back after a timeout. After that, reconnects keep the values that we already have.
-    let timeout: ReturnType<typeof setTimeout> | undefined;
-    if (!hasReceivedRef.current) {
-      timeout = setTimeout(() => {
-        if (!hasReceivedRef.current) setUseFallback(true);
-      }, FIRST_EVENT_TIMEOUT_MS);
-    }
+    // After a reconnect the server may send nothing until the next match, so the open stream alone counts as live.
+    source.onopen = () => {
+      if (hasReceivedRef.current) setIsConnected(true);
+    };
 
     source.onmessage = (event: MessageEvent<string>) => {
       const parsed = parseLiveEvent(event.data);
       if (!parsed) return;
       hasReceivedRef.current = true;
-      setUseFallback(false);
       setIsConnected(true);
       setTotal(parsed.total);
       setItems((prev) => mergeLiveItems(prev, parsed.items));
     };
 
     // EventSource reconnects by itself after most errors; we only update the UI state here.
-    source.onerror = () => {
-      setIsConnected(false);
-      if (!hasReceivedRef.current) setUseFallback(true);
-    };
+    source.onerror = () => setIsConnected(false);
 
     return () => {
-      if (timeout) clearTimeout(timeout);
       source.close();
       setIsConnected(false);
     };
@@ -89,6 +71,5 @@ export default function useLiveStats(enabled: boolean): LiveStats {
     total,
     items,
     isLive: isConnected && total !== null,
-    useFallback: useFallback && total === null,
   };
 }

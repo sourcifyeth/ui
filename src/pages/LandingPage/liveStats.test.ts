@@ -69,6 +69,11 @@ describe("mergeLiveItems", () => {
     const current = [item("1")];
     expect(mergeLiveItems(current, [])).toBe(current);
   });
+
+  it("returns the same array when all incoming items are already shown", () => {
+    const current = [item("2"), item("1")];
+    expect(mergeLiveItems(current, [item("2"), item("1")])).toBe(current);
+  });
 });
 
 describe("shortenAddress", () => {
