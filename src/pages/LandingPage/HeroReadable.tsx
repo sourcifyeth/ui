@@ -50,7 +50,13 @@ const TRY_GROUPS: { title: string; icon: IconType; iconClassName: string; exampl
     title: "Verified Contracts",
     icon: IoCheckmarkDoneCircle,
     iconClassName: "bg-green-100 text-green-800 border border-green-200 text-base",
-    examples: [{ prefix: "Contract", value: "0x1F98431c8aD98523631AE4a59f267346ea31F984" }], // Uniswap V3 Factory
+    // Checked on 20 Oct 2026 with the all-chains API: Safe 1.4.1 singleton is verified on 222 chains (221 exact);
+    // the Ethereum Deposit Contract and DAI are exact matches on Ethereum mainnet.
+    examples: [
+      { prefix: "Contract", value: "0x41675C099F32341bf84BFc5382aF534df5C7461a" }, // Safe 1.4.1 singleton
+      { prefix: "Contract", value: "0x00000000219ab540356cBB839Cbe05303d7705Fa" }, // Ethereum Deposit Contract
+      { prefix: "Contract", value: "0x6B175474E89094C44Da98b954EedeAC495271d0F" }, // DAI
+    ],
   },
   {
     title: "4byte Selectors",
@@ -58,7 +64,8 @@ const TRY_GROUPS: { title: string; icon: IconType; iconClassName: string; exampl
     iconClassName: "bg-ceruleanBlue-50 text-ceruleanBlue-500 text-xs",
     examples: [
       { prefix: "Function", value: "0xa9059cbb" },
-      { prefix: "Event", value: "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" },
+      // Uniswap V2 Swap(address,uint256,uint256,uint256,uint256,address): common and different from the transfer example
+      { prefix: "Event", value: "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822" },
       // Timed on 20 Oct 2026: "name(*" searches answer in about 0.3s, and every flashLoan result is a real
       // flash-loan interface. Bare prefixes like "transfer*" took 1-7s and start with junk names.
       { prefix: "Wildcard", value: "flashLoan(*" },
