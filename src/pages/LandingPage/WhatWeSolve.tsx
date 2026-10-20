@@ -475,10 +475,11 @@ const WhatWeSolve = () => {
                   <Card item={item} isFront={isFront} />
                 </div>
                 {isFront && (
-                  // Small hint that the rotation stops while the reader is on the cards
+                  // Small hint that the rotation stops while the reader is on the cards, at the top center of the card.
+                  // Centered with inset-x-0 + mx-auto, not a translate, so it does not clash with motion's transforms.
                   <motion.div
                     animate={{ opacity: isHovered && !reduceMotion ? 1 : 0 }}
-                    className="pointer-events-none absolute right-4 bottom-4 inline-flex items-center gap-1.5 rounded-full bg-gray-800/80 px-3 py-1 text-xs text-white"
+                    className="pointer-events-none absolute inset-x-0 top-3 z-10 mx-auto flex w-fit items-center gap-1.5 rounded-full bg-gray-800/80 px-3 py-1 text-xs text-white"
                     aria-hidden="true"
                   >
                     <FaPause /> Paused
