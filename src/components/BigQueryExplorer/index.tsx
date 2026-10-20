@@ -118,7 +118,7 @@ const BigQueryExplorer = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isTitleInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl text-ceruleanBlue-500 font-bold text-center mb-4"
+          className="text-4xl md:text-5xl text-gray-800 font-bold text-center mb-4"
         >
           Dataset Playground
         </motion.h2>
