@@ -41,7 +41,7 @@ const SupportedChains = () => {
   }, [chainCount, isTitleInView]);
 
   return (
-    <section className="px-8 md:px-12 lg:px-24 bg-gray-100 pt-8 pb-2 text-center" id="supported-chains">
+    <section className="px-8 md:px-12 lg:px-24 bg-gray-100 py-12 md:py-20 text-center" id="supported-chains">
       <motion.div
         ref={titleRef}
         initial={{ opacity: 0, y: 20 }}
@@ -49,11 +49,11 @@ const SupportedChains = () => {
         transition={{ duration: 0.6 }}
       >
         {chainCount ? (
-          <h1 className="text-4xl md:text-5xl text-ceruleanBlue-500 font-light ">
+          <h2 className="text-4xl md:text-5xl text-ceruleanBlue-500 font-light ">
             <div className="text-8xl md:text-9xl font-bold">{displayCount}</div> Chains
-          </h1>
+          </h2>
         ) : (
-          <h1 className="text-3xl md:text-5xl text-ceruleanBlue-500 font-bold">Supported Chains</h1>
+          <h2 className="text-4xl md:text-5xl text-ceruleanBlue-500 font-bold">Supported Chains</h2>
         )}
       </motion.div>
 
@@ -61,7 +61,7 @@ const SupportedChains = () => {
         className="!rounded-xl !text-lg !bg-ceruleanBlue-100 !text-ceruleanBlue-600 !opacity-100 !px-6 !py-4 !z-50"
         id="supported-chains-tooltip"
       />
-      <div className="flex flex-col items-center w-full md:mb-8 mt-8 md:mt-16" ref={chainsRef}>
+      <div className="flex flex-col items-center w-full md:mb-8 mt-10 md:mt-12" ref={chainsRef}>
         <div className="flex flex-row justify-center md:w-[50rem] flex-wrap">
           {chains.map((chain, index) => (
             <motion.img

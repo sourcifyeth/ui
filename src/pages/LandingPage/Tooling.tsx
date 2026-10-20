@@ -94,18 +94,18 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
 
   return (
     <section
-      className="w-full flex flex-col items-center text-gray-700 mt-8"
+      className="w-full flex flex-col items-center text-gray-700 py-12 md:py-20"
       id="tooling"
     >
-      <motion.h1
+      <motion.h2
         ref={titleRef}
         initial={{ opacity: 0, y: 20 }}
         animate={isTitleInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6 }}
-        className="text-6xl text-ceruleanBlue-500 font-bold text-center mb-10"
+        className="text-4xl md:text-5xl text-ceruleanBlue-500 font-bold text-center mb-10 md:mb-12"
       >
         Tooling
-      </motion.h1>
+      </motion.h2>
 
       <motion.div
         ref={tabsRef}
@@ -279,11 +279,11 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
         )}
       </motion.div>
 
-      <div className="text-center mx-4 mt-24">
-        <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500 mb-4">
+      <div className="text-center mx-4 mt-16 md:mt-20">
+        <h2 className="text-4xl md:text-5xl font-bold text-ceruleanBlue-500 mb-4">
           Self-hosting
         </h2>
-        <p className="text-sm md:text-lg text-gray-600 mb-12">
+        <p className="text-sm md:text-lg text-gray-600 mb-10 md:mb-12">
           Sourcify is open-source and for self-hosting. Here are some public
           instances we are aware of:
         </p>
@@ -326,7 +326,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
               </motion.a>
             ))}
         </div>
-        <div className="mb-8 mt-4">
+        <div className="mt-6">
           <div className="text-gray-500 mb-2 text-sm">
             Are you running a self-hosted instance?
           </div>
