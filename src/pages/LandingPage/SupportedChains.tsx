@@ -97,7 +97,7 @@ const SupportedChains = () => {
         </div>
         <div className="flex flex-col md:flex-row items-center justify-center gap-4">
           <a href={`${DOCS_URL}/docs/chains`}>
-            <Button className="font-semibold">{`See all ${chainCount.toString() || ""} chains`}</Button>
+            <Button className="font-semibold">{chainCount ? `See all ${chainCount} chains` : "See all chains"}</Button>
           </a>
           <a href={`${DOCS_URL}/docs/chain-support/`}>
             <Button type="secondary" className="font-semibold">
