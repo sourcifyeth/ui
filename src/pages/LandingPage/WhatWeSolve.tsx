@@ -372,9 +372,6 @@ const WhatWeSolve = () => {
           className="text-center mb-10 md:mb-12"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-800">What we solve</h2>
-          <p className="text-lg md:text-xl text-gray-600 mt-4 max-w-3xl mx-auto">
-            Sourcify makes Ethereum verifiable, human-readable, and open-source by default.
-          </p>
         </motion.div>
       </div>
 
@@ -417,7 +414,8 @@ const WhatWeSolve = () => {
                 {isActive && !reduceMotion && (
                   <span
                     key={step}
-                    className="absolute bottom-0 left-0 h-[3px] w-full origin-left bg-ceruleanBlue-500"
+                    // Pink, so the timer stands out on the dark active tab (blue was too dark there)
+                    className="absolute bottom-0 left-0 h-[3px] w-full origin-left bg-pink-400"
                     style={{
                       animation: `wws-progress ${ROTATE_MS}ms linear forwards`,
                       animationPlayState: isPaused ? "paused" : "running",
