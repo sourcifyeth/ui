@@ -2,6 +2,7 @@
   "name": "sourcify-ui",
   "private": true,
   "dependencies": {
+    "@ethereum-sourcify/clear-signing": "0.2.2",
     "@ethersproject/abi": "5.8.0",
     "@ethersproject/address": "5.8.0",
     "@ethersproject/bytes": "5.8.0",

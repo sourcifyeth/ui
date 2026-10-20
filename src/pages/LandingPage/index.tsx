@@ -223,7 +223,7 @@ const LandingPage = () => {
       </section>
       )}
 
-      <WhatWeSolve showHeading={heroVariant === "current"} />
+      <WhatWeSolve />
       {/* Verified contract stats */}
       <section
         className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-12 md:py-20"
