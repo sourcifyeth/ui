@@ -51,13 +51,13 @@ type Result =
 // The three things the box can look up. Each example fills the box and runs the lookup.
 const TRY_GROUPS: { title: string; icon: IconType; iconClassName: string; examples: { label: string; value: string; prefix?: string }[] }[] = [
   {
-    title: "See Verified Contracts",
+    title: "Verified Contracts",
     icon: IoCheckmarkDoneCircle,
     iconClassName: "bg-green-100 text-green-800 border border-green-200 text-base",
     examples: [{ label: "Uniswap V3 Factory", value: "0x1F98431c8aD98523631AE4a59f267346ea31F984" }],
   },
   {
-    title: "Query 4byte Selectors",
+    title: "4byte Selectors",
     icon: FaHashtag,
     iconClassName: "bg-ceruleanBlue-50 text-ceruleanBlue-500 text-xs",
     examples: [
@@ -91,7 +91,10 @@ const kindOf = (query: string): Kind | null => {
   return null;
 };
 
-// Shortens long hex values only; names and signatures stay as they are
+// Chips: long hex values keep their first 12 characters, so the start of the hash is easy to recognize
+const chipValue = (value: string) => (/^0x/i.test(value) && value.length > 12 ? `${value.slice(0, 12)}…` : value);
+
+// Results: shortens long hex values in the middle; names and signatures stay as they are
 const short = (value: string) => (/^0x/i.test(value) && value.length > 14 ? `${value.slice(0, 6)}…${value.slice(-4)}` : value);
 
 const formatCompact = (n: number) =>
@@ -606,10 +609,8 @@ const HeroReadable = () => {
                       title={value}
                     >
                       {/* The value first and larger, then a small label. Only transactions get a "Tx" prefix. */}
-                      <code className="font-mono text-[13px] text-gray-800">
-                        {prefix && <span className="font-sans font-semibold text-gray-500">{prefix} </span>}
-                        {short(value)}
-                      </code>
+                      {prefix && <span className="text-xs font-semibold text-gray-500">{prefix}</span>}
+                      <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[13px] text-gray-800">{chipValue(value)}</code>
                       <span className="text-[11px] text-gray-500">{label}</span>
                     </button>
                   ))}
