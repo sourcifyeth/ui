@@ -689,9 +689,25 @@ const HeroReadable = () => {
           </div>
         </div>
 
+        {/* Proof row: live numbers, each shown only once it has loaded */}
+        <dl
+          className="mt-6 md:mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3 opacity-0 animate-fade-up"
+          style={{ animationDelay: "550ms" }}
+        >
+          {proof.map(({ value, label }) => (
+            <div key={label} className="flex items-baseline gap-1.5">
+              <dt className="sr-only">{label}</dt>
+              <dd className="text-xl md:text-2xl font-bold tabular-nums text-gray-800">{value}</dd>
+              <span className="text-sm text-gray-500" aria-hidden="true">
+                {label}
+              </span>
+            </div>
+          ))}
+        </dl>
+
         <div
           className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-base opacity-0 animate-fade-up"
-          style={{ animationDelay: "550ms" }}
+          style={{ animationDelay: "700ms" }}
         >
           <a
             href={process.env.REACT_APP_VERIFY_URL}
@@ -705,22 +721,6 @@ const HeroReadable = () => {
             Documentation <FiArrowRight aria-hidden="true" />
           </a>
         </div>
-
-        {/* Proof row: live numbers, each shown only once it has loaded */}
-        <dl
-          className="mt-6 md:mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3 opacity-0 animate-fade-up"
-          style={{ animationDelay: "700ms" }}
-        >
-          {proof.map(({ value, label }) => (
-            <div key={label} className="flex items-baseline gap-1.5">
-              <dt className="sr-only">{label}</dt>
-              <dd className="text-xl md:text-2xl font-bold tabular-nums text-gray-800">{value}</dd>
-              <span className="text-sm text-gray-500" aria-hidden="true">
-                {label}
-              </span>
-            </div>
-          ))}
-        </dl>
       </div>
     </section>
   );
