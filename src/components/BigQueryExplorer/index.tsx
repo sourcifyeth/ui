@@ -111,18 +111,18 @@ const BigQueryExplorer = () => {
   };
 
   return (
-    <section className="px-4 md:px-12 lg:px-24 bg-gray-100 mb-12">
+    <section className="px-4 md:px-12 lg:px-24 bg-gray-100 py-12 md:py-20">
       <div className="max-w-7xl mx-auto">
-        <motion.h1
+        <motion.h2
           ref={titleRef}
           initial={{ opacity: 0, y: 20 }}
           animate={isTitleInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
-          className="md:text-6xl text-4xl text-ceruleanBlue-500 font-bold text-center mb-4"
+          className="text-4xl md:text-5xl text-ceruleanBlue-500 font-bold text-center mb-4"
         >
           Dataset Playground
-        </motion.h1>
-        <p className="text-gray-600 mb-6 text-center max-w-3xl mx-auto text-sm md:text-base">
+        </motion.h2>
+        <p className="text-gray-600 mb-10 md:mb-12 text-center max-w-3xl mx-auto text-sm md:text-base">
           Write a SQL query and execute it against the Sourcify dataset in BigQuery.
         </p>
         <AIGenerator

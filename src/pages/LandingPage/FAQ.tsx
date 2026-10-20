@@ -156,12 +156,12 @@ export default function FAQ() {
   ];
 
   return (
-    <section ref={faqRef} className="w-full flex flex-col items-center py-16 bg-ceruleanBlue-100">
+    <section ref={faqRef} className="w-full flex flex-col items-center py-12 md:py-20 bg-ceruleanBlue-100">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         animate={isFAQInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6 }}
-        className="text-6xl font-bold text-ceruleanBlue-500 mb-12"
+        className="text-4xl md:text-5xl font-bold text-ceruleanBlue-500 mb-10 md:mb-12"
       >
         F.A.Q.
       </motion.h2>

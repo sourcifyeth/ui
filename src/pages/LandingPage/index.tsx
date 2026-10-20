@@ -185,7 +185,7 @@ const LandingPage = () => {
       <WhatWeSolve />
       {/* Verified contract stats */}
       <section
-        className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 pt-24 pb-16"
+        className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-12 md:py-20"
         id="contract-stats"
       >
         <VerifiedContracts />
