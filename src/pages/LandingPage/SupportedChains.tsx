@@ -53,7 +53,7 @@ const SupportedChains = () => {
             <div className="text-8xl md:text-9xl font-bold">{displayCount}</div> Chains
           </h2>
         ) : (
-          <h2 className="text-4xl md:text-5xl text-ceruleanBlue-500 font-bold">Supported Chains</h2>
+          <h2 className="text-4xl md:text-5xl text-gray-800 font-bold">Supported Chains</h2>
         )}
       </motion.div>
 

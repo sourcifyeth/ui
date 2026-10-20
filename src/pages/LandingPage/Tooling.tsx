@@ -103,7 +103,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
         initial={{ opacity: 0, y: 20 }}
         animate={isTitleInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6 }}
-        className="text-4xl md:text-5xl text-ceruleanBlue-500 font-bold text-center mb-10 md:mb-12"
+        className="text-4xl md:text-5xl text-gray-800 font-bold text-center mb-10 md:mb-12"
       >
         Tooling
       </motion.h2>
@@ -281,7 +281,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
       </motion.div>
 
       <div className="text-center mx-4 mt-16 md:mt-20">
-        <h2 className="text-4xl md:text-5xl font-bold text-ceruleanBlue-500 mb-4">
+        <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
           Self-hosting
         </h2>
         <p className="text-sm md:text-lg text-gray-600 mb-10 md:mb-12">
