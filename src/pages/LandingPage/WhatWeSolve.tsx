@@ -20,11 +20,12 @@ import feLogo from "../../assets/languages/fe.svg";
 
 // How long each card stays in front before the stack rotates
 const ROTATE_MS = 7000;
-// How much of the previous and next card shows at each side, and the space between cards
+// The smallest part of the previous and next card that shows at each side, and the space between cards.
+// On wide screens the side cards show more, up to the page edge.
 const PEEK_PX = { small: 16, large: 56 };
 const GAP_PX = { small: 12, large: 24 };
-// Cards drawn on each side of the active one. The outer ones are off screen, so a card can always slide in.
-const SIDE_CARDS = 2;
+// The active card is never wider than this, about the width of the page content (max-w-6xl)
+const MAX_CARD_PX = 1088;
 
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 
@@ -340,7 +341,9 @@ const WhatWeSolve = () => {
   const isSmall = trackWidth < 640;
   const peek = isSmall ? PEEK_PX.small : PEEK_PX.large;
   const gap = isSmall ? GAP_PX.small : GAP_PX.large;
-  const cardWidth = Math.max(trackWidth - 2 * (peek + gap), 0);
+  const cardWidth = Math.min(Math.max(trackWidth - 2 * (peek + gap), 0), MAX_CARD_PX);
+  // Cards drawn on each side of the active one: enough to fill the screen, plus one off screen, so a card can always slide in
+  const sideCards = cardWidth > 0 ? Math.ceil((trackWidth - cardWidth) / 2 / (cardWidth + gap)) + 1 : 0;
 
   // Go to a card by the shortest way, left or right
   const goTo = (index: number) => {
@@ -353,7 +356,7 @@ const WhatWeSolve = () => {
   // Until the track width is known, draw only the active card at full width
   const steps =
     trackWidth > 0
-      ? Array.from({ length: 2 * SIDE_CARDS + 1 }, (_, i) => step - SIDE_CARDS + i)
+      ? Array.from({ length: 2 * sideCards + 1 }, (_, i) => step - sideCards + i)
       : [step];
 
   return (
@@ -371,115 +374,119 @@ const WhatWeSolve = () => {
             Sourcify makes Ethereum verifiable, human-readable, and open-source by default.
           </p>
         </motion.div>
+      </div>
 
+      <div
+        onMouseEnter={() => setIsHovered(true)}
+        // Also on move: if the page loads under the mouse, no mouseenter event comes
+        onMouseMove={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        // Keyboard users also pause it. A mouse click does not, so the rotation goes on after the mouse leaves.
+        onFocus={(e) => setIsFocused(e.target.matches(":focus-visible"))}
+        onBlur={() => setIsFocused(false)}
+      >
+        {/* Tabs: one per card, with a timer bar under the active one */}
         <div
-          onMouseEnter={() => setIsHovered(true)}
-          // Also on move: if the page loads under the mouse, no mouseenter event comes
-          onMouseMove={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          // Keyboard users also pause it. A mouse click does not, so the rotation goes on after the mouse leaves.
-          onFocus={(e) => setIsFocused(e.target.matches(":focus-visible"))}
-          onBlur={() => setIsFocused(false)}
+          role="tablist"
+          aria-label="Problems Sourcify solves"
+          className="max-w-6xl mx-auto px-4 flex flex-wrap justify-center gap-2 mb-6"
         >
-          {/* Tabs: one per card, with a timer bar under the active one */}
-          <div role="tablist" aria-label="Problems Sourcify solves" className="flex flex-wrap justify-center gap-2 mb-6">
-            {problems.map((item, index) => {
-              const isActive = index === active;
-              return (
-                <button
-                  key={item.id}
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-controls={`wws-card-${item.id}`}
-                  onClick={() => goTo(index)}
-                  className={`relative overflow-hidden rounded-full px-4 py-2 text-sm md:text-base font-medium transition-colors ${
-                    isActive ? "text-white" : "text-gray-600 hover:text-gray-900 hover:bg-white"
-                  }`}
-                >
-                  {isActive && (
-                    <motion.span
-                      layoutId="wws-active-tab"
-                      className="absolute inset-0 rounded-full bg-gray-800"
-                      transition={{ type: "spring", stiffness: 400, damping: 35 }}
-                    />
-                  )}
-                  <span className="relative">{item.title}</span>
-                  {isActive && !reduceMotion && (
-                    <span
-                      key={step}
-                      className="absolute bottom-0 left-0 h-[3px] w-full origin-left bg-ceruleanBlue-500"
-                      style={{
-                        animation: `wws-progress ${ROTATE_MS}ms linear forwards`,
-                        animationPlayState: isPaused ? "paused" : "running",
-                      }}
-                      onAnimationEnd={() => move(1)}
-                      aria-hidden="true"
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/*
-            The track. All cards share one grid cell and stretch to it, so every card is as tall as the tallest one.
-            It clips only left and right: the side cards show a small part, and the shadows above and below stay.
-          */}
-          <div ref={trackRef} className="relative grid overflow-x-clip overflow-y-visible py-6 -my-6">
-            {steps.map((cardStep) => {
-              const position = cardStep - step; // 0 is the active card, -1 the previous one, 1 the next one
-              const isFront = position === 0;
-              const item = problems[mod(cardStep, count)];
-
-              return (
-                <motion.div
-                  key={cardStep}
-                  id={isFront ? `wws-card-${item.id}` : undefined}
-                  role={isFront ? "tabpanel" : undefined}
-                  aria-hidden={!isFront}
-                  className="[grid-area:1/1] self-stretch justify-self-center relative"
-                  style={{ width: trackWidth > 0 ? cardWidth : "100%", zIndex: isFront ? 1 : 0 }}
-                  initial={false}
-                  animate={{
-                    x: position * (cardWidth + gap),
-                    scale: isFront ? 1 : 0.96,
-                    opacity: isFront ? 1 : 0.5,
-                  }}
-                  transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 170, damping: 26 }}
-                  // On touch screens, swipe the active card to change it
-                  drag={isFront ? "x" : false}
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.25}
-                  onDragEnd={(_, info) => {
-                    if (info.offset.x < -80) move(1);
-                    else if (info.offset.x > 80) move(-1);
-                  }}
-                  onClick={() => !isFront && move(position)}
-                >
-                  <div
-                    className={`h-full ${isFront ? "" : "cursor-pointer"}`}
-                    // Side cards are only for show, so keyboard focus must not go into them.
-                    // React 18 does not know the `inert` attribute, so set it on the element.
-                    ref={(el) => {
-                      el?.toggleAttribute("inert", !isFront);
+          {problems.map((item, index) => {
+            const isActive = index === active;
+            return (
+              <button
+                key={item.id}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`wws-card-${item.id}`}
+                onClick={() => goTo(index)}
+                className={`relative overflow-hidden rounded-full px-4 py-2 text-sm md:text-base font-medium transition-colors ${
+                  isActive ? "text-white" : "text-gray-600 hover:text-gray-900 hover:bg-white"
+                }`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="wws-active-tab"
+                    className="absolute inset-0 rounded-full bg-gray-800"
+                    transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                  />
+                )}
+                <span className="relative">{item.title}</span>
+                {isActive && !reduceMotion && (
+                  <span
+                    key={step}
+                    className="absolute bottom-0 left-0 h-[3px] w-full origin-left bg-ceruleanBlue-500"
+                    style={{
+                      animation: `wws-progress ${ROTATE_MS}ms linear forwards`,
+                      animationPlayState: isPaused ? "paused" : "running",
                     }}
+                    onAnimationEnd={() => move(1)}
+                    aria-hidden="true"
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/*
+          The track uses the full page width. All cards share one grid cell and stretch to it, so every card is
+          as tall as the tallest one. It clips only left and right, so the shadows above and below stay.
+        */}
+        <div ref={trackRef} className="relative grid overflow-x-clip overflow-y-visible py-6 -my-6">
+          {steps.map((cardStep) => {
+            const position = cardStep - step; // 0 is the active card, -1 the previous one, 1 the next one
+            const isFront = position === 0;
+            const item = problems[mod(cardStep, count)];
+
+            return (
+              <motion.div
+                key={cardStep}
+                id={isFront ? `wws-card-${item.id}` : undefined}
+                role={isFront ? "tabpanel" : undefined}
+                aria-hidden={!isFront}
+                className="[grid-area:1/1] self-stretch justify-self-center relative"
+                style={{ width: trackWidth > 0 ? cardWidth : "100%", zIndex: isFront ? 1 : 0 }}
+                initial={false}
+                animate={{
+                  x: position * (cardWidth + gap),
+                  scale: isFront ? 1 : 0.96,
+                  opacity: isFront ? 1 : 0.5,
+                }}
+                transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 170, damping: 26 }}
+                // On touch screens, swipe the active card to change it
+                drag={isFront ? "x" : false}
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.25}
+                onDragEnd={(_, info) => {
+                  if (info.offset.x < -80) move(1);
+                  else if (info.offset.x > 80) move(-1);
+                }}
+                onClick={() => !isFront && move(position)}
+              >
+                <div
+                  className={`h-full ${isFront ? "" : "cursor-pointer"}`}
+                  // Side cards are only for show, so keyboard focus must not go into them.
+                  // React 18 does not know the `inert` attribute, so set it on the element.
+                  ref={(el) => {
+                    el?.toggleAttribute("inert", !isFront);
+                  }}
+                >
+                  <Card item={item} isFront={isFront} />
+                </div>
+                {isFront && (
+                  // Small hint that the rotation stops while the reader is on the cards
+                  <motion.div
+                    animate={{ opacity: isHovered && !reduceMotion ? 1 : 0 }}
+                    className="pointer-events-none absolute right-4 bottom-4 inline-flex items-center gap-1.5 rounded-full bg-gray-800/80 px-3 py-1 text-xs text-white"
+                    aria-hidden="true"
                   >
-                    <Card item={item} isFront={isFront} />
-                  </div>
-                  {isFront && (
-                    // Small hint that the rotation stops while the reader is on the cards
-                    <motion.div
-                      animate={{ opacity: isHovered && !reduceMotion ? 1 : 0 }}
-                      className="pointer-events-none absolute right-4 bottom-4 inline-flex items-center gap-1.5 rounded-full bg-gray-800/80 px-3 py-1 text-xs text-white"
-                      aria-hidden="true"
-                    >
-                      <FaPause /> Paused
-                    </motion.div>
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
+                    <FaPause /> Paused
+                  </motion.div>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
