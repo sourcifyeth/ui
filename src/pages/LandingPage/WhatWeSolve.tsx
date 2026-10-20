@@ -2,6 +2,8 @@ import { Fragment, ReactNode, useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import {
   FaArrowRight,
+  FaChevronLeft,
+  FaChevronRight,
   FaCheckCircle,
   FaDownload,
   FaFileSignature,
@@ -487,6 +489,24 @@ const WhatWeSolve = () => {
               </motion.div>
             );
           })}
+
+          {/* Arrow buttons on the left and right edge of the active card */}
+          {trackWidth > 0 &&
+            [
+              { delta: -1, label: "Previous card", Icon: FaChevronLeft, side: -1 },
+              { delta: 1, label: "Next card", Icon: FaChevronRight, side: 1 },
+            ].map(({ delta, label, Icon, side }) => (
+              <button
+                key={label}
+                type="button"
+                aria-label={label}
+                onClick={() => move(delta)}
+                className="absolute top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full bg-white text-gray-700 shadow-lg ring-1 ring-gray-200 transition hover:text-ceruleanBlue-500 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-500"
+                style={{ left: `calc(50% + ${(side * cardWidth) / 2}px)` }}
+              >
+                <Icon aria-hidden="true" />
+              </button>
+            ))}
         </div>
       </div>
     </section>
