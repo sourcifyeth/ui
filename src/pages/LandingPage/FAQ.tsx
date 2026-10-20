@@ -8,7 +8,6 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
   return (
     <section
       className={`flex flex-col w-full px-8 my-2 text-gray-700 bg-gray-50 rounded-lg shadow-lg transition-colors duration-500 ease-in-out`}
-      id="faq"
     >
       <button
         className={`flex flex-row justify-between items-center text-left cursor-pointer py-6 ${
@@ -156,7 +155,7 @@ export default function FAQ() {
   ];
 
   return (
-    <section ref={faqRef} className="w-full flex flex-col items-center py-12 md:py-20 bg-ceruleanBlue-100">
+    <section ref={faqRef} id="faq" className="w-full flex flex-col items-center py-12 md:py-20 bg-ceruleanBlue-100">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         animate={isFAQInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}

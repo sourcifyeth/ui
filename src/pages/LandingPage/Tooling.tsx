@@ -75,8 +75,9 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
 
       const typingInterval = setInterval(() => {
         if (i < codeToType.length) {
-          i++; // If i++ is not before the state update, it skips the second character.
-          setDisplayedCode((prev) => prev + codeToType.charAt(i));
+          i++;
+          // Set the whole prefix. Appending one char per tick shows wrong chars if React runs two updates late.
+          setDisplayedCode(codeToType.slice(0, i + 1));
         } else {
           clearInterval(typingInterval);
         }
