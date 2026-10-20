@@ -317,7 +317,8 @@ const Card = ({ item, isFront }: { item: Problem; isFront: boolean }) => {
   );
 };
 
-const WhatWeSolve = () => {
+// `showHeading={false}` drops the "What we solve" heading and the top padding, for a hero that sits right above the tabs
+const WhatWeSolve = ({ showHeading = true }: { showHeading?: boolean }) => {
   // `step` counts every move and never wraps. Each drawn card is keyed by its step, so cards slide and never jump back.
   const [step, setStep] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -362,21 +363,27 @@ const WhatWeSolve = () => {
       : [step];
 
   return (
-    <section className="bg-gray-100 py-12 md:py-20 overflow-hidden" id="what-we-solve" ref={sectionRef}>
-      <div className="max-w-6xl mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-10 md:mb-12"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-800">What we solve</h2>
-          <p className="text-lg md:text-xl text-gray-600 mt-4 max-w-3xl mx-auto">
-            Sourcify makes Ethereum verifiable, human-readable, and open-source by default.
-          </p>
-        </motion.div>
-      </div>
+    <section
+      className={`bg-gray-100 overflow-hidden ${showHeading ? "py-12 md:py-20" : "pb-12 md:pb-20"}`}
+      id="what-we-solve"
+      ref={sectionRef}
+    >
+      {showHeading && (
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-10 md:mb-12"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-800">What we solve</h2>
+            <p className="text-lg md:text-xl text-gray-600 mt-4 max-w-3xl mx-auto">
+              Sourcify makes Ethereum verifiable, human-readable, and open-source by default.
+            </p>
+          </motion.div>
+        </div>
+      )}
 
       <div
         onMouseEnter={() => setIsHovered(true)}

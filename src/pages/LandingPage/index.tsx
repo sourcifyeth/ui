@@ -1,6 +1,6 @@
 // AnimateOnScroll
 import { useRef, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
 import solidityLang from "react-syntax-highlighter/dist/esm/languages/prism/solidity";
@@ -11,6 +11,7 @@ import { DOCS_URL } from "../../constants";
 import VerifiedContracts from "./VerifiedContracts";
 import { bytecode, solidityCode } from "./example";
 import WhatWeSolve from "./WhatWeSolve";
+import HeroReadable from "./HeroReadable";
 import SupportedChains from "./SupportedChains";
 import Tooling from "./Tooling";
 import FAQ from "./FAQ";
@@ -19,6 +20,40 @@ import BigQueryExplorer from "../../components/BigQueryExplorer";
 
 SyntaxHighlighter.registerLanguage("solidity", solidityLang);
 SyntaxHighlighter.registerLanguage("json", jsonLang);
+
+// TEMPORARY: compare hero variants with ?hero=current|d, or the switcher in the bottom-left corner.
+// D is the default on this branch. The switcher never shows in production (REACT_APP_TAG=master).
+type HeroVariant = "current" | "d";
+const HERO_VARIANTS: { id: HeroVariant; name: string }[] = [
+  { id: "current", name: "Current" },
+  { id: "d", name: "D · Readable + lookup" },
+];
+const SHOW_HERO_SWITCHER = process.env.REACT_APP_TAG !== "master";
+
+const HeroSwitcher = ({ variant }: { variant: HeroVariant }) => {
+  const { search, pathname, hash } = useLocation();
+  const navigate = useNavigate();
+  const setVariant = (id: HeroVariant) => {
+    const params = new URLSearchParams(search);
+    params.set("hero", id);
+    navigate({ pathname, search: params.toString(), hash }, { replace: true });
+  };
+  return (
+    <div className="fixed bottom-4 left-4 z-50 flex items-center gap-1 rounded-full bg-gray-900/90 p-1 pl-3 text-xs text-white shadow-lg">
+      <span className="mr-1 text-gray-300">Hero</span>
+      {HERO_VARIANTS.map(({ id, name }) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => setVariant(id)}
+          className={`rounded-full px-3 py-1 ${variant === id ? "bg-white text-gray-900" : "hover:bg-white/10"}`}
+        >
+          {name}
+        </button>
+      ))}
+    </div>
+  );
+};
 
 //////////////////////////////////
 ///////// MAIN COMPONENT /////////
@@ -31,7 +66,8 @@ const LandingPage = () => {
   const MIN_VELOCITY = 0.1;
   const velocityRef = useRef({ x: MAX_VELOCITY, y: MAX_VELOCITY }); // Store velocity
   const positionRef = useRef({ x: 50, y: 50 }); // Store position
-  const { pathname, hash, key } = useLocation();
+  const { pathname, hash, key, search } = useLocation();
+  const heroVariant: HeroVariant = new URLSearchParams(search).get("hero") === "current" ? "current" : "d";
 
   useEffect(() => {
     const element = document.querySelector(".spotlight-effect") as HTMLElement;
@@ -76,7 +112,8 @@ const LandingPage = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isHovering]);
+    // heroVariant: the spotlight element only exists in the current hero, so start again when switching to it
+  }, [isHovering, heroVariant]);
 
   useEffect(() => {
     // Handle direct route to dataset-playground
@@ -107,6 +144,9 @@ const LandingPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 w-full">
       <Header />
+      {SHOW_HERO_SWITCHER && <HeroSwitcher variant={heroVariant} />}
+      {heroVariant === "d" && <HeroReadable />}
+      {heroVariant === "current" && (
       <section className="min-h-screen flex flex-col justify-center px-8 md:px-12 -mt-20 pt-20 max-w-7xl mx-auto">
         <div className="flex flex-col justify-center items-center">
           {/* Hero section */}
@@ -181,8 +221,9 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+      )}
 
-      <WhatWeSolve />
+      <WhatWeSolve showHeading={heroVariant === "current"} />
       {/* Verified contract stats */}
       <section
         className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-12 md:py-20"
