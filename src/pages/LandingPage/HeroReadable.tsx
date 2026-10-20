@@ -51,17 +51,17 @@ type Result =
 // The three things the box can look up. Each example fills the box and runs the lookup.
 const TRY_GROUPS: { title: string; text: string; icon: IconType; iconClassName: string; examples: { label: string; value: string; prefix?: string }[] }[] = [
   {
-    title: "Verified contract",
-    text: "Source code and match type on every chain",
+    title: "See Verified Contracts",
+    text: "Source code verification",
     icon: IoCheckmarkDoneCircle,
-    iconClassName: "bg-green-100 text-green-800 border border-green-200 text-xl",
+    iconClassName: "bg-green-100 text-green-800 border border-green-200 text-base",
     examples: [{ label: "Uniswap V3 Factory", value: "0x1F98431c8aD98523631AE4a59f267346ea31F984" }],
   },
   {
-    title: "Signatures",
-    text: "Hex selectors and topics as readable names",
+    title: "Query Selectors",
+    text: "4byte function and event signatures",
     icon: FaHashtag,
-    iconClassName: "bg-ceruleanBlue-50 text-ceruleanBlue-500",
+    iconClassName: "bg-ceruleanBlue-50 text-ceruleanBlue-500 text-xs",
     examples: [
       { label: "Function", value: "0xa9059cbb" },
       { label: "Event", value: "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" },
@@ -69,10 +69,10 @@ const TRY_GROUPS: { title: string; text: string; icon: IconType; iconClassName: 
     ],
   },
   {
-    title: "ERC7730 Clear Signing",
-    text: "Transactions in plain words",
+    title: "Clear Sign Transactions",
+    text: "With ERC7730",
     icon: FaFileSignature,
-    iconClassName: "bg-ceruleanBlue-50 text-ceruleanBlue-500",
+    iconClassName: "bg-ceruleanBlue-50 text-ceruleanBlue-500 text-xs",
     examples: [
       // Mainnet transactions to contracts covered by the ERC-7730 registry (from the Clear Signing playground examples).
       // Checked on 20 Oct 2026: both render with a descriptor. The playground's USDC example has no descriptor any more.
@@ -498,7 +498,8 @@ const HeroReadable = () => {
   return (
     // Full screen height, like the original hero: -mt-20 pt-20 lets the section start under the header
     <section className="min-h-screen -mt-20 pt-20 flex flex-col items-center justify-center px-4 pb-12 text-center">
-      <div className="flex w-full max-w-4xl flex-col items-center">
+      {/* 66rem: room for the lookup area on large screens; the headline and subline set their own widths */}
+      <div className="flex w-full max-w-[66rem] flex-col items-center">
         <h1
           className="text-5xl md:text-7xl font-bold tracking-tight text-gray-800 opacity-0 animate-fade-up"
           style={{ animationDelay: "100ms" }}
@@ -515,7 +516,7 @@ const HeroReadable = () => {
 
         {/* relative z-20: the result overlay must show above the links, numbers and sections that follow */}
         <div
-          className="relative z-20 mt-8 w-full max-w-[50rem] opacity-0 animate-fade-up"
+          className="relative z-20 mt-8 w-full max-w-[50rem] lg:max-w-[66rem] opacity-0 animate-fade-up"
           style={{ animationDelay: "400ms" }}
         >
           {/* Lookup: one box for contracts, signatures and transactions. The result opens over the page below it. */}
@@ -580,20 +581,25 @@ const HeroReadable = () => {
           )}
           </div>
 
-          {/* Try: the three kinds of lookup, one row each, in one frame with lines between them.
-              In each row the icon sits on the left, and the title, text and examples stack on the right. */}
+          {/* Try: a call to action, then the three kinds of lookup, one line each, in one frame with lines between them.
+              The left part has a fixed width on large screens, so the examples line up across the rows. */}
           <div className="mt-4 overflow-hidden rounded-2xl bg-white/70 text-left ring-1 ring-gray-200 divide-y divide-gray-200">
+            <div className="flex flex-wrap items-baseline gap-x-2 bg-ceruleanBlue-50/60 px-4 py-2">
+              <span className="text-sm font-semibold text-ceruleanBlue-600">Try it out</span>
+              <span className="text-sm text-gray-500">Pick an example, or paste your own above.</span>
+            </div>
             {TRY_GROUPS.map(({ title, text, icon: Icon, iconClassName, examples }) => (
-              <div key={title} className="flex items-start gap-3 px-4 py-3.5">
-                <span className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${iconClassName}`}>
-                  <Icon aria-hidden="true" />
-                </span>
-                <div className="flex min-w-0 flex-1 flex-col gap-2">
-                  <div className="flex flex-wrap items-baseline gap-x-2">
-                    <p className="font-semibold text-gray-800">{title}</p>
-                    <p className="text-sm text-gray-500">{text}</p>
-                  </div>
-                  <div className="flex min-w-0 flex-wrap gap-2">
+              <div key={title} className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 lg:flex-nowrap">
+                <div className="flex min-w-0 items-center gap-2.5 lg:w-[25rem] lg:shrink-0">
+                  <span className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${iconClassName}`}>
+                    <Icon aria-hidden="true" />
+                  </span>
+                  <p className="min-w-0 lg:whitespace-nowrap">
+                    <span className="font-semibold text-gray-800">{title}</span>{" "}
+                    <span className="text-sm text-gray-500">{text}</span>
+                  </p>
+                </div>
+                <div className="flex min-w-0 flex-wrap gap-1.5">
                   {examples.map(({ label, value, prefix }) => (
                     <button
                       key={label}
@@ -602,18 +608,18 @@ const HeroReadable = () => {
                         setQuery(value);
                         lookUp(value);
                       }}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-sm ring-1 ring-gray-200 hover:ring-ceruleanBlue-500"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-0.5 ring-1 ring-gray-200 hover:ring-ceruleanBlue-500"
                       title={value}
                     >
                       {/* The value first and larger, then a small label. Only transactions get a "Tx" prefix. */}
-                      <code className="font-mono text-sm text-gray-800">
+                      <code className="font-mono text-[13px] text-gray-800">
                         {prefix && <span className="font-sans font-semibold text-gray-500">{prefix} </span>}
                         {short(value)}
                       </code>
-                      <span className="text-xs text-gray-500">{label}</span>
+                      {/* Hidden from 1024 to 1279px only, so each row fits on one line there; rows wrap below 1024px anyway */}
+                      <span className="text-[11px] text-gray-500 lg:hidden xl:inline">{label}</span>
                     </button>
                   ))}
-                  </div>
                 </div>
               </div>
             ))}
