@@ -1,6 +1,6 @@
-import { FormEvent, ReactNode, useContext, useEffect, useState } from "react";
+import { FormEvent, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { FiArrowRight, FiCheck, FiSearch } from "react-icons/fi";
+import { FiArrowRight, FiCheck, FiSearch, FiX } from "react-icons/fi";
 import { FaFileSignature, FaHashtag } from "react-icons/fa";
 import { IoCheckmarkDoneCircle } from "react-icons/io5";
 import { IconType } from "react-icons";
@@ -371,7 +371,7 @@ const HeroReadable = () => {
   // The daily stats.json total, used until the live total arrives (the same fallback as the stats section)
   const [dailyTotal, setDailyTotal] = useState<number | null>(null);
   const [query, setQuery] = useState("");
-  const [result, setResult] = useState<Result>({ status: "idle" });
+  const [result, setResultState] = useState<Result>({ status: "idle" });
 
   useEffect(() => {
     fetch(`${FOURBYTE_API}/stats`)
@@ -387,9 +387,34 @@ const HeroReadable = () => {
   }, []);
   const contractCount = live.total ?? dailyTotal;
 
+  // The result overlay. Each lookup gets a number; an answer that arrives after a newer lookup or after the
+  // overlay was closed is dropped, so a slow answer never opens the overlay again.
+  const lookupRef = useRef<HTMLDivElement>(null);
+  const lookupIdRef = useRef(0);
+  const isOpen = result.status !== "idle";
+  const closeResult = useCallback(() => {
+    lookupIdRef.current++;
+    setResultState({ status: "idle" });
+  }, []);
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => e.key === "Escape" && closeResult();
+    const onPointerDown = (e: PointerEvent) => {
+      if (lookupRef.current && !lookupRef.current.contains(e.target as Node)) closeResult();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [isOpen, closeResult]);
+
   const lookUp = async (raw: string) => {
     const q = raw.trim();
     if (!q) return;
+    const id = ++lookupIdRef.current;
+    const setResult = (next: Result) => id === lookupIdRef.current && setResultState(next);
     const kind = kindOf(q);
     if (!kind) {
       setResult({ status: "invalid", query: q });
@@ -484,12 +509,18 @@ const HeroReadable = () => {
           className="mt-4 max-w-2xl text-lg md:text-xl text-gray-600 opacity-0 animate-fade-up"
           style={{ animationDelay: "250ms" }}
         >
-          Sourcify matches deployed contracts to their source code, byte for byte, and turns them into names, data and
-          clear transactions that anyone can read. Open source, open data.
+          Sourcify matches contracts to their source code, byte for byte, and turns bytecode into names and clear
+          transactions.
+          <span className="mt-2 block font-semibold text-gray-700">Open source. Open data.</span>
         </p>
 
-        <div className="mt-8 w-full max-w-[50rem] opacity-0 animate-fade-up" style={{ animationDelay: "400ms" }}>
-          {/* Lookup: one box for contracts, signatures and transactions */}
+        {/* relative z-20: the result overlay must show above the links, numbers and sections that follow */}
+        <div
+          className="relative z-20 mt-8 w-full max-w-[50rem] opacity-0 animate-fade-up"
+          style={{ animationDelay: "400ms" }}
+        >
+          {/* Lookup: one box for contracts, signatures and transactions. The result opens over the page below it. */}
+          <div className="relative" ref={lookupRef}>
           <form
             onSubmit={onSubmit}
             role="search"
@@ -518,10 +549,37 @@ const HeroReadable = () => {
           </form>
 
           {result.status !== "idle" && (
-            <div className="mt-4 rounded-2xl bg-white p-4 md:p-5 text-left shadow-sm ring-1 ring-gray-200" aria-live="polite">
-              {resultBody}
+            <div
+              role="dialog"
+              aria-label="Lookup result"
+              className="absolute inset-x-0 top-full mt-2 max-h-[min(70vh,44rem)] overflow-y-auto rounded-2xl bg-white text-left shadow-2xl ring-1 ring-gray-200"
+            >
+              {/* Header: which of the three lookups this is (the same names as the Try rows), and the close button */}
+              <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-gray-100 bg-white px-4 py-2 md:px-5">
+                <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  {result.status === "contract"
+                    ? "Verified contract"
+                    : result.status === "signatures"
+                      ? "Signatures"
+                      : result.status === "transaction"
+                        ? "Clear signing"
+                        : "Lookup"}
+                </span>
+                <button
+                  type="button"
+                  onClick={closeResult}
+                  aria-label="Close the result"
+                  className="-mr-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-500"
+                >
+                  <FiX aria-hidden="true" />
+                </button>
+              </div>
+              <div className="p-4 md:p-5" aria-live="polite">
+                {resultBody}
+              </div>
             </div>
           )}
+          </div>
 
           {/* Try: the three kinds of lookup, one row each, in one frame with lines between them.
               In each row the icon sits on the left, and the title, text and examples stack on the right. */}
