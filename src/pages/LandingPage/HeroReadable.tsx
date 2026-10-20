@@ -18,7 +18,7 @@ const FOURBYTE_API = "https://api.4byte.sourcify.dev/signature-database/v1";
 const CLEAR_SIGNING_PLAYGROUND_URL = "https://clear-signing.sourcify.dev";
 const REGISTRY_URL = "https://github.com/ethereum/clear-signing-erc7730-registry";
 // Signatures shown in a 4byte result
-const MAX_SIGNATURES = 5;
+const MAX_SIGNATURES = 8;
 // Calldata characters shown on the "blind signing" side
 const MAX_CALLDATA_CHARS = 330;
 
@@ -59,7 +59,9 @@ const TRY_GROUPS: { title: string; icon: IconType; iconClassName: string; exampl
     examples: [
       { prefix: "Function", value: "0xa9059cbb" },
       { prefix: "Event", value: "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" },
-      { prefix: "Signature", value: "transfer(address,uint256)" },
+      // Timed on 20 Oct 2026: "name(*" searches answer in about 0.3s, and every flashLoan result is a real
+      // flash-loan interface. Bare prefixes like "transfer*" took 1-7s and start with junk names.
+      { prefix: "Wildcard", value: "flashLoan(*" },
     ],
   },
   {
@@ -76,12 +78,14 @@ const TRY_GROUPS: { title: string; icon: IconType; iconClassName: string; exampl
 ];
 
 // Reads what was pasted: a 20-byte address, a 4-byte selector, a 32-byte hash (transaction or event topic),
-// a full signature like transfer(address,uint256), or a bare name to search for
+// a full signature like transfer(address,uint256), a wildcard search like swapExact*, or a bare name to search for
 const kindOf = (query: string): Kind | null => {
   if (/^0x[0-9a-fA-F]{40}$/.test(query)) return "address";
   if (/^0x[0-9a-fA-F]{8}$/.test(query)) return "selector";
   if (/^0x[0-9a-fA-F]{64}$/.test(query)) return "hash";
   if (/^0x/i.test(query)) return null;
+  // A "*" anywhere makes it a 4byte text search, the same as on 4byte.sourcify.dev
+  if (query.includes("*") && /^[A-Za-z0-9_$*(),[\] ]+$/.test(query)) return "name";
   if (/^[A-Za-z_$][A-Za-z0-9_$]*\(.*\)$/.test(query)) return "signature";
   if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(query)) return "name";
   return null;
@@ -106,8 +110,9 @@ async function lookUpSignatures(kind: Kind, query: string): Promise<SignatureGro
     const topic = keccakOfText(query.replace(/\s+/g, ""));
     url = `${FOURBYTE_API}/lookup?function=${topic.slice(0, 10)}&event=${topic}`;
   } else if (kind === "name") {
-    // The "(" keeps the search to this exact name with any arguments
-    url = `${FOURBYTE_API}/search?query=${encodeURIComponent(`${query}(`)}*`;
+    // A wildcard search goes to 4byte as typed. A bare name gets "(*", which keeps the search to that exact name
+    // with any arguments.
+    url = `${FOURBYTE_API}/search?query=${encodeURIComponent(query.includes("*") ? query : `${query}(*`)}`;
   } else {
     url = `${FOURBYTE_API}/lookup?${kind === "hash" ? "event" : "function"}=${query}`;
   }
@@ -259,7 +264,7 @@ const FooterLink = ({ href, children }: { href: string; children: ReactNode }) =
   </a>
 );
 
-const SignatureResult = ({ kind, signatures }: { kind: Kind; signatures: SignatureGroup[] }) => {
+const SignatureResult = ({ kind, query, signatures }: { kind: Kind; query: string; signatures: SignatureGroup[] }) => {
   if (signatures.length === 0) {
     const what = kind === "name" ? "signature with this name" : kind === "signature" ? "entry for this signature" : "name for this hash";
     return <EmptyState title="No signature found" text={`The 4byte database has no ${what}.`} />;
@@ -292,7 +297,8 @@ const SignatureResult = ({ kind, signatures }: { kind: Kind; signatures: Signatu
           </li>
         ))}
       </ul>
-      <FooterLink href="https://4byte.sourcify.dev">Open 4byte.sourcify.dev</FooterLink>
+      {/* 4byte.sourcify.dev runs the search in its "q" parameter when the page loads */}
+      <FooterLink href={`https://4byte.sourcify.dev/?q=${encodeURIComponent(query)}`}>See all results on 4byte.sourcify.dev</FooterLink>
     </div>
   );
 };
@@ -550,7 +556,7 @@ const HeroReadable = () => {
       resultBody = <ContractResult key={result.query} contracts={result.contracts} />;
       break;
     case "signatures":
-      resultBody = <SignatureResult kind={result.kind} signatures={result.signatures} />;
+      resultBody = <SignatureResult kind={result.kind} query={result.query} signatures={result.signatures} />;
       break;
     case "transaction":
       resultBody = <TransactionResult result={result} />;
