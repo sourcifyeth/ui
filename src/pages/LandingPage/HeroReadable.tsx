@@ -49,7 +49,7 @@ type Result =
     };
 
 // The three things the box can look up. Each example fills the box and runs the lookup.
-const TRY_GROUPS: { title: string; text: string; icon: IconType; iconClassName: string; examples: { label: string; value: string }[] }[] = [
+const TRY_GROUPS: { title: string; text: string; icon: IconType; iconClassName: string; examples: { label: string; value: string; prefix?: string }[] }[] = [
   {
     title: "Verified contract",
     text: "Source code and match type on every chain",
@@ -69,15 +69,15 @@ const TRY_GROUPS: { title: string; text: string; icon: IconType; iconClassName: 
     ],
   },
   {
-    title: "Clear signing",
-    text: "Transactions in plain words, with ERC-7730",
+    title: "ERC7730 Clear Signing",
+    text: "Transactions in plain words",
     icon: FaFileSignature,
     iconClassName: "bg-ceruleanBlue-50 text-ceruleanBlue-500",
     examples: [
       // Mainnet transactions to contracts covered by the ERC-7730 registry (from the Clear Signing playground examples).
       // Checked on 20 Oct 2026: both render with a descriptor. The playground's USDC example has no descriptor any more.
-      { label: "Uniswap swap", value: "0x675a2e96e48b77e5d8edc16bfc4dc2ea7547f950edb76fdeff40e8af250d897e" },
-      { label: "Aave supply", value: "0xb0bd1c520f3b43405bb23f94f2a7f18e0fd0b671dc606516f3d0f9c9a199b608" },
+      { prefix: "Tx", label: "Uniswap swap", value: "0x675a2e96e48b77e5d8edc16bfc4dc2ea7547f950edb76fdeff40e8af250d897e" },
+      { prefix: "Tx", label: "Aave supply", value: "0xb0bd1c520f3b43405bb23f94f2a7f18e0fd0b671dc606516f3d0f9c9a199b608" },
     ],
   },
 ];
@@ -509,8 +509,7 @@ const HeroReadable = () => {
           className="mt-4 max-w-2xl text-lg md:text-xl text-gray-600 opacity-0 animate-fade-up"
           style={{ animationDelay: "250ms" }}
         >
-          Sourcify matches contracts to their source code, byte for byte, and turns bytecode into names and clear
-          transactions.
+          Sourcify matches Ethereum contracts to their source code and turns bytecode into names and clear transactions.
           <span className="mt-2 block font-semibold text-gray-700">Open source. Open data.</span>
         </p>
 
@@ -562,7 +561,7 @@ const HeroReadable = () => {
                     : result.status === "signatures"
                       ? "Signatures"
                       : result.status === "transaction"
-                        ? "Clear signing"
+                        ? "ERC7730 Clear Signing"
                         : "Lookup"}
                 </span>
                 <button
@@ -595,7 +594,7 @@ const HeroReadable = () => {
                     <p className="text-sm text-gray-500">{text}</p>
                   </div>
                   <div className="flex min-w-0 flex-wrap gap-2">
-                  {examples.map(({ label, value }) => (
+                  {examples.map(({ label, value, prefix }) => (
                     <button
                       key={label}
                       type="button"
@@ -606,9 +605,12 @@ const HeroReadable = () => {
                       className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-sm ring-1 ring-gray-200 hover:ring-ceruleanBlue-500"
                       title={value}
                     >
-                      <span className="font-medium text-gray-700">{label}</span>
-                      {/* Values only from tablet width up, so the chips fit on a phone */}
-                      <code className="hidden md:inline font-mono text-xs text-gray-500">{short(value)}</code>
+                      {/* The value first and larger, then a small label. Only transactions get a "Tx" prefix. */}
+                      <code className="font-mono text-sm text-gray-800">
+                        {prefix && <span className="font-sans font-semibold text-gray-500">{prefix} </span>}
+                        {short(value)}
+                      </code>
+                      <span className="text-xs text-gray-500">{label}</span>
                     </button>
                   ))}
                   </div>
