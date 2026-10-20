@@ -91,8 +91,10 @@ const kindOf = (query: string): Kind | null => {
   return null;
 };
 
-// Chips: long hex values keep their first 12 characters, so the start of the hash is easy to recognize
-const chipValue = (value: string) => (/^0x/i.test(value) && value.length > 12 ? `${value.slice(0, 12)}…` : value);
+// Chips: long hex values keep their first CHIP_HASH_CHARS characters, so the start of the hash is easy to recognize
+const CHIP_HASH_CHARS = 18;
+const chipValue = (value: string) =>
+  /^0x/i.test(value) && value.length > CHIP_HASH_CHARS ? `${value.slice(0, CHIP_HASH_CHARS)}…` : value;
 
 // Results: shortens long hex values in the middle; names and signatures stay as they are
 const short = (value: string) => (/^0x/i.test(value) && value.length > 14 ? `${value.slice(0, 6)}…${value.slice(-4)}` : value);
@@ -605,7 +607,7 @@ const HeroReadable = () => {
                         setQuery(value);
                         lookUp(value);
                       }}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-0.5 ring-1 ring-gray-200 hover:ring-ceruleanBlue-500"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 ring-1 ring-gray-200 hover:ring-ceruleanBlue-500"
                       title={value}
                     >
                       {/* The value first and larger, then a small label. Only transactions get a "Tx" prefix. */}
