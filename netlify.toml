@@ -10,7 +10,6 @@
   REACT_APP_BIGQUERY_API_URL = "https://europe-west1-sourcify-project.cloudfunctions.net/bigquery-api-staging/bigquery"
   REACT_APP_BIGQUERY_DATASET_NAME = "sourcify_staging"
   # Netlify does not serve /live/stream, so read the live feed from staging (it allows cross-origin requests).
-  # This value is not in .env.build.staging, because the staging site serves /live/stream on its own domain.
   REACT_APP_LIVE_STATS_URL = "https://staging.sourcify.dev/live/stream"
 
 [context.branch-deploy.environment]
@@ -21,5 +20,4 @@
   REACT_APP_BIGQUERY_API_URL = "https://europe-west1-sourcify-project.cloudfunctions.net/bigquery-api-staging/bigquery"
   REACT_APP_BIGQUERY_DATASET_NAME = "sourcify_staging"
   # Netlify does not serve /live/stream, so read the live feed from staging (it allows cross-origin requests).
-  # This value is not in .env.build.staging, because the staging site serves /live/stream on its own domain.
   REACT_APP_LIVE_STATS_URL = "https://staging.sourcify.dev/live/stream"
