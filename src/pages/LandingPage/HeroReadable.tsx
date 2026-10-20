@@ -49,21 +49,21 @@ type Result =
     };
 
 // The three things the box can look up. Each example fills the box and runs the lookup.
-const TRY_GROUPS: { title: string; icon: IconType; iconClassName: string; examples: { label: string; value: string; prefix?: string }[] }[] = [
+const TRY_GROUPS: { title: string; icon: IconType; iconClassName: string; examples: { value: string; prefix: string; label?: string }[] }[] = [
   {
     title: "Verified Contracts",
     icon: IoCheckmarkDoneCircle,
     iconClassName: "bg-green-100 text-green-800 border border-green-200 text-base",
-    examples: [{ label: "Uniswap V3 Factory", value: "0x1F98431c8aD98523631AE4a59f267346ea31F984" }],
+    examples: [{ prefix: "Contract", value: "0x1F98431c8aD98523631AE4a59f267346ea31F984" }], // Uniswap V3 Factory
   },
   {
     title: "4byte Selectors",
     icon: FaHashtag,
     iconClassName: "bg-ceruleanBlue-50 text-ceruleanBlue-500 text-xs",
     examples: [
-      { label: "Function", value: "0xa9059cbb" },
-      { label: "Event", value: "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" },
-      { label: "Signature", value: "transfer(address,uint256)" },
+      { prefix: "Function", value: "0xa9059cbb" },
+      { prefix: "Event", value: "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" },
+      { prefix: "Signature", value: "transfer(address,uint256)" },
     ],
   },
   {
@@ -601,7 +601,7 @@ const HeroReadable = () => {
                 <div className="flex min-w-0 flex-wrap gap-1.5">
                   {examples.map(({ label, value, prefix }) => (
                     <button
-                      key={label}
+                      key={value}
                       type="button"
                       onClick={() => {
                         setQuery(value);
@@ -610,10 +610,10 @@ const HeroReadable = () => {
                       className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 ring-1 ring-gray-200 hover:ring-ceruleanBlue-500"
                       title={value}
                     >
-                      {/* The value first and larger, then a small label. Only transactions get a "Tx" prefix. */}
-                      {prefix && <span className="text-xs font-semibold text-gray-500">{prefix}</span>}
+                      {/* A short kind in front, then the value. Transactions also get a small label after the value. */}
+                      <span className="text-xs font-semibold text-gray-500">{prefix}</span>
                       <code className="rounded bg-gray-100 px-1 font-mono text-[13px] text-gray-800">{chipValue(value)}</code>
-                      <span className="text-[11px] text-gray-500">{label}</span>
+                      {label && <span className="text-[11px] text-gray-500">{label}</span>}
                     </button>
                   ))}
                 </div>
