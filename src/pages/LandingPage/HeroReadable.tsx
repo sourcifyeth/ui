@@ -12,7 +12,7 @@ import { VerifiedContractMinimal } from "../../types";
 import useLiveStats from "./useLiveStats";
 import { clearSign, fetchMainnetTransaction, MainnetTransaction } from "./clearSigning";
 
-// Hero variant D: "Make Ethereum readable." with one lookup box for contracts, signatures and transactions.
+// The landing page hero: "Make Ethereum readable." with one lookup box for contracts, signatures and transactions.
 
 const FOURBYTE_API = "https://api.4byte.sourcify.dev/signature-database/v1";
 const CLEAR_SIGNING_PLAYGROUND_URL = "https://clear-signing.sourcify.dev";
