@@ -1,4 +1,4 @@
-import { Fragment, ReactNode, useRef, useState } from "react";
+import { Fragment, ReactNode, useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import {
   FaArrowRight,
@@ -20,8 +20,13 @@ import feLogo from "../../assets/languages/fe.svg";
 
 // How long each card stays in front before the stack rotates
 const ROTATE_MS = 7000;
-// How far each card behind the front card peeks out above it
-const PEEK_PX = 22;
+// How much of the previous and next card shows at each side, and the space between cards
+const PEEK_PX = { small: 16, large: 56 };
+const GAP_PX = { small: 12, large: 24 };
+// Cards drawn on each side of the active one. The outer ones are off screen, so a card can always slide in.
+const SIDE_CARDS = 2;
+
+const mod = (n: number, m: number) => ((n % m) + m) % m;
 
 const ExternalLink = ({ href, children }: { href?: string; children: ReactNode }) => (
   <a
@@ -271,13 +276,13 @@ const problems: Problem[] = [
 const Card = ({ item, isFront }: { item: Problem; isFront: boolean }) => {
   const Icon = item.icon;
   return (
-    <div className="relative bg-white rounded-3xl shadow-2xl ring-1 ring-gray-200/70 overflow-hidden">
-      <motion.div
-        animate={{ opacity: isFront ? 1 : 0 }}
-        transition={{ duration: 0.4, delay: isFront ? 0.2 : 0 }}
-        className="relative p-8 md:p-14 flex flex-col gap-6"
-        aria-hidden={!isFront}
-      >
+    // Only the active card gets the large shadow. The track would cut a large shadow on the side cards at its edges.
+    <div
+      className={`relative h-full bg-white rounded-3xl ring-1 ring-gray-200/70 overflow-hidden transition-shadow duration-500 ${
+        isFront ? "shadow-2xl" : "shadow-sm"
+      }`}
+    >
+      <div className="relative p-8 md:p-14 flex flex-col gap-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -304,28 +309,52 @@ const Card = ({ item, isFront }: { item: Problem; isFront: boolean }) => {
           <div className="self-center">{item.visual}</div>
         </div>
         {item.extra}
-      </motion.div>
+      </div>
     </div>
   );
 };
 
 const WhatWeSolve = () => {
-  // `previous` is the card that was in front before the last change. It gets the "sink and go back" animation.
-  const [{ active, previous }, setState] = useState({ active: 0, previous: -1 });
+  // `step` counts every move and never wraps. Each drawn card is keyed by its step, so cards slide and never jump back.
+  const [step, setStep] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const sectionRef = useRef(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [trackWidth, setTrackWidth] = useState(0);
   const isInView = useInView(sectionRef, { amount: 0.3 });
   const reduceMotion = useReducedMotion();
 
   const count = problems.length;
+  const active = mod(step, count);
   const isPaused = isHovered || isFocused || !isInView;
 
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const observer = new ResizeObserver(([entry]) => setTrackWidth(entry.contentRect.width));
+    observer.observe(track);
+    return () => observer.disconnect();
+  }, []);
+
+  const isSmall = trackWidth < 640;
+  const peek = isSmall ? PEEK_PX.small : PEEK_PX.large;
+  const gap = isSmall ? GAP_PX.small : GAP_PX.large;
+  const cardWidth = Math.max(trackWidth - 2 * (peek + gap), 0);
+
+  // Go to a card by the shortest way, left or right
   const goTo = (index: number) => {
-    const next = (index + count) % count;
-    if (next === active) return;
-    setState({ active: next, previous: active });
+    let delta = mod(index - active, count);
+    if (delta > count / 2) delta -= count;
+    if (delta !== 0) setStep((s) => s + delta);
   };
+  const move = (delta: number) => setStep((s) => s + delta);
+
+  // Until the track width is known, draw only the active card at full width
+  const steps =
+    trackWidth > 0
+      ? Array.from({ length: 2 * SIDE_CARDS + 1 }, (_, i) => step - SIDE_CARDS + i)
+      : [step];
 
   return (
     <section className="bg-gray-100 py-12 md:py-20 overflow-hidden" id="what-we-solve" ref={sectionRef}>
@@ -377,13 +406,13 @@ const WhatWeSolve = () => {
                   <span className="relative">{item.title}</span>
                   {isActive && !reduceMotion && (
                     <span
-                      key={active}
+                      key={step}
                       className="absolute bottom-0 left-0 h-[3px] w-full origin-left bg-ceruleanBlue-500"
                       style={{
                         animation: `wws-progress ${ROTATE_MS}ms linear forwards`,
                         animationPlayState: isPaused ? "paused" : "running",
                       }}
-                      onAnimationEnd={() => goTo(active + 1)}
+                      onAnimationEnd={() => move(1)}
                       aria-hidden="true"
                     />
                   )}
@@ -392,68 +421,64 @@ const WhatWeSolve = () => {
             })}
           </div>
 
-          {/* The stack. All cards share one grid cell, so the stack is as tall as the tallest card. */}
-          <div className="relative grid" style={{ paddingTop: PEEK_PX * (count - 1) }}>
-            {problems.map((item, index) => {
-              const position = (index - active + count) % count; // 0 is the front card
+          {/*
+            The track. All cards share one grid cell and stretch to it, so every card is as tall as the tallest one.
+            It clips only left and right: the side cards show a small part, and the shadows above and below stay.
+          */}
+          <div ref={trackRef} className="relative grid overflow-x-clip overflow-y-visible py-6 -my-6">
+            {steps.map((cardStep) => {
+              const position = cardStep - step; // 0 is the active card, -1 the previous one, 1 the next one
               const isFront = position === 0;
-              const wasFront = index === previous;
-              const y = -position * PEEK_PX;
-              const scale = 1 - position * 0.04;
-              const opacity = 1 - position * 0.22;
-              const rotate = isFront ? 0 : position % 2 ? 1.2 : -1.2;
+              const item = problems[mod(cardStep, count)];
 
               return (
                 <motion.div
-                  key={item.id}
-                  id={`wws-card-${item.id}`}
-                  role="tabpanel"
-                  className="[grid-area:1/1] self-start origin-top"
-                  style={{ zIndex: count - position }}
+                  key={cardStep}
+                  id={isFront ? `wws-card-${item.id}` : undefined}
+                  role={isFront ? "tabpanel" : undefined}
+                  aria-hidden={!isFront}
+                  className="[grid-area:1/1] self-stretch justify-self-center relative"
+                  style={{ width: trackWidth > 0 ? cardWidth : "100%", zIndex: isFront ? 1 : 0 }}
                   initial={false}
-                  animate={
-                    // The card that leaves the front sinks down, fades, and then settles at its place in the back
-                    wasFront && !isFront && !reduceMotion
-                      ? {
-                          y: [0, 60, y],
-                          scale: [1, 0.92, scale],
-                          opacity: [1, 0, opacity],
-                          rotate: [0, -3, rotate],
-                        }
-                      : { y, scale, opacity, rotate }
-                  }
-                  transition={
-                    reduceMotion
-                      ? { duration: 0 }
-                      : wasFront && !isFront
-                        ? { duration: 0.9, times: [0, 0.45, 1], ease: "easeInOut" }
-                        : { type: "spring", stiffness: 160, damping: 24 }
-                  }
-                  // On touch screens, swipe the front card to change it
+                  animate={{
+                    x: position * (cardWidth + gap),
+                    scale: isFront ? 1 : 0.96,
+                    opacity: isFront ? 1 : 0.5,
+                  }}
+                  transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 170, damping: 26 }}
+                  // On touch screens, swipe the active card to change it
                   drag={isFront ? "x" : false}
                   dragConstraints={{ left: 0, right: 0 }}
                   dragElastic={0.25}
                   onDragEnd={(_, info) => {
-                    if (info.offset.x < -80) goTo(active + 1);
-                    else if (info.offset.x > 80) goTo(active - 1);
+                    if (info.offset.x < -80) move(1);
+                    else if (info.offset.x > 80) move(-1);
                   }}
-                  onClick={() => !isFront && goTo(index)}
+                  onClick={() => !isFront && move(position)}
                 >
-                  <div className={isFront ? "" : "cursor-pointer"}>
+                  <div
+                    className={`h-full ${isFront ? "" : "cursor-pointer"}`}
+                    // Side cards are only for show, so keyboard focus must not go into them.
+                    // React 18 does not know the `inert` attribute, so set it on the element.
+                    ref={(el) => {
+                      el?.toggleAttribute("inert", !isFront);
+                    }}
+                  >
                     <Card item={item} isFront={isFront} />
                   </div>
+                  {isFront && (
+                    // Small hint that the rotation stops while the reader is on the cards
+                    <motion.div
+                      animate={{ opacity: isHovered && !reduceMotion ? 1 : 0 }}
+                      className="pointer-events-none absolute right-4 bottom-4 inline-flex items-center gap-1.5 rounded-full bg-gray-800/80 px-3 py-1 text-xs text-white"
+                      aria-hidden="true"
+                    >
+                      <FaPause /> Paused
+                    </motion.div>
+                  )}
                 </motion.div>
               );
             })}
-
-            {/* Small hint that the rotation stops while the reader is on the cards */}
-            <motion.div
-              animate={{ opacity: isHovered && !reduceMotion ? 1 : 0 }}
-              className="pointer-events-none absolute right-4 bottom-4 z-50 inline-flex items-center gap-1.5 rounded-full bg-gray-800/80 px-3 py-1 text-xs text-white"
-              aria-hidden="true"
-            >
-              <FaPause /> Paused
-            </motion.div>
           </div>
         </div>
       </div>
