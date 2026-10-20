@@ -1,4 +1,5 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
+import { getAddress } from "@ethersproject/address";
 import type { DisplayModel, TokenResult } from "@ethereum-sourcify/clear-signing";
 
 // Clear signing for the hero lookup: fetch an Ethereum mainnet transaction and format it with ERC-7730.
@@ -44,7 +45,8 @@ export async function fetchMainnetTransaction(hash: string): Promise<MainnetTran
     [hash],
   );
   if (!tx) return null;
-  return { hash: tx.hash, to: tx.to, data: tx.input, value: BigInt(tx.value), from: tx.from };
+  // RPCs return lowercase addresses; use the EIP-55 checksum form, like the rest of Sourcify
+  return { hash: tx.hash, to: tx.to ? getAddress(tx.to) : null, data: tx.input, value: BigInt(tx.value), from: tx.from };
 }
 
 // ERC-20 metadata, read with eth_call. Some old tokens return bytes32 instead of string for name and symbol.

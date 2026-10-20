@@ -1,6 +1,6 @@
 import { FormEvent, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { FiArrowRight, FiSearch, FiX } from "react-icons/fi";
-import { FaFileSignature, FaHashtag } from "react-icons/fa";
+import { FaArrowRight, FaFileSignature, FaHashtag } from "react-icons/fa";
 import { IoCheckmarkCircle, IoCheckmarkDoneCircle, IoChevronForward, IoCloseCircle } from "react-icons/io5";
 import { IconType } from "react-icons";
 import { id as keccakOfText } from "@ethersproject/hash";
@@ -20,7 +20,7 @@ const REGISTRY_URL = "https://github.com/ethereum/clear-signing-erc7730-registry
 // Signatures shown in a 4byte result
 const MAX_SIGNATURES = 8;
 // Calldata characters shown on the "blind signing" side
-const MAX_CALLDATA_CHARS = 330;
+const MAX_CALLDATA_CHARS = 2000; // enough to fill the column, which cuts it off and fades it out
 
 type Kind = "address" | "selector" | "hash" | "signature" | "name";
 
@@ -188,7 +188,7 @@ const EmptyState = ({ title, text }: { title: string; text: ReactNode }) => (
 );
 
 // One row per chain: name, chain ID, match pill and an arrow. Opens the contract on repo.sourcify.dev.
-const ChainRow = ({ contract }: { contract: VerifiedContractMinimal }) => {
+const ChainRow = ({ contract, showAddress = false }: { contract: VerifiedContractMinimal; showAddress?: boolean }) => {
   const { sourcifyChainMap } = useContext(Context);
   const chain = sourcifyChainMap[parseInt(contract.chainId)];
   const deprecated = chain ? !chain.supported : false;
@@ -211,6 +211,12 @@ const ChainRow = ({ contract }: { contract: VerifiedContractMinimal }) => {
           </div>
           <div className="text-xs text-gray-500">
             Chain ID: <span className="font-mono">{contract.chainId}</span>
+            {showAddress && (
+              <>
+                {" · "}
+                <span className="break-all font-mono">{contract.address}</span>
+              </>
+            )}
           </div>
         </div>
         <div className={`shrink-0 ${deprecated ? "opacity-50" : ""}`}>
@@ -315,23 +321,20 @@ const SignatureResult = ({ kind, query, signatures }: { kind: Kind; query: strin
 
 const isGroup = (f: DisplayField | DisplayFieldGroup): f is DisplayFieldGroup => "fields" in f;
 
+// Clear signing rows: the label on the left, the value on the right, as in the Clear Signing card
 const FieldRows = ({ fields }: { fields: DisplayField[] }) => (
   <>
     {fields.map((f, i) => (
-      <li key={f.label + i} className="px-3 py-2">
-        <div className="text-xs text-gray-500">{f.separator ? `${f.separator} · ${f.label}` : f.label}</div>
-        <div className="break-all text-sm font-medium text-gray-900">{f.value}</div>
-      </li>
+      <div key={f.label + i} className="flex items-baseline justify-between gap-3 py-2">
+        <dt className="shrink-0 text-gray-500">{f.separator ? `${f.separator} · ${f.label}` : f.label}</dt>
+        <dd className="min-w-0 break-all text-right font-mono text-gray-900">{f.value}</dd>
+      </div>
     ))}
   </>
 );
 
-// The small title of a card: a pill and one line next to it
-const CardTitle = ({ pill, pillClassName, children }: { pill: string; pillClassName: string; children?: ReactNode }) => (
-  <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 px-3 py-2">
-    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${pillClassName}`}>{pill}</span>
-    {children}
-  </div>
+const Pill = ({ className, children }: { className: string; children: ReactNode }) => (
+  <span className={`self-start rounded-full px-2.5 py-0.5 text-xs font-semibold ${className}`}>{children}</span>
 );
 
 const TransactionResult = ({ result }: { result: Extract<Result, { status: "transaction" }> }) => {
@@ -351,49 +354,83 @@ const TransactionResult = ({ result }: { result: Extract<Result, { status: "tran
 
   return (
     <div>
-      <div className="mb-2 flex min-h-9 flex-wrap items-center justify-between gap-x-3">
-        <p className="text-sm text-gray-700">
+      <p className="mb-2 flex min-h-9 flex-wrap items-center gap-x-1.5 text-sm text-gray-700">
+        <span>
           Ethereum transaction <span className="font-mono">{short(tx.hash)}</span>
-        </p>
-        <p className="text-sm text-gray-700">
-          to <span className="font-mono">{short(tx.to)}</span>
-        </p>
-      </div>
+        </span>
+        <span className="min-w-0">
+          to contract{" "}
+          <a
+            href={`${REPOSITORY_URL}/1/${tx.to}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="break-all font-mono text-ceruleanBlue-600 hover:underline"
+          >
+            {tx.to}
+          </a>
+        </span>
+      </p>
 
-      {/* Clear signing next to blind signing */}
-      <div className="grid gap-2 md:grid-cols-2">
-        <div className="min-w-0 overflow-hidden rounded-md border border-gray-200 bg-white">
-          <CardTitle pill="Clear signing" pillClassName="bg-ceruleanBlue-100 text-ceruleanBlue-700">
-            {hasDescriptor && intent && <span className="text-sm font-semibold text-gray-900">{intent}</span>}
-          </CardTitle>
+      {/* The layout of the Clear Signing card: blind signing (faded) on the left, an arrow, clear signing on the right.
+          On phones the parts stack and the arrow points down. */}
+      <div className="grid grid-cols-1 overflow-hidden rounded-md border border-gray-200 bg-white md:grid-cols-[1fr_auto_1fr]">
+        {/* The clear signing side sets the height; the calldata is cut off below it and fades out */}
+        <div className="relative min-h-[8rem] md:min-h-0">
+          <div className="absolute inset-0 flex flex-col gap-2 overflow-hidden p-3">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <Pill className="bg-gray-100 text-gray-500">Blind signing</Pill>
+              <span className="text-xs text-gray-400">What a wallet without clear signing shows</span>
+            </div>
+            <code className="block break-all font-mono text-[11px] leading-relaxed text-gray-400">{calldata}</code>
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" aria-hidden="true" />
+        </div>
+
+        <div className="relative flex items-center justify-center py-1 md:px-1 md:py-0">
+          <div className="absolute inset-x-0 h-px bg-gray-200 md:inset-x-auto md:inset-y-0 md:h-auto md:w-px" aria-hidden="true" />
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 bg-white text-xs text-gray-500">
+            <FaArrowRight className="rotate-90 md:rotate-0" aria-hidden="true" />
+          </div>
+        </div>
+
+        <div className="flex min-w-0 flex-col gap-2 p-3">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <Pill className="bg-ceruleanBlue-500 text-white">Clear signing</Pill>
+            <span className="text-xs text-gray-500">What a wallet shows with clear signing</span>
+          </div>
           {hasDescriptor ? (
             <>
-              {display?.interpolatedIntent && (
-                <p className="border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{display.interpolatedIntent}</p>
+              {/* The intent stays the most prominent line, labeled "Action" like in the Clear Signing card */}
+              {intent && (
+                <div className="flex items-baseline justify-between gap-3 rounded-md bg-ceruleanBlue-50 px-3 py-2">
+                  <span className="shrink-0 text-sm text-gray-600">Action</span>
+                  <span className="min-w-0 break-words text-right text-lg font-semibold text-gray-900">
+                    {intent.charAt(0).toUpperCase() + intent.slice(1)}
+                  </span>
+                </div>
               )}
-              <ul className="divide-y divide-gray-100">
+              {display?.interpolatedIntent && <p className="text-sm text-gray-600">{display.interpolatedIntent}</p>}
+              <dl className="divide-y divide-gray-100 text-sm">
                 {(display?.fields ?? []).map((f, i) =>
                   isGroup(f) ? (
-                    <li key={i}>
-                      {f.label && <p className="px-3 pt-2 text-xs font-semibold uppercase tracking-wide text-gray-500">{f.label}</p>}
-                      <ul className="divide-y divide-gray-100">
-                        <FieldRows fields={f.fields} />
-                      </ul>
-                    </li>
+                    <div key={i}>
+                      {f.label && <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-gray-500">{f.label}</p>}
+                      <FieldRows fields={f.fields} />
+                    </div>
                   ) : (
                     <FieldRows key={i} fields={[f]} />
                   ),
                 )}
-              </ul>
+              </dl>
               {display?.metadata?.contractName && (
-                <p className="border-t border-gray-100 px-3 py-2 text-xs text-gray-500">
+                <p className="text-xs text-gray-500">
                   {display.metadata.contractName}
                   {display.metadata.owner ? ` by ${display.metadata.owner}` : ""}
                 </p>
               )}
             </>
           ) : (
-            <div className="px-3 py-2 text-sm text-gray-700">
+            <div className="text-sm text-gray-700">
               <p>No ERC-7730 descriptor for this contract yet, so wallets cannot show this call in plain words.</p>
               {functionNames.length > 0 && (
                 <p className="mt-1">
@@ -404,26 +441,16 @@ const TransactionResult = ({ result }: { result: Extract<Result, { status: "tran
             </div>
           )}
         </div>
-
-        <div className="min-w-0 overflow-hidden rounded-md border border-gray-200 bg-white">
-          <CardTitle pill="Blind signing" pillClassName="bg-gray-200 text-gray-700">
-            <span className="text-xs text-gray-500">What a wallet without clear signing shows</span>
-          </CardTitle>
-          <code className="block break-all px-3 py-2 font-mono text-xs leading-relaxed text-gray-600">
-            <span className="font-semibold text-gray-900">{calldata.slice(0, 10)}</span>
-            {calldata.slice(10)}
-          </code>
-        </div>
       </div>
 
       {/* The same transaction, one layer down: the contract it calls */}
       <p className="mb-2 mt-3 text-sm text-gray-700">Contract source</p>
       {contract ? (
         <ul className="divide-y divide-gray-100 rounded-md border border-gray-200 bg-white">
-          <ChainRow contract={contract} />
+          <ChainRow contract={contract} showAddress />
         </ul>
       ) : (
-        <EmptyState title="Not verified" text="The contract this transaction calls is not verified on Sourcify." />
+        <EmptyState title="Not verified" text={`The contract ${tx.to} is not verified on Sourcify.`} />
       )}
       <FooterLink href={CLEAR_SIGNING_PLAYGROUND_URL}>Open the Clear Signing playground</FooterLink>
     </div>
