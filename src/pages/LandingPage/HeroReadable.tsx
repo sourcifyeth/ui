@@ -49,17 +49,15 @@ type Result =
     };
 
 // The three things the box can look up. Each example fills the box and runs the lookup.
-const TRY_GROUPS: { title: string; text: string; icon: IconType; iconClassName: string; examples: { label: string; value: string; prefix?: string }[] }[] = [
+const TRY_GROUPS: { title: string; icon: IconType; iconClassName: string; examples: { label: string; value: string; prefix?: string }[] }[] = [
   {
     title: "See Verified Contracts",
-    text: "Source code verification",
     icon: IoCheckmarkDoneCircle,
     iconClassName: "bg-green-100 text-green-800 border border-green-200 text-base",
     examples: [{ label: "Uniswap V3 Factory", value: "0x1F98431c8aD98523631AE4a59f267346ea31F984" }],
   },
   {
-    title: "Query Selectors",
-    text: "4byte function and event signatures",
+    title: "Query 4byte Selectors",
     icon: FaHashtag,
     iconClassName: "bg-ceruleanBlue-50 text-ceruleanBlue-500 text-xs",
     examples: [
@@ -70,7 +68,6 @@ const TRY_GROUPS: { title: string; text: string; icon: IconType; iconClassName: 
   },
   {
     title: "Clear Sign Transactions",
-    text: "With ERC7730",
     icon: FaFileSignature,
     iconClassName: "bg-ceruleanBlue-50 text-ceruleanBlue-500 text-xs",
     examples: [
@@ -588,16 +585,13 @@ const HeroReadable = () => {
               <span className="text-sm font-semibold text-ceruleanBlue-600">Try it out</span>
               <span className="text-sm text-gray-500">Pick an example, or paste your own above.</span>
             </div>
-            {TRY_GROUPS.map(({ title, text, icon: Icon, iconClassName, examples }) => (
+            {TRY_GROUPS.map(({ title, icon: Icon, iconClassName, examples }) => (
               <div key={title} className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 lg:flex-nowrap">
-                <div className="flex min-w-0 items-center gap-2.5 lg:w-[25rem] lg:shrink-0">
+                <div className="flex min-w-0 items-center gap-2.5 lg:w-56 lg:shrink-0">
                   <span className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${iconClassName}`}>
                     <Icon aria-hidden="true" />
                   </span>
-                  <p className="min-w-0 lg:whitespace-nowrap">
-                    <span className="font-semibold text-gray-800">{title}</span>{" "}
-                    <span className="text-sm text-gray-500">{text}</span>
-                  </p>
+                  <p className="min-w-0 font-semibold text-gray-800 lg:whitespace-nowrap">{title}</p>
                 </div>
                 <div className="flex min-w-0 flex-wrap gap-1.5">
                   {examples.map(({ label, value, prefix }) => (
@@ -616,8 +610,7 @@ const HeroReadable = () => {
                         {prefix && <span className="font-sans font-semibold text-gray-500">{prefix} </span>}
                         {short(value)}
                       </code>
-                      {/* Hidden from 1024 to 1279px only, so each row fits on one line there; rows wrap below 1024px anyway */}
-                      <span className="text-[11px] text-gray-500 lg:hidden xl:inline">{label}</span>
+                      <span className="text-[11px] text-gray-500">{label}</span>
                     </button>
                   ))}
                 </div>
