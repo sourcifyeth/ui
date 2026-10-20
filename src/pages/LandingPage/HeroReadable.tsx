@@ -99,6 +99,9 @@ const chipValue = (value: string) =>
 // Results: shortens long hex values in the middle; names and signatures stay as they are
 const short = (value: string) => (/^0x/i.test(value) && value.length > 14 ? `${value.slice(0, 6)}…${value.slice(-4)}` : value);
 
+// Whole GB below 1 TB, then TB with one decimal (decimal units, the same as the stats section)
+const formatSize = (bytes: number) => (bytes >= 1e12 ? `${(bytes / 1e12).toFixed(1)} TB` : `${Math.round(bytes / 1e9)} GB`);
+
 const formatCompact = (n: number) =>
   n >= 1e6 ? `${(n / 1e6).toFixed(1).replace(/\.0$/, "")}M` : n >= 1e3 ? `${Math.round(n / 1e3)}K` : String(n);
 
@@ -426,6 +429,8 @@ const HeroReadable = () => {
   const [signatureCount, setSignatureCount] = useState<number | null>(null);
   // The daily stats.json total, used until the live total arrives (the same fallback as the stats section)
   const [dailyTotal, setDailyTotal] = useState<number | null>(null);
+  // The live size of the public Postgres database, from the daily export stats (the same file as the stats section)
+  const [databaseBytes, setDatabaseBytes] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [result, setResultState] = useState<Result>({ status: "idle" });
 
@@ -440,6 +445,10 @@ const HeroReadable = () => {
         setDailyTotal(Object.values(stats).reduce((sum, s) => sum + s.full_match + s.partial_match, 0)),
       )
       .catch(() => setDailyTotal(null));
+    fetch(`https://export.${process.env.REACT_APP_TAG === "staging" ? "staging." : ""}sourcify.dev/v2/stats.json`)
+      .then((r) => r.json())
+      .then((stats: { database?: { totalBytes?: number } }) => setDatabaseBytes(stats.database?.totalBytes ?? null))
+      .catch(() => setDatabaseBytes(null));
   }, []);
   const contractCount = live.total ?? dailyTotal;
 
@@ -512,7 +521,7 @@ const HeroReadable = () => {
     contractCount !== null && { value: formatCompact(contractCount), label: "contracts verified" },
     signatureCount !== null && { value: formatCompact(signatureCount), label: "signatures" },
     chainCount > 0 && { value: String(chainCount), label: "chains" },
-    { value: "Daily", label: "open dataset" },
+    databaseBytes !== null && { value: formatSize(databaseBytes), label: "public database" },
   ].filter(Boolean) as { value: string; label: string }[];
 
   let resultBody: ReactNode = null;
@@ -578,7 +587,7 @@ const HeroReadable = () => {
           className="mt-4 max-w-2xl text-lg md:text-xl text-gray-600 opacity-0 animate-fade-up"
           style={{ animationDelay: "250ms" }}
         >
-          Sourcify matches Ethereum contracts to their source code and turns bytecode into names and clear transactions.
+          Sourcify matches EVM contracts to their source code and turns bytecode into human-readable information.
           <span className="mt-2 block font-semibold text-gray-700">Open source. Open data.</span>
         </p>
 
