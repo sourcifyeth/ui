@@ -4,7 +4,6 @@ import bashLang from "react-syntax-highlighter/dist/esm/languages/prism/bash";
 import javascriptLang from "react-syntax-highlighter/dist/esm/languages/prism/javascript";
 import codeStyle from "react-syntax-highlighter/dist/esm/styles/prism/dracula";
 import { motion, useInView } from "framer-motion";
-import integrationsData from "../../data/integrations.json";
 import selfHostedInstancesData from "../../data/selfHostedInstances.json";
 import Button from "../../components/Button";
 
@@ -14,8 +13,6 @@ SyntaxHighlighter.registerLanguage("javascript", javascriptLang);
 
 export default function Tooling() {
   const [activeTab, setActiveTab] = useState("foundry");
-  const integrationsRef = useRef(null);
-  const areIntegrationsInView = useInView(integrationsRef, { once: true });
   const selfHostedRef = useRef(null);
   const areSelfHostedInView = useInView(selfHostedRef, { once: true });
   const [displayedCode, setDisplayedCode] = useState("");
@@ -27,7 +24,6 @@ export default function Tooling() {
   const areTabsInView = useInView(tabsRef, { once: true });
 
   const tabs = ["foundry", "hardhat v2", "hardhat v3", "remix"];
-  const integrations = integrationsData;
   const selfHostedInstances = selfHostedInstancesData;
 
   const foundryExample = `# Deploy and verify
@@ -283,53 +279,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
         )}
       </motion.div>
 
-      <div className="my-24 text-center max-w-6xl">
-        <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500">
-          Who's using
-        </h2>
-        <div
-          className="flex flex-wrap justify-center gap-2 md:gap-8 mt-12 mx-2"
-          ref={integrationsRef}
-        >
-          {integrations
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((integration, index) => (
-              <motion.a
-                initial={{ opacity: 0 }}
-                animate={
-                  areIntegrationsInView
-                    ? {
-                      opacity: 1,
-                      y: [0, 0, -20],
-                      transition: { duration: 0.6, delay: index * 0.1 },
-                    }
-                    : { opacity: 0 }
-                }
-                whileHover={{
-                  scale: 1.1,
-                  transition: { duration: 0.1, delay: 0 },
-                }}
-                href={integration.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                key={integration.name}
-                className="w-16 flex flex-col items-center text-center"
-              >
-                <img
-                  src={integration.logo}
-                  alt={integration.name}
-                  className={`w-10 md:w-14 ${integration.name !== "Blockscout" ? "rounded-full" : ""
-                    } ${integration.name === "Wake" ? "bg-[#0000ff] p-2" : ""}`}
-                />
-                <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">
-                  {integration.name}
-                </div>
-              </motion.a>
-            ))}
-        </div>
-      </div>
-
-      <div className="text-center mx-4">
+      <div className="text-center mx-4 mt-24">
         <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500 mb-4">
           Self-hosting
         </h2>
