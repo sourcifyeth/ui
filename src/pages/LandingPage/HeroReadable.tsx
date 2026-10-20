@@ -610,7 +610,7 @@ const HeroReadable = () => {
                     >
                       {/* The value first and larger, then a small label. Only transactions get a "Tx" prefix. */}
                       {prefix && <span className="text-xs font-semibold text-gray-500">{prefix}</span>}
-                      <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[13px] text-gray-800">{chipValue(value)}</code>
+                      <code className="rounded bg-gray-100 px-1 font-mono text-[13px] text-gray-800">{chipValue(value)}</code>
                       <span className="text-[11px] text-gray-500">{label}</span>
                     </button>
                   ))}
