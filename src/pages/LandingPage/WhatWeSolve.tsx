@@ -486,27 +486,31 @@ const WhatWeSolve = () => {
                     <FaPause /> Paused
                   </motion.div>
                 )}
+                {/* Arrow buttons on the left and right edge. Every card has them, so they move with it. Only the active card shows them. */}
+                {[
+                  { delta: -1, label: "Previous card", Icon: FaChevronLeft, edge: "left-0 -translate-x-1/2" },
+                  { delta: 1, label: "Next card", Icon: FaChevronRight, edge: "right-0 translate-x-1/2" },
+                ].map(({ delta, label, Icon, edge }) => (
+                  <motion.button
+                    key={label}
+                    type="button"
+                    aria-label={label}
+                    aria-hidden={!isFront}
+                    tabIndex={isFront ? 0 : -1}
+                    onClick={() => move(delta)}
+                    initial={false}
+                    animate={{ opacity: isFront ? 1 : 0 }}
+                    transition={{ duration: reduceMotion ? 0 : 0.3 }}
+                    className={`absolute top-1/2 ${edge} -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full bg-white text-gray-700 shadow-lg ring-1 ring-gray-200 transition-colors hover:text-ceruleanBlue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-500 ${
+                      isFront ? "" : "pointer-events-none"
+                    }`}
+                  >
+                    <Icon aria-hidden="true" />
+                  </motion.button>
+                ))}
               </motion.div>
             );
           })}
-
-          {/* Arrow buttons on the left and right edge of the active card */}
-          {trackWidth > 0 &&
-            [
-              { delta: -1, label: "Previous card", Icon: FaChevronLeft, side: -1 },
-              { delta: 1, label: "Next card", Icon: FaChevronRight, side: 1 },
-            ].map(({ delta, label, Icon, side }) => (
-              <button
-                key={label}
-                type="button"
-                aria-label={label}
-                onClick={() => move(delta)}
-                className="absolute top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full bg-white text-gray-700 shadow-lg ring-1 ring-gray-200 transition hover:text-ceruleanBlue-500 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-500"
-                style={{ left: `calc(50% + ${(side * cardWidth) / 2}px)` }}
-              >
-                <Icon aria-hidden="true" />
-              </button>
-            ))}
         </div>
       </div>
     </section>
