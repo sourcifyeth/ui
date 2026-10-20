@@ -183,7 +183,6 @@ const LandingPage = () => {
       </section>
 
       <WhatWeSolve />
-      <SupportedChains />
       {/* Verified contract stats */}
       <section
         className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 pt-24 pb-16"
@@ -191,6 +190,7 @@ const LandingPage = () => {
       >
         <VerifiedContracts />
       </section>
+      <SupportedChains />
 
       <div id="dataset-playground">
         <BigQueryExplorer />
