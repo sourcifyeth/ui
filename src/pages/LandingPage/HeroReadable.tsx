@@ -1,12 +1,10 @@
 import { FormEvent, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { FiArrowRight, FiCheck, FiSearch, FiX } from "react-icons/fi";
+import { FiArrowRight, FiSearch, FiX } from "react-icons/fi";
 import { FaFileSignature, FaHashtag } from "react-icons/fa";
-import { IoCheckmarkDoneCircle } from "react-icons/io5";
+import { IoCheckmarkCircle, IoCheckmarkDoneCircle, IoChevronForward, IoCloseCircle } from "react-icons/io5";
 import { IconType } from "react-icons";
 import { id as keccakOfText } from "@ethersproject/hash";
 import type { DisplayField, DisplayFieldGroup, DisplayModel } from "@ethereum-sourcify/clear-signing";
-import MatchBadge from "../../components/MatchBadge";
 import { Context } from "../../Context";
 import { REPOSITORY_URL } from "../../constants";
 import { getVerifiedContractAllChains } from "../../utils/api";
@@ -19,8 +17,6 @@ import { clearSign, fetchMainnetTransaction, MainnetTransaction } from "./clearS
 const FOURBYTE_API = "https://api.4byte.sourcify.dev/signature-database/v1";
 const CLEAR_SIGNING_PLAYGROUND_URL = "https://clear-signing.sourcify.dev";
 const REGISTRY_URL = "https://github.com/ethereum/clear-signing-erc7730-registry";
-// Chains shown in the address result before "more chains"
-const MAX_CHAINS = 4;
 // Signatures shown in a 4byte result
 const MAX_SIGNATURES = 5;
 // Calldata characters shown on the "blind signing" side
@@ -102,10 +98,6 @@ const short = (value: string) => (/^0x/i.test(value) && value.length > 14 ? `${v
 const formatCompact = (n: number) =>
   n >= 1e6 ? `${(n / 1e6).toFixed(1).replace(/\.0$/, "")}M` : n >= 1e3 ? `${Math.round(n / 1e3)}K` : String(n);
 
-const chainLabel = (chainMap: Record<number, { title?: string; name: string }>, chainId: string) => {
-  const chain = chainMap[parseInt(chainId)];
-  return chain?.title || chain?.name || `Chain ${chainId}`;
-};
 
 async function lookUpSignatures(kind: Kind, query: string): Promise<SignatureGroup[]> {
   let url: string;
@@ -149,107 +141,158 @@ async function lookUpTransaction(tx: MainnetTransaction) {
   };
 }
 
-const ContractResult = ({ query, contracts }: { query: string; contracts: VerifiedContractMinimal[] }) => {
+// Result styles follow the lookup dropdown of repo.sourcify.dev: a gray panel, white lists with thin lines, small pills.
+
+const MatchPill = ({ match }: { match: VerifiedContractMinimal["match"] }) => {
+  const isExact = match === "exact_match";
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+      {isExact ? <IoCheckmarkDoneCircle className="h-4 w-4" aria-hidden="true" /> : <IoCheckmarkCircle className="h-4 w-4" aria-hidden="true" />}
+      {isExact ? (
+        <>
+          Exact<span className="hidden sm:inline"> Match</span>
+        </>
+      ) : (
+        "Match"
+      )}
+    </span>
+  );
+};
+
+// A box for "nothing found": a red cross, a bold line and one explaining line
+const EmptyState = ({ title, text }: { title: string; text: ReactNode }) => (
+  <div className="rounded-md border border-gray-200 bg-white p-4 text-left">
+    <div className="flex items-center gap-3">
+      <IoCloseCircle className="h-8 w-8 shrink-0 text-red-500" aria-hidden="true" />
+      <div>
+        <p className="text-base font-semibold text-gray-900">{title}</p>
+        <p className="text-sm text-gray-600">{text}</p>
+      </div>
+    </div>
+  </div>
+);
+
+// One row per chain: name, chain ID, match pill and an arrow. Opens the contract on repo.sourcify.dev.
+const ChainRow = ({ contract }: { contract: VerifiedContractMinimal }) => {
   const { sourcifyChainMap } = useContext(Context);
+  const chain = sourcifyChainMap[parseInt(contract.chainId)];
+  const deprecated = chain ? !chain.supported : false;
+  return (
+    <li>
+      <a
+        href={`${REPOSITORY_URL}/${contract.chainId}/${contract.address}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 px-3 py-2 hover:bg-ceruleanBlue-100 focus:bg-ceruleanBlue-100 focus:outline-none sm:gap-3"
+      >
+        <div className={`min-w-0 flex-1 ${deprecated ? "opacity-50" : ""}`}>
+          <div className="flex items-center gap-2">
+            <span className="break-words text-sm font-medium text-gray-900">{chain?.name ?? `Chain ${contract.chainId}`}</span>
+            {deprecated && (
+              <span className="shrink-0 rounded bg-gray-200 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-gray-600">
+                deprecated
+              </span>
+            )}
+          </div>
+          <div className="text-xs text-gray-500">
+            Chain ID: <span className="font-mono">{contract.chainId}</span>
+          </div>
+        </div>
+        <div className={`shrink-0 ${deprecated ? "opacity-50" : ""}`}>
+          <MatchPill match={contract.match} />
+        </div>
+        <IoChevronForward className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
+      </a>
+    </li>
+  );
+};
+
+// Show the chain filter only when the list is long enough to need it
+const CHAIN_FILTER_THRESHOLD = 8;
+
+const ContractResult = ({ contracts }: { contracts: VerifiedContractMinimal[] }) => {
+  const { sourcifyChains, sourcifyChainMap } = useContext(Context);
+  const [filter, setFilter] = useState("");
   if (contracts.length === 0) {
-    return (
-      <p className="text-gray-700">
-        This address is not verified on Sourcify yet.{" "}
-        <a href={process.env.REACT_APP_VERIFY_URL} className="text-ceruleanBlue-500 font-medium link-underline">
-          Verify it
-        </a>
-      </p>
-    );
+    return <EmptyState title="Not verified" text="This address is not verified on Sourcify on any chain." />;
   }
-  // Ethereum mainnet first, then exact matches, then by chain id
+  // The order of Sourcify's /chains list (Ethereum first); chains missing from it go last
+  const position = new Map(sourcifyChains.map((chain, index) => [String(chain.chainId), index]));
   const sorted = [...contracts].sort(
     (a, b) =>
-      Number(b.chainId === "1") - Number(a.chainId === "1") ||
-      Number(b.match === "exact_match") - Number(a.match === "exact_match") ||
-      Number(a.chainId) - Number(b.chainId),
+      (position.get(a.chainId) ?? Infinity) - (position.get(b.chainId) ?? Infinity) || Number(a.chainId) - Number(b.chainId),
   );
-  const shown = sorted.slice(0, MAX_CHAINS);
+  const q = filter.trim().toLowerCase();
+  const visible = q
+    ? sorted.filter((c) => c.chainId.includes(q) || sourcifyChainMap[parseInt(c.chainId)]?.name.toLowerCase().includes(q))
+    : sorted;
   return (
-    <div className="flex flex-col gap-3">
-      <p className="text-gray-700">
-        Verified on <strong>{contracts.length}</strong> {contracts.length === 1 ? "chain" : "chains"}.
-      </p>
-      <ul className="flex flex-col divide-y divide-gray-100">
-        {shown.map((c) => (
-          <li key={c.chainId} className="flex items-center gap-3 py-2">
-            <span className="min-w-0 flex-1 truncate text-gray-800">{chainLabel(sourcifyChainMap, c.chainId)}</span>
-            <MatchBadge match={c.match} small />
-            <SourceLink chainId={c.chainId} address={c.address} />
-          </li>
+    <div>
+      <div className="mb-2 flex min-h-9 items-center justify-between gap-3">
+        {contracts.length > CHAIN_FILTER_THRESHOLD && (
+          <input
+            type="text"
+            aria-label="Filter chains"
+            placeholder="Filter chains…"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="min-w-0 flex-1 rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ceruleanBlue-500 sm:w-56 sm:flex-none"
+          />
+        )}
+        <p className="ml-auto shrink-0 whitespace-nowrap text-sm text-gray-700">
+          Verified on <span className="font-semibold">{contracts.length}</span> {contracts.length === 1 ? "chain" : "chains"}
+        </p>
+      </div>
+      <ul className="max-h-80 divide-y divide-gray-100 overflow-y-auto rounded-md border border-gray-200 bg-white">
+        {visible.map((c) => (
+          <ChainRow key={`${c.chainId}-${c.matchId}`} contract={c} />
         ))}
+        {visible.length === 0 && <li className="px-3 py-2.5 text-sm text-gray-500">No chains match “{filter}”.</li>}
       </ul>
-      {contracts.length > shown.length && (
-        <Link to={`/address/${query}`} className="self-start text-sm text-ceruleanBlue-500 font-medium link-underline">
-          See all {contracts.length} chains
-        </Link>
-      )}
     </div>
   );
 };
 
-const SourceLink = ({ chainId, address }: { chainId: string; address: string }) => (
-  <a
-    href={`${REPOSITORY_URL}/${chainId}/${address}/`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-sm text-ceruleanBlue-500 font-medium link-underline whitespace-nowrap"
-  >
-    {/* Short label on phones, so the name next to it keeps its room */}
-    <span className="hidden sm:inline">Read the source</span>
-    <span className="sm:hidden">Source</span>
+const FooterLink = ({ href, children }: { href: string; children: ReactNode }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs text-ceruleanBlue-600 hover:underline">
+    {children} →
   </a>
 );
 
 const SignatureResult = ({ kind, signatures }: { kind: Kind; signatures: SignatureGroup[] }) => {
   if (signatures.length === 0) {
-    return (
-      <p className="text-gray-700">
-        No signature found for this {kind === "name" ? "name" : kind === "signature" ? "signature" : "hash"} in the 4byte
-        database.
-      </p>
-    );
+    const what = kind === "name" ? "signature with this name" : kind === "signature" ? "entry for this signature" : "name for this hash";
+    return <EmptyState title="No signature found" text={`The 4byte database has no ${what}.`} />;
   }
+  const rows = signatures.flatMap(({ hash, items, type }) => items.map((s) => ({ hash, type, ...s })));
   return (
-    <div className="flex flex-col gap-3">
-      <p className="text-gray-700">
-        {kind === "hash"
-          ? "Event"
-          : kind === "selector"
-            ? "Function or error"
-            : kind === "signature"
-              ? "Selector and topic of this signature"
-              : "Signatures with this name"}{" "}
-        from the 4byte database:
-      </p>
-      <ul className="flex flex-col divide-y divide-gray-100">
-        {signatures.flatMap(({ hash, items, type }) =>
-          items.map((s) => (
-            <li key={hash + s.name} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2">
-              <span className="w-16 shrink-0 text-xs font-semibold uppercase tracking-wide text-gray-500">{type}</span>
-              <code className="font-mono text-xs text-gray-500">{short(hash)}</code>
-              <code className="min-w-0 break-all font-mono text-sm text-gray-900">{s.name}</code>
-              {s.hasVerifiedContract && (
-                <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700">
-                  <FiCheck aria-hidden="true" /> Used in a verified contract
-                </span>
-              )}
-            </li>
-          )),
-        )}
+    <div>
+      <div className="mb-2 flex min-h-9 items-center justify-between gap-3">
+        <p className="text-sm text-gray-700">From the 4byte database</p>
+        <p className="shrink-0 whitespace-nowrap text-sm text-gray-700">
+          <span className="font-semibold">{rows.length}</span> {rows.length === 1 ? "signature" : "signatures"}
+        </p>
+      </div>
+      <ul className="max-h-80 divide-y divide-gray-100 overflow-y-auto rounded-md border border-gray-200 bg-white">
+        {rows.map((row) => (
+          <li key={row.hash + row.name} className="flex items-center gap-2 px-3 py-2 sm:gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="break-all font-mono text-sm font-medium text-gray-900">{row.name}</div>
+              <div className="text-xs text-gray-500">
+                {row.type}: <span className="font-mono">{short(row.hash)}</span>
+              </div>
+            </div>
+            {row.hasVerifiedContract && (
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-green-200 bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                <IoCheckmarkCircle className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden sm:inline">In verified contracts</span>
+                <span className="sm:hidden">Verified</span>
+              </span>
+            )}
+          </li>
+        ))}
       </ul>
-      <a
-        href="https://4byte.sourcify.dev"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="self-start text-sm text-ceruleanBlue-500 font-medium link-underline"
-      >
-        Open 4byte.sourcify.dev
-      </a>
+      <FooterLink href="https://4byte.sourcify.dev">Open 4byte.sourcify.dev</FooterLink>
     </div>
   );
 };
@@ -259,12 +302,20 @@ const isGroup = (f: DisplayField | DisplayFieldGroup): f is DisplayFieldGroup =>
 const FieldRows = ({ fields }: { fields: DisplayField[] }) => (
   <>
     {fields.map((f, i) => (
-      <div key={f.label + i} className="flex flex-col gap-0.5 py-2 sm:flex-row sm:items-baseline sm:gap-4">
-        <dt className="text-gray-400 sm:w-28 sm:shrink-0">{f.separator ? `${f.separator} · ${f.label}` : f.label}</dt>
-        <dd className="min-w-0 break-all text-gray-100">{f.value}</dd>
-      </div>
+      <li key={f.label + i} className="px-3 py-2">
+        <div className="text-xs text-gray-500">{f.separator ? `${f.separator} · ${f.label}` : f.label}</div>
+        <div className="break-all text-sm font-medium text-gray-900">{f.value}</div>
+      </li>
     ))}
   </>
+);
+
+// The small title of a card: a pill and one line next to it
+const CardTitle = ({ pill, pillClassName, children }: { pill: string; pillClassName: string; children?: ReactNode }) => (
+  <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 px-3 py-2">
+    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${pillClassName}`}>{pill}</span>
+    {children}
+  </div>
 );
 
 const TransactionResult = ({ result }: { result: Extract<Result, { status: "transaction" }> }) => {
@@ -279,89 +330,86 @@ const TransactionResult = ({ result }: { result: Extract<Result, { status: "tran
   const calldata = tx.data.length > MAX_CALLDATA_CHARS ? `${tx.data.slice(0, MAX_CALLDATA_CHARS)}…` : tx.data;
 
   if (!tx.to) {
-    return <p className="text-gray-700">This transaction creates a contract, so there is no call to show in plain words.</p>;
+    return <EmptyState title="Contract creation" text="This transaction creates a contract, so there is no call to show in plain words." />;
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <p className="text-gray-700">
-        Ethereum transaction <code className="font-mono text-sm">{short(tx.hash)}</code> to{" "}
-        <code className="font-mono text-sm">{short(tx.to)}</code>
-      </p>
+    <div>
+      <div className="mb-2 flex min-h-9 flex-wrap items-center justify-between gap-x-3">
+        <p className="text-sm text-gray-700">
+          Ethereum transaction <span className="font-mono">{short(tx.hash)}</span>
+        </p>
+        <p className="text-sm text-gray-700">
+          to <span className="font-mono">{short(tx.to)}</span>
+        </p>
+      </div>
 
-      {/* Blind signing next to clear signing */}
-      <div className="grid gap-3 md:grid-cols-2">
-        <div className="flex min-w-0 flex-col gap-2 rounded-xl bg-[#111827] p-4">
-          <span className="self-start rounded-full bg-gray-700 px-2.5 py-0.5 text-xs font-semibold text-gray-200">Blind signing</span>
-          <p className="text-xs text-gray-400">What a wallet without clear signing shows:</p>
-          <code className="break-all font-mono text-xs leading-relaxed text-gray-300">
-            <span className="text-amber-300">{calldata.slice(0, 10)}</span>
-            {calldata.slice(10)}
-          </code>
-        </div>
-        <div className="flex min-w-0 flex-col gap-2 rounded-xl bg-[#111827] p-4">
-          <span className="self-start rounded-full bg-ceruleanBlue-500 px-2.5 py-0.5 text-xs font-semibold text-white">Clear signing</span>
+      {/* Clear signing next to blind signing */}
+      <div className="grid gap-2 md:grid-cols-2">
+        <div className="min-w-0 overflow-hidden rounded-md border border-gray-200 bg-white">
+          <CardTitle pill="Clear signing" pillClassName="bg-ceruleanBlue-100 text-ceruleanBlue-700">
+            {hasDescriptor && intent && <span className="text-sm font-semibold text-gray-900">{intent}</span>}
+          </CardTitle>
           {hasDescriptor ? (
             <>
-              {intent && <p className="text-lg font-semibold text-white">{intent}</p>}
-              {display?.interpolatedIntent && <p className="text-sm text-gray-300">{display.interpolatedIntent}</p>}
-              <dl className="divide-y divide-gray-700 text-sm">
+              {display?.interpolatedIntent && (
+                <p className="border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{display.interpolatedIntent}</p>
+              )}
+              <ul className="divide-y divide-gray-100">
                 {(display?.fields ?? []).map((f, i) =>
                   isGroup(f) ? (
-                    <div key={i}>
-                      {f.label && <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-gray-400">{f.label}</p>}
-                      <FieldRows fields={f.fields} />
-                    </div>
+                    <li key={i}>
+                      {f.label && <p className="px-3 pt-2 text-xs font-semibold uppercase tracking-wide text-gray-500">{f.label}</p>}
+                      <ul className="divide-y divide-gray-100">
+                        <FieldRows fields={f.fields} />
+                      </ul>
+                    </li>
                   ) : (
                     <FieldRows key={i} fields={[f]} />
                   ),
                 )}
-              </dl>
+              </ul>
               {display?.metadata?.contractName && (
-                <p className="text-xs text-gray-400">
-                  Contract: {display.metadata.contractName}
+                <p className="border-t border-gray-100 px-3 py-2 text-xs text-gray-500">
+                  {display.metadata.contractName}
                   {display.metadata.owner ? ` by ${display.metadata.owner}` : ""}
                 </p>
               )}
             </>
           ) : (
-            <>
-              <p className="text-sm text-gray-300">
-                No ERC-7730 descriptor for this contract yet, so wallets cannot show this call in plain words.
-              </p>
+            <div className="px-3 py-2 text-sm text-gray-700">
+              <p>No ERC-7730 descriptor for this contract yet, so wallets cannot show this call in plain words.</p>
               {functionNames.length > 0 && (
-                <p className="text-sm text-gray-300">
-                  From 4byte, the function is <code className="font-mono text-green-300">{functionNames[0]}</code>.
+                <p className="mt-1">
+                  From 4byte, the function is <span className="font-mono font-medium text-gray-900">{functionNames[0]}</span>.
                 </p>
               )}
-              <a href={REGISTRY_URL} target="_blank" rel="noopener noreferrer" className="self-start text-sm font-medium text-ceruleanBlue-300 link-underline">
-                Add a descriptor to the registry
-              </a>
-            </>
+              <FooterLink href={REGISTRY_URL}>Add a descriptor to the registry</FooterLink>
+            </div>
           )}
+        </div>
+
+        <div className="min-w-0 overflow-hidden rounded-md border border-gray-200 bg-white">
+          <CardTitle pill="Blind signing" pillClassName="bg-gray-200 text-gray-700">
+            <span className="text-xs text-gray-500">What a wallet without clear signing shows</span>
+          </CardTitle>
+          <code className="block break-all px-3 py-2 font-mono text-xs leading-relaxed text-gray-600">
+            <span className="font-semibold text-gray-900">{calldata.slice(0, 10)}</span>
+            {calldata.slice(10)}
+          </code>
         </div>
       </div>
 
-      {/* The same transaction, one layer down: is the contract it calls verified? */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-gray-100 pt-3 text-sm">
-        <span className="text-gray-500">Contract source:</span>
-        {contract ? (
-          <>
-            <MatchBadge match={contract.match} small />
-            <SourceLink chainId="1" address={contract.address} />
-          </>
-        ) : (
-          <span className="text-gray-700">not verified on Sourcify</span>
-        )}
-        <a
-          href={CLEAR_SIGNING_PLAYGROUND_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-auto text-ceruleanBlue-500 font-medium link-underline"
-        >
-          Open the Clear Signing playground
-        </a>
-      </div>
+      {/* The same transaction, one layer down: the contract it calls */}
+      <p className="mb-2 mt-3 text-sm text-gray-700">Contract source</p>
+      {contract ? (
+        <ul className="divide-y divide-gray-100 rounded-md border border-gray-200 bg-white">
+          <ChainRow contract={contract} />
+        </ul>
+      ) : (
+        <EmptyState title="Not verified" text="The contract this transaction calls is not verified on Sourcify." />
+      )}
+      <FooterLink href={CLEAR_SIGNING_PLAYGROUND_URL}>Open the Clear Signing playground</FooterLink>
     </div>
   );
 };
@@ -464,30 +512,42 @@ const HeroReadable = () => {
   let resultBody: ReactNode = null;
   switch (result.status) {
     case "loading":
-      resultBody = <p className="text-gray-500">Looking up {short(result.query)}…</p>;
+      resultBody = (
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-ceruleanBlue-300 border-t-ceruleanBlue-600" />
+          Looking up {short(result.query)}…
+        </div>
+      );
       break;
     case "invalid":
       resultBody = (
-        <p className="text-gray-700">
-          Sourcify cannot read <code className="font-mono">{short(result.query)}</code>. Paste a contract address (0x and 40
+        <p className="text-sm text-gray-700">
+          Sourcify cannot read <span className="font-mono">{short(result.query)}</span>. Paste a contract address (0x and 40
           hex characters), a transaction hash or event topic (0x and 64), a selector (0x and 8), a signature like{" "}
-          <code className="font-mono">transfer(address,uint256)</code>, or a function name.
+          <span className="font-mono">transfer(address,uint256)</span>, or a function name.
         </p>
       );
       break;
     case "error":
-      resultBody = <p className="text-gray-700">The lookup did not work. Check your connection and try again.</p>;
-      break;
-    case "not-found":
       resultBody = (
-        <p className="text-gray-700">
-          No Ethereum transaction and no event topic has the hash <code className="font-mono">{short(result.query)}</code>.
-          Transactions are looked up on Ethereum mainnet only.
+        <p className="text-sm text-red-600">
+          Could not look up {short(result.query)}.{" "}
+          <button type="button" onClick={() => lookUp(result.query)} className="cursor-pointer underline">
+            Try again
+          </button>
         </p>
       );
       break;
+    case "not-found":
+      resultBody = (
+        <EmptyState
+          title="Not found"
+          text="No Ethereum transaction and no event topic has this hash. Transactions are looked up on Ethereum mainnet only."
+        />
+      );
+      break;
     case "contract":
-      resultBody = <ContractResult query={result.query} contracts={result.contracts} />;
+      resultBody = <ContractResult key={result.query} contracts={result.contracts} />;
       break;
     case "signatures":
       resultBody = <SignatureResult kind={result.kind} signatures={result.signatures} />;
@@ -542,6 +602,20 @@ const HeroReadable = () => {
               spellCheck={false}
               className="min-w-0 flex-1 bg-transparent py-2 font-mono text-sm md:text-base text-gray-900 placeholder:font-sans placeholder:text-gray-400 focus:outline-none"
             />
+            {/* Clear: empties the box and closes the result */}
+            {query && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  closeResult();
+                }}
+                aria-label="Clear"
+                className="shrink-0 rounded p-1 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-500"
+              >
+                <FiX className="h-5 w-5" aria-hidden="true" />
+              </button>
+            )}
             <button
               type="submit"
               className="shrink-0 rounded-xl bg-ceruleanBlue-500 px-4 py-2.5 text-sm md:text-base font-semibold text-white hover:bg-ceruleanBlue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-300"
@@ -554,31 +628,9 @@ const HeroReadable = () => {
             <div
               role="dialog"
               aria-label="Lookup result"
-              className="absolute inset-x-0 top-full mt-2 max-h-[min(70vh,44rem)] overflow-y-auto rounded-2xl bg-white text-left shadow-2xl ring-1 ring-gray-200"
+              className="absolute inset-x-0 top-full z-30 mt-2 max-h-[min(70vh,44rem)] overflow-y-auto rounded-lg border border-gray-200 bg-gray-50 p-2 text-left shadow-xl sm:p-3"
             >
-              {/* Header: which of the three lookups this is (the same names as the Try rows), and the close button */}
-              <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-gray-100 bg-white px-4 py-2 md:px-5">
-                <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  {result.status === "contract"
-                    ? "Verified contract"
-                    : result.status === "signatures"
-                      ? "Signatures"
-                      : result.status === "transaction"
-                        ? "ERC7730 Clear Signing"
-                        : "Lookup"}
-                </span>
-                <button
-                  type="button"
-                  onClick={closeResult}
-                  aria-label="Close the result"
-                  className="-mr-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-500"
-                >
-                  <FiX aria-hidden="true" />
-                </button>
-              </div>
-              <div className="p-4 md:p-5" aria-live="polite">
-                {resultBody}
-              </div>
+              <div aria-live="polite">{resultBody}</div>
             </div>
           )}
           </div>
