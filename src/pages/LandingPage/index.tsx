@@ -1,8 +1,15 @@
-import { useEffect } from "react";
+// AnimateOnScroll
+import { useRef, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
+import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
+import solidityLang from "react-syntax-highlighter/dist/esm/languages/prism/solidity";
+import codeStyle from "react-syntax-highlighter/dist/esm/styles/prism/dracula";
+import Button from "../../components/Button";
 import Header from "../../components/Header";
+import { DOCS_URL } from "../../constants";
 import VerifiedContracts from "./VerifiedContracts";
-import Hero from "./Hero";
+import { bytecode, solidityCode } from "./example";
 import WhatWeSolve from "./WhatWeSolve";
 import SupportedChains from "./SupportedChains";
 import Tooling from "./Tooling";
@@ -10,12 +17,66 @@ import FAQ from "./FAQ";
 import Contact from "./Contact";
 import BigQueryExplorer from "../../components/BigQueryExplorer";
 
+SyntaxHighlighter.registerLanguage("solidity", solidityLang);
+SyntaxHighlighter.registerLanguage("json", jsonLang);
+
 //////////////////////////////////
 ///////// MAIN COMPONENT /////////
 //////////////////////////////////
 
 const LandingPage = () => {
+  const [isHovering, setIsHovering] = useState(false);
+  const animationRef = useRef<number>(null);
+  const MAX_VELOCITY = 0.3;
+  const MIN_VELOCITY = 0.1;
+  const velocityRef = useRef({ x: MAX_VELOCITY, y: MAX_VELOCITY }); // Store velocity
+  const positionRef = useRef({ x: 50, y: 50 }); // Store position
   const { pathname, hash, key } = useLocation();
+
+  useEffect(() => {
+    const element = document.querySelector(".spotlight-effect") as HTMLElement;
+    if (!element) return;
+
+    const animate = () => {
+      if (isHovering) return;
+
+      // Update position based on velocity
+      positionRef.current.x += velocityRef.current.x;
+      positionRef.current.y += velocityRef.current.y;
+
+      // Bounce off edges
+      if (positionRef.current.x <= 20 || positionRef.current.x >= 80) {
+        velocityRef.current.x *= -1;
+        // Add some randomness to the bounce
+        velocityRef.current.x =
+          (Math.random() * (MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY) * Math.sign(velocityRef.current.x);
+      }
+      if (positionRef.current.y <= 20 || positionRef.current.y >= 80) {
+        velocityRef.current.y *= -1;
+        // Add some randomness to the bounce
+        velocityRef.current.y =
+          (Math.random() * (MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY) * Math.sign(velocityRef.current.y);
+      }
+
+      // Keep velocity within bounds
+      velocityRef.current.x = Math.max(Math.min(velocityRef.current.x, 3), -3);
+      velocityRef.current.y = Math.max(Math.min(velocityRef.current.y, 3), -3);
+
+      // Apply position
+      element.style.setProperty("--x", `${positionRef.current.x}%`);
+      element.style.setProperty("--y", `${positionRef.current.y}%`);
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isHovering]);
 
   useEffect(() => {
     // Handle direct route to dataset-playground
@@ -46,7 +107,81 @@ const LandingPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 w-full">
       <Header />
-      <Hero />
+      <section className="min-h-screen flex flex-col justify-center px-8 md:px-12 -mt-20 pt-20 max-w-7xl mx-auto">
+        <div className="flex flex-col justify-center items-center">
+          {/* Hero section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 flex-1 place-items-center">
+            {/* Hero left */}
+            <div className="flex flex-col justify-center text-center lg:text-left order-2 lg:order-1">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4">
+                <div className="opacity-0 animate-fade-up" style={{ animationDelay: "400ms" }}>
+                  Source Code Verification <br /> for{" "}
+                  <span className="text-ceruleanBlue-500">Ethereum Smart Contracts</span>
+                </div>
+              </h1>
+              <h2
+                className="text-base md:text-xl font-semibold text-gray-500 opacity-0 animate-fade-up"
+                style={{ animationDelay: "1500ms" }}
+              >
+                Open-source, open-data, open-standards
+              </h2>
+            </div>
+
+            {/* Hero right */}
+            <div
+              className="relative h-72 w-72 md:h-96 md:w-[30rem] md:flex items-center justify-center opacity-0 animate-fade-up order-1 lg:order-2 mt-4 lg:mt-0"
+              style={{ animationDelay: "100ms" }}
+            >
+              <div
+                className="absolute h-72 w-72 md:h-96 md:w-[30rem] z-10 spotlight-effect rounded-xl overflow-hidden "
+                style={{
+                  maskImage: "radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent 80px, black 128px)",
+                  WebkitMaskImage:
+                    "radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent 80px, black 128px)",
+                  background: "var(--code-bg, #1E1E1E)",
+                }}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                onMouseMove={(e) => {
+                  if (!isHovering) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.clientX - rect.left) / rect.width) * 100;
+                  const y = ((e.clientY - rect.top) / rect.height) * 100;
+                  e.currentTarget.style.setProperty("--x", `${x}%`);
+                  e.currentTarget.style.setProperty("--y", `${y}%`);
+                }}
+              >
+                <div className="p-4 text-xs text-gray-100 break-all bg-[#111827]">{bytecode}</div>
+              </div>
+              <div className="absolute h-72 w-72 md:h-96 md:w-[30rem] rounded-xl overflow-hidden shadow-xl">
+                <SyntaxHighlighter
+                  language="solidity"
+                  customStyle={{ margin: 0, background: "#111827" }}
+                  style={codeStyle}
+                  className="h-full w-full p-0 m-0 text-xs"
+                >
+                  {solidityCode}
+                </SyntaxHighlighter>
+              </div>
+            </div>
+          </div>
+          {/* Buttons */}
+          <div
+            className="flex flex-col items-center justify-center sm:flex-row gap-2 md:gap-4 mt-4 lg:mt-12 opacity-0 animate-fade-up"
+            style={{ animationDelay: "1700ms" }}
+          >
+            <a href={process.env.REACT_APP_VERIFY_URL} target="_blank" rel="noopener noreferrer">
+              <Button className="uppercase mt-4">Verify Contract</Button>
+            </a>
+            <a href={DOCS_URL}>
+              <Button className="uppercase mt-4" type="secondary">
+                Documentation
+              </Button>
+            </a>
+          </div>
+        </div>
+      </section>
+
       <WhatWeSolve />
       {/* Verified contract stats */}
       <section
