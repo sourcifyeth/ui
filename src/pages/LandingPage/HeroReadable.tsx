@@ -14,7 +14,9 @@ import { clearSign, fetchMainnetTransaction, MainnetTransaction } from "./clearS
 
 // The landing page hero: "Make Ethereum readable." with one lookup box for contracts, signatures and transactions.
 
-const FOURBYTE_API = "https://api.4byte.sourcify.dev/signature-database/v1";
+// Staging builds (and Netlify previews) read the staging 4byte database, like the other stats
+const FOURBYTE_HOST = process.env.REACT_APP_TAG === "staging" ? "4byte.staging.sourcify.dev" : "4byte.sourcify.dev";
+const FOURBYTE_API = `https://api.${FOURBYTE_HOST}/signature-database/v1`;
 const CLEAR_SIGNING_PLAYGROUND_URL = "https://clear-signing.sourcify.dev";
 const REGISTRY_URL = "https://github.com/ethereum/clear-signing-erc7730-registry";
 // Signatures shown in a 4byte result
@@ -313,8 +315,8 @@ const SignatureResult = ({ kind, query, signatures }: { kind: Kind; query: strin
           </li>
         ))}
       </ul>
-      {/* 4byte.sourcify.dev runs the search in its "q" parameter when the page loads */}
-      <FooterLink href={`https://4byte.sourcify.dev/?q=${encodeURIComponent(query)}`}>See all results on 4byte.sourcify.dev</FooterLink>
+      {/* The 4byte site runs the search in its "q" parameter when the page loads */}
+      <FooterLink href={`https://${FOURBYTE_HOST}/?q=${encodeURIComponent(query)}`}>See all results on {FOURBYTE_HOST}</FooterLink>
     </div>
   );
 };
