@@ -12,6 +12,7 @@ import { VerifiedContractMinimal } from "../../types";
 import useLiveStats from "./useLiveStats";
 import { clearSign, fetchMainnetTransaction, MainnetTransaction } from "./clearSigning";
 import ReadableWord from "./ReadableWord";
+import HeroBackground from "./HeroBackground";
 
 // The landing page hero: "Make Ethereum readable." with one lookup box for contracts, signatures and transactions.
 
@@ -612,7 +613,8 @@ const HeroReadable = () => {
   return (
     // Full screen height: -mt-[72px] lets the section start under the 72px header. pt-[120px] is the header
     // plus the same 48px as pb-12, so the content sits in the middle of the screen below the header.
-    <section className="min-h-screen -mt-[72px] pt-[120px] flex flex-col items-center justify-center px-4 md:px-8 pb-12 text-center">
+    <section className="relative isolate min-h-screen -mt-[72px] pt-[120px] flex flex-col items-center justify-center px-4 md:px-8 pb-12 text-center">
+      <HeroBackground />
       {/* 66rem: room for the lookup area on large screens; the headline and subline set their own widths */}
       <div className="flex w-full max-w-5xl flex-col items-center">
         <h1
