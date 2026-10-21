@@ -4,7 +4,7 @@ import { Context } from "../../Context";
 import { AnimatePresence, animate, motion, useInView, useReducedMotion } from "framer-motion";
 import Button from "../../components/Button";
 import { FaDownload } from "react-icons/fa";
-import { FiBarChart2, FiInfo } from "react-icons/fi";
+import { FiArrowRight, FiInfo } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import useLiveStats from "./useLiveStats";
 import LiveFeed from "./LiveFeed";
@@ -195,10 +195,11 @@ const Chart = () => {
               href="https://stats.sourcify.dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-flex items-center gap-2 text-base font-medium text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline"
+              // The same "text →" link style as "Verify a contract" in the hero and "See all chains"
+              className="mt-3 inline-flex items-center gap-1 text-base font-semibold text-ceruleanBlue-500 link-underline"
             >
-              <FiBarChart2 aria-hidden="true" />
               stats.sourcify.dev
+              <FiArrowRight aria-hidden="true" />
             </a>
             {live.total !== null && live.items.length > 0 && (
               <LiveFeed items={live.items} isLive={live.isLive} chainMap={sourcifyChainMap} />
