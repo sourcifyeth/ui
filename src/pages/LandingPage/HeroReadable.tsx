@@ -669,9 +669,11 @@ const HeroReadable = () => {
             )}
             <button
               type="submit"
-              className="shrink-0 rounded-xl bg-ceruleanBlue-500 px-4 py-2.5 text-sm md:text-base font-semibold text-white hover:bg-ceruleanBlue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-300"
+              aria-label="Look up"
+              title="Look up"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-ceruleanBlue-500 text-white hover:bg-ceruleanBlue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-300"
             >
-              Look up
+              <FiArrowRight className="h-5 w-5" aria-hidden="true" />
             </button>
           </form>
 
