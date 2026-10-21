@@ -5,14 +5,13 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaCheckCircle,
-  FaDownload,
   FaFileSignature,
-  FaGithub,
   FaHashtag,
   FaPause,
   FaUserShield,
 } from "react-icons/fa";
 import { IoCheckmarkDoneCircle } from "react-icons/io5";
+import { FiArrowRight } from "react-icons/fi";
 import { IconType } from "react-icons";
 import SourceBytecodeSlider from "./SourceBytecodeSlider";
 import ClearSigningExample from "./ClearSigningExample";
@@ -31,59 +30,42 @@ const MAX_CARD_PX = 1088;
 
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 
-const ExternalLink = ({ href, children }: { href?: string; children: ReactNode }) => (
+// Every link on the cards: "text →", in one row at the bottom of the text column
+const CardLink = ({ href, children }: { href: string; children: ReactNode }) => (
   <a
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    className="text-ceruleanBlue-500 font-medium link-underline whitespace-nowrap"
+    className="inline-flex items-center gap-1 whitespace-nowrap font-semibold text-ceruleanBlue-500 link-underline"
   >
-    {children} →
+    {children}
+    <FiArrowRight aria-hidden="true" />
   </a>
 );
 
 // Dark panel that shows the problem as raw data next to its readable form
 const Visual = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
   <div
-    className={`bg-[#111827] text-gray-100 rounded-xl p-5 font-mono text-xs shadow-inner ring-1 ring-white/10 ${className}`}
+    className={`w-full bg-[#111827] text-gray-100 rounded-xl p-5 font-mono text-xs shadow-inner ring-1 ring-white/10 ${className}`}
   >
     {children}
   </div>
 );
 
-// "Used by" row: small logo and name of each user, linked to its website
-const UsedBy = ({ users }: { users: { name: string; logo: string; url: string }[] }) => (
-  <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-gray-700">
-    <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Used by</span>
-    {users.map(({ name, logo, url }) => (
-      <a
-        key={name}
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 hover:text-ceruleanBlue-500"
-      >
-        <img src={logo} alt="" className="h-5 w-5 rounded object-contain" />
-        {name}
-      </a>
-    ))}
-  </div>
-);
+type FooterItem = { name: string; logo: string; url: string };
 
 type Problem = {
   id: string;
   title: string;
-  badge?: string;
   icon: IconType;
   // Size and colors of the icon box. The default is Sourcify blue.
   iconClassName?: string;
-  // One paragraph per entry
-  text: string[];
-  // Shown under the paragraphs
-  afterText?: ReactNode;
-  links?: ReactNode;
+  // Two short paragraphs on every card
+  text: [string, string];
+  links: { label: string; href: string }[];
   visual: ReactNode;
-  extra?: ReactNode;
+  // The footer row of every card: a label, then logos with names, or a status
+  footer: { label: string; items?: FooterItem[]; status?: string };
 };
 
 const problems: Problem[] = [
@@ -94,67 +76,23 @@ const problems: Problem[] = [
     icon: IoCheckmarkDoneCircle,
     iconClassName: "bg-green-100 text-green-800 border border-green-200 text-2xl",
     text: [
-      "Sourcify's main service.",
-      "We verify source code of contracts to make sure they match the bytecode.",
+      "Sourcify's main service: we check that the source code of a contract matches its bytecode.",
+      "Sourcify is 100% open source, publishes the whole database daily and shares data with other verifiers.",
     ],
-    afterText: (
-      <ul className="flex flex-col gap-3 text-[15px]">
-        <li>
-          <div className="font-semibold text-gray-800">Open Source</div>
-          <div className="text-gray-700">Sourcify is and always will be 100% open source.</div>
-          <div className="mt-0.5 text-xs">
-            <ExternalLink href="https://github.com/argotorg/sourcify">
-              <span className="inline-flex items-center gap-1">
-                <FaGithub aria-hidden="true" /> GitHub
-              </span>
-            </ExternalLink>
-          </div>
-        </li>
-        <li>
-          <div className="font-semibold text-gray-800">Open Data</div>
-          <div className="text-gray-700">We publish our whole database daily.</div>
-          <div className="mt-0.5 text-xs">
-            <ExternalLink href="https://docs.sourcify.dev/docs/repository/">
-              <span className="inline-flex items-center gap-1">
-                <FaDownload aria-hidden="true" /> Download the dataset
-              </span>
-            </ExternalLink>
-          </div>
-        </li>
-        <li>
-          <div className="font-semibold text-gray-800">Open Standards</div>
-          <div className="text-gray-700">We share data and standards with other verifiers.</div>
-          <div className="mt-0.5 text-xs">
-            <ExternalLink href="https://verifieralliance.org">Verifier Alliance</ExternalLink>
-          </div>
-        </li>
-      </ul>
-    ),
-    visual: (
-      <div className="flex flex-col gap-4">
-        <SourceBytecodeSlider />
-        <div className="flex flex-wrap items-center justify-end gap-y-2 text-gray-700">
-          {[
-            { name: "Solidity", logo: solidityLogo, url: "https://soliditylang.org" },
-            { name: "Vyper", logo: vyperLogo, url: "https://vyperlang.org" },
-            { name: "Fe", logo: feLogo, url: "https://fe-lang.org" },
-          ].map(({ name, logo, url }, index) => (
-            <span key={name} className={`px-4 last:pr-0 ${index > 0 ? "border-l border-gray-300" : ""}`}>
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 hover:text-ceruleanBlue-500"
-              >
-                {/* Same box for every logo, so they show at the same size */}
-                <img src={logo} alt="" className="h-5 w-5 object-contain" />
-                {name}
-              </a>
-            </span>
-          ))}
-        </div>
-      </div>
-    ),
+    links: [
+      { label: "GitHub", href: "https://github.com/argotorg/sourcify" },
+      { label: "Download the dataset", href: "https://docs.sourcify.dev/docs/repository/" },
+      { label: "Verifier Alliance", href: "https://verifieralliance.org" },
+    ],
+    visual: <SourceBytecodeSlider />,
+    footer: {
+      label: "Languages",
+      items: [
+        { name: "Solidity", logo: solidityLogo, url: "https://soliditylang.org" },
+        { name: "Vyper", logo: vyperLogo, url: "https://vyperlang.org" },
+        { name: "Fe", logo: feLogo, url: "https://fe-lang.org" },
+      ],
+    },
   },
   {
     id: "4byte",
@@ -164,17 +102,14 @@ const problems: Problem[] = [
       "Sourcify runs the largest EVM function/event/error signatures database.",
       "It combines signatures from verified contracts with imported collections.",
     ],
-    links: (
-      <span className="text-base">
-        <ExternalLink href="https://4byte.sourcify.dev">4byte.sourcify.dev</ExternalLink>
-      </span>
-    ),
+    links: [{ label: "4byte.sourcify.dev", href: "https://4byte.sourcify.dev" }],
     visual: (
       <Visual>
         {/* Real hashes: the 4-byte selector of a function or error, and the 32-byte topic of an event (shortened) */}
         <div className="grid grid-cols-[auto_auto_1fr] items-baseline gap-x-3 gap-y-4">
           {[
             { kind: "Function", hash: "0xa9059cbb", name: "transfer(address,uint256)" },
+            { kind: "Function", hash: "0x095ea7b3", name: "approve(address,uint256)" },
             { kind: "Event", hash: "0xd78ad95f…d822", name: "Swap(address,uint256,uint256,uint256,uint256,address)" },
             { kind: "Error", hash: "0xe450d38c", name: "ERC20InsufficientBalance(address,uint256,uint256)" },
           ].map(({ kind, hash, name }) => (
@@ -184,7 +119,7 @@ const problems: Problem[] = [
                 <div className="text-gray-400 whitespace-nowrap">{hash}</div>
               </div>
               <FaArrowRight className="text-ceruleanBlue-300 self-end mb-1" aria-hidden="true" />
-              <div className="text-green-300 self-end">
+              <div className="min-w-0 self-end text-green-300 [overflow-wrap:anywhere]">
                 {/* Allow line breaks after commas, so long signatures wrap cleanly */}
                 {name.split(",").map((part, i, parts) => (
                   <Fragment key={i}>
@@ -203,17 +138,16 @@ const problems: Problem[] = [
       </Visual>
     ),
     // Known users of the signature database, from the Sourcify usage reports
-    extra: (
-      <UsedBy
-        users={[
-          { name: "Foundry", logo: "/foundry.png", url: "https://getfoundry.sh" },
-          { name: "viem", logo: "/users/viem.png", url: "https://viem.sh" },
-          { name: "Remix", logo: "/remix.png", url: "https://remix.ethereum.org" },
-          { name: "L2BEAT", logo: "/users/l2beat.png", url: "https://l2beat.com" },
-          { name: "MetaMask", logo: "/users/metamask.png", url: "https://metamask.io" },
-        ]}
-      />
-    ),
+    footer: {
+      label: "Used by",
+      items: [
+        { name: "Foundry", logo: "/foundry.png", url: "https://getfoundry.sh" },
+        { name: "viem", logo: "/users/viem.png", url: "https://viem.sh" },
+        { name: "Remix", logo: "/remix.png", url: "https://remix.ethereum.org" },
+        { name: "L2BEAT", logo: "/users/l2beat.png", url: "https://l2beat.com" },
+        { name: "MetaMask", logo: "/users/metamask.png", url: "https://metamask.io" },
+      ],
+    },
   },
   {
     id: "clear-signing",
@@ -223,39 +157,33 @@ const problems: Problem[] = [
       "Blind signing is Ethereum's biggest UX issue.",
       "We maintain the ERC7730 registry, move the spec forward and build tooling to foster adoption.",
     ],
-    links: (
-      <>
-        <ExternalLink href="https://eips.ethereum.org/EIPS/eip-7730">ERC-7730 spec</ExternalLink>
-        <ExternalLink href="https://github.com/ethereum/clear-signing-erc7730-registry">ERC-7730 registry</ExternalLink>
-        <ExternalLink href="https://github.com/sourcifyeth/clear-signing">TypeScript SDK</ExternalLink>
-      </>
-    ),
+    links: [
+      { label: "Spec", href: "https://eips.ethereum.org/EIPS/eip-7730" },
+      { label: "Registry", href: "https://github.com/ethereum/clear-signing-erc7730-registry" },
+      { label: "TypeScript SDK", href: "https://github.com/sourcifyeth/clear-signing" },
+    ],
     visual: <ClearSigningExample />,
-    extra: (
-      <UsedBy
-        users={[
-          { name: "Ledger", logo: "/users/ledger.png", url: "https://www.ledger.com" },
-          { name: "Trezor", logo: "/users/trezor.png", url: "https://trezor.io" },
-          { name: "Ambire", logo: "/users/ambire.png", url: "https://www.ambire.com" },
-        ]}
-      />
-    ),
+    footer: {
+      label: "Used by",
+      items: [
+        { name: "Ledger", logo: "/users/ledger.png", url: "https://www.ledger.com" },
+        { name: "Trezor", logo: "/users/trezor.png", url: "https://trezor.io" },
+        { name: "Ambire", logo: "/users/ambire.png", url: "https://www.ambire.com" },
+      ],
+    },
   },
   {
     id: "onay",
     title: "Onay: 2FA for Signing",
-    badge: "New · in development",
     icon: FaUserShield,
     text: [
       "Your wallet is the only screen between you and a signature. Most people press confirm and hope.",
-      "Onay is 2FA for signing. It gets the same transaction as your wallet, checks the source code and chain state locally, and shows what the transaction does. It holds no keys and signs nothing.",
+      "Onay gets the same transaction as your wallet, checks it locally and shows what it does. It holds no keys.",
     ],
-    links: (
-      <>
-        <ExternalLink href="https://docs.sourcify.dev/blog/onay-local-signing-companion/">Read more</ExternalLink>
-        <ExternalLink href="https://github.com/sourcifyeth/onay">GitHub</ExternalLink>
-      </>
-    ),
+    links: [
+      { label: "Read more", href: "https://docs.sourcify.dev/blog/onay-local-signing-companion/" },
+      { label: "GitHub", href: "https://github.com/sourcifyeth/onay" },
+    ],
     visual: (
       <Visual className="font-sans">
         <div className="grid grid-cols-2 gap-3 text-center">
@@ -268,50 +196,83 @@ const problems: Problem[] = [
             <div className="font-mono">0x3f9a…c21e</div>
           </div>
         </div>
-        <div className="mt-3 flex items-center justify-center gap-2 text-green-400 font-semibold">
-          <FaCheckCircle aria-hidden="true" /> Same transaction, safe to sign
+        {/* What Onay checks before you sign */}
+        <ul className="mt-4 flex flex-col gap-2 text-sm text-gray-300">
+          {["Same transaction as the wallet", "Contract source code is verified", "Transfers 250 USDC to vitalik.eth"].map(
+            (check) => (
+              <li key={check} className="flex items-center gap-2">
+                <FaCheckCircle className="shrink-0 text-green-400" aria-hidden="true" /> {check}
+              </li>
+            ),
+          )}
+        </ul>
+        <div className="mt-4 rounded border border-green-500/40 bg-green-500/10 py-2 text-center font-semibold text-green-400">
+          Safe to sign
         </div>
       </Visual>
     ),
+    footer: { label: "Status", status: "New · in development" },
   },
 ];
 
+// Every card has the same parts in the same places:
+// - left: icon and title, two paragraphs, and the links at the bottom of the column
+// - right: the visual, centered in a box of the same height on every card
+// - bottom: the footer row, a label with logos or a status
 const Card = ({ item, isFront }: { item: Problem; isFront: boolean }) => {
   const Icon = item.icon;
   return (
     // Only the active card gets the large shadow. The track would cut a large shadow on the side cards at its edges.
     <div
-      className={`relative h-full bg-white rounded-3xl ring-1 ring-gray-200/70 overflow-hidden transition-shadow duration-500 ${
+      className={`relative flex h-full flex-col bg-white rounded-3xl ring-1 ring-gray-200/70 overflow-hidden transition-shadow duration-500 ${
         isFront ? "shadow-2xl" : "shadow-sm"
       }`}
     >
-      <div className="relative p-8 md:p-14 flex flex-col gap-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              <span
-                className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${item.iconClassName ?? "text-xl bg-ceruleanBlue-50 text-ceruleanBlue-500"}`}
-              >
-                <Icon aria-hidden="true" />
-              </span>
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-800">{item.title}</h3>
-              {item.badge && (
-                <span className="text-xs font-semibold bg-ceruleanBlue-100 text-ceruleanBlue-600 rounded-full px-3 py-1">
-                  {item.badge}
-                </span>
-              )}
-            </div>
-            {item.text.map((paragraph) => (
-              <p key={paragraph} className="text-gray-700">
-                {paragraph}
-              </p>
-            ))}
-            {item.afterText}
-            {item.links && <div className="flex flex-col items-start gap-1 text-sm">{item.links}</div>}
+      <div className="grid flex-1 grid-cols-1 gap-8 p-6 md:p-12 lg:grid-cols-2 lg:gap-12">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <span
+              className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${item.iconClassName ?? "text-xl bg-ceruleanBlue-50 text-ceruleanBlue-500"}`}
+            >
+              <Icon aria-hidden="true" />
+            </span>
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-800">{item.title}</h3>
           </div>
-          <div className="self-center">{item.visual}</div>
+          {item.text.map((paragraph) => (
+            <p key={paragraph} className="text-gray-700">
+              {paragraph}
+            </p>
+          ))}
+          <div className="mt-auto flex flex-wrap gap-x-5 gap-y-1 pt-2 text-sm md:text-base">
+            {item.links.map((link) => (
+              <CardLink key={link.href} href={link.href}>
+                {link.label}
+              </CardLink>
+            ))}
+          </div>
         </div>
-        {item.extra}
+        <div className="flex min-h-[19rem] items-center lg:h-80 lg:min-h-0">{item.visual}</div>
+      </div>
+      <div className="flex min-h-[3.5rem] flex-wrap items-center gap-x-6 gap-y-2 border-t border-gray-100 bg-gray-50/60 px-6 py-3 text-sm text-gray-700 md:px-12">
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">{item.footer.label}</span>
+        {item.footer.items?.map(({ name, logo, url }) => (
+          <a
+            key={name}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 hover:text-ceruleanBlue-500"
+          >
+            {/* Same box for every logo, so they show at the same size */}
+            <img src={logo} alt="" className="h-5 w-5 rounded object-contain" />
+            {name}
+          </a>
+        ))}
+        {item.footer.status && (
+          <span className="rounded-full bg-ceruleanBlue-100 px-3 py-0.5 text-xs font-semibold text-ceruleanBlue-600">
+            {item.footer.status}
+          </span>
+        )}
       </div>
     </div>
   );
