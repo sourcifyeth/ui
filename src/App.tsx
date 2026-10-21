@@ -6,6 +6,7 @@ import StagingBanner from "./components/StagingBanner";
 import LandingPage from "./pages/LandingPage";
 import Lookup from "./pages/Lookup";
 import VerifyRedirect from "./pages/VerifyRedirect";
+import { IS_STAGING } from "./constants";
 
 const LegacyLookupRedirect = () => {
   const { address } = useParams();
@@ -14,7 +15,7 @@ const LegacyLookupRedirect = () => {
 
 function App() {
   useEffect(() => {
-    if (process.env.REACT_APP_TAG !== "master") {
+    if (IS_STAGING) {
       document.title = "(staging) sourcify.eth";
     }
   }, []);

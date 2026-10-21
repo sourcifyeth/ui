@@ -6,7 +6,7 @@ import { IconType } from "react-icons";
 import { id as keccakOfText } from "@ethersproject/hash";
 import type { DisplayField, DisplayFieldGroup, DisplayModel } from "@ethereum-sourcify/clear-signing";
 import { Context } from "../../Context";
-import { REPOSITORY_URL } from "../../constants";
+import { IS_STAGING, REPOSITORY_URL } from "../../constants";
 import { getVerifiedContractAllChains } from "../../utils/api";
 import { VerifiedContractMinimal } from "../../types";
 import useLiveStats from "./useLiveStats";
@@ -14,8 +14,8 @@ import { clearSign, fetchMainnetTransaction, MainnetTransaction } from "./clearS
 
 // The landing page hero: "Make Ethereum readable." with one lookup box for contracts, signatures and transactions.
 
-// Staging builds (and Netlify previews) read the staging 4byte database, like the other stats
-const FOURBYTE_HOST = process.env.REACT_APP_TAG === "staging" ? "4byte.staging.sourcify.dev" : "4byte.sourcify.dev";
+// Staging builds, Netlify previews and the dev server read the staging 4byte database, like the other stats
+const FOURBYTE_HOST = IS_STAGING ? "4byte.staging.sourcify.dev" : "4byte.sourcify.dev";
 const FOURBYTE_API = `https://api.${FOURBYTE_HOST}/signature-database/v1`;
 const CLEAR_SIGNING_PLAYGROUND_URL = "https://clear-signing.sourcify.dev";
 const REGISTRY_URL = "https://github.com/ethereum/clear-signing-erc7730-registry";
@@ -475,13 +475,13 @@ const HeroReadable = () => {
       .then((r) => r.json())
       .then((json) => setSignatureCount(json.result?.count?.total ?? null))
       .catch(() => setSignatureCount(null));
-    fetch(`https://${process.env.REACT_APP_TAG === "staging" ? "staging." : ""}sourcify.dev/static/stats.json`)
+    fetch(`https://${IS_STAGING ? "staging." : ""}sourcify.dev/static/stats.json`)
       .then((r) => r.json())
       .then((stats: Record<string, { full_match: number; partial_match: number }>) =>
         setDailyTotal(Object.values(stats).reduce((sum, s) => sum + s.full_match + s.partial_match, 0)),
       )
       .catch(() => setDailyTotal(null));
-    fetch(`https://export.${process.env.REACT_APP_TAG === "staging" ? "staging." : ""}sourcify.dev/v2/stats.json`)
+    fetch(`https://export.${IS_STAGING ? "staging." : ""}sourcify.dev/v2/stats.json`)
       .then((r) => r.json())
       .then((stats: { database?: { totalBytes?: number } }) => setDatabaseBytes(stats.database?.totalBytes ?? null))
       .catch(() => setDatabaseBytes(null));

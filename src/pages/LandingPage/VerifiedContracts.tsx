@@ -9,6 +9,7 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import useLiveStats from "./useLiveStats";
 import LiveFeed from "./LiveFeed";
 import { formatRelativeTime } from "./liveStats";
+import { IS_STAGING } from "../../constants";
 
 // The live total usually arrives within a few hundred ms. Waiting avoids a count-up to the stats.json total and then a jump.
 const LIVE_TOTAL_WAIT_MS = 1000;
@@ -91,14 +92,14 @@ const Chart = () => {
   useEffect(() => {
     // We are temporarily putting the stats.json file in the static folder on GCP.
     // This assumes that the file is available.
-    fetch(`https://${process.env.REACT_APP_TAG === "staging" ? "staging." : ""}sourcify.dev/static/stats.json`)
+    fetch(`https://${IS_STAGING ? "staging." : ""}sourcify.dev/static/stats.json`)
       .then((res) => res.json())
       .then((json) => setStats(json))
       .catch(() => console.error("error fetching stats"));
   }, []);
 
   useEffect(() => {
-    fetch(`https://export.${process.env.REACT_APP_TAG === "staging" ? "staging." : ""}sourcify.dev/v2/stats.json`)
+    fetch(`https://export.${IS_STAGING ? "staging." : ""}sourcify.dev/v2/stats.json`)
       .then((res) => res.json())
       .then((json) => setDatasetStats(json))
       .catch(() => console.error("error fetching dataset stats"));

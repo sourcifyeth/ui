@@ -1,14 +1,12 @@
 import { useState } from "react";
+import { IS_STAGING } from "../../constants";
 
-// Shown only on non-production (staging/dev) deployments. Production builds
-// set REACT_APP_TAG to "master"; anything else is treated as staging.
-const isStaging = process.env.REACT_APP_TAG !== "master";
-
+// Shown only on staging builds (see IS_STAGING).
 const StagingBanner = () => {
   // Kept in memory only, so the banner comes back on every page load.
   const [isClosed, setIsClosed] = useState(false);
 
-  if (!isStaging || isClosed) {
+  if (!IS_STAGING || isClosed) {
     return null;
   }
 
