@@ -610,8 +610,9 @@ const HeroReadable = () => {
   }
 
   return (
-    // Full screen height, like the original hero: -mt-20 pt-20 lets the section start under the header
-    <section className="min-h-screen -mt-20 pt-20 flex flex-col items-center justify-center px-4 md:px-8 pb-12 text-center">
+    // Full screen height: -mt-[72px] lets the section start under the 72px header. pt-[120px] is the header
+    // plus the same 48px as pb-12, so the content sits in the middle of the screen below the header.
+    <section className="min-h-screen -mt-[72px] pt-[120px] flex flex-col items-center justify-center px-4 md:px-8 pb-12 text-center">
       {/* 66rem: room for the lookup area on large screens; the headline and subline set their own widths */}
       <div className="flex w-full max-w-5xl flex-col items-center">
         <h1

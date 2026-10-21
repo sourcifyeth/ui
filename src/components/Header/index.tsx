@@ -7,7 +7,7 @@ import { RiTwitterXFill } from "react-icons/ri";
 import logoText from "../../assets/logo-rounded.svg";
 import { DOCS_URL, REPOSITORY_URL } from "../../constants";
 
-const Header = ({ className }: { className?: string }) => {
+const Header = ({ className = "" }: { className?: string }) => {
   const [showNav, setShowNav] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 1024); // tailwind md=768px
   useEffect(() => {
@@ -26,7 +26,9 @@ const Header = ({ className }: { className?: string }) => {
     setShowNav((prev) => !prev);
   };
   return (
-    <div className={`flex w-full p-4 relative bg-gray-100 z-10 ${className}`}>
+    // 72px tall with a small shadow, the same as the headers of repo.sourcify.dev and verify.sourcify.dev
+    // ("shadow" here is the same shadow as "shadow-sm" in their Tailwind v4)
+    <header className={`relative z-10 flex h-[72px] w-full items-center bg-gray-100 px-4 shadow lg:px-0 ${className}`}>
       <div className="flex flex-wrap lg:flex-nowrap items-center justify-between max-w-[100rem] w-full mx-auto px-8 md:px-12 lg:px-12 xl:px-24 ">
         <Tooltip id="social-tooltip" />
         <div className="flex items-center">
@@ -41,7 +43,7 @@ const Header = ({ className }: { className?: string }) => {
         <div
           className={`${showNav || isDesktop ? "flex" : "hidden"} ${
             !isDesktop ? "absolute top-0 left-0 h-screen w-screen z-20" : ""
-          } items-center justify-center lg:justify-end text-center flex-col lg:flex-row py-4 lg:mt-0 bg-gray-100 lg:bg-transparent bg-opacity-95 w-full`}
+          } items-center justify-center lg:justify-end text-center flex-col lg:flex-row py-4 lg:py-0 lg:mt-0 bg-gray-100 lg:bg-transparent bg-opacity-95 w-full`}
         >
           {!isDesktop && showNav && (
             <button className="absolute top-4 right-8" onClick={toggleNav}>
@@ -104,7 +106,7 @@ const Header = ({ className }: { className?: string }) => {
           </div>
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 
