@@ -107,7 +107,7 @@ $ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F98
     name: "API",
     how: "Any language, over HTTP",
     icon: <FiTerminal className="h-6 w-6 text-gray-700" aria-hidden="true" />,
-    docs: { label: "API reference", href: "https://sourcify.dev/server/api-docs/" },
+    docs: { label: "API docs", href: "https://docs.sourcify.dev/docs/api/" },
     blocks: [
       {
         title: "terminal",
@@ -186,8 +186,13 @@ const WindowBar = ({ title, dots = true, children }: { title: string; dots?: boo
 );
 
 const ToolCard = ({ tool }: { tool: Tool }) => (
-  // A fixed height for every tool, so the page does not move when the tab changes
-  <div className="flex h-[26rem] flex-col overflow-hidden rounded-xl bg-[#111827] shadow-xl ring-1 ring-black/5 md:h-[24rem]">
+  // The code cards share one fixed height, so the page does not move between them.
+  // The video card is as tall as the video at the full card width, so it stays readable.
+  <div
+    className={`flex flex-col overflow-hidden rounded-xl bg-[#111827] shadow-xl ring-1 ring-black/5 ${
+      tool.video ? "" : "h-[26rem] md:h-[24rem]"
+    }`}
+  >
     <div className="min-h-0 flex-1 overflow-y-auto">
       {tool.blocks?.map((block, i) => (
         <div key={block.title + i} className={i > 0 ? "border-t border-white/10" : ""}>
@@ -207,7 +212,7 @@ const ToolCard = ({ tool }: { tool: Tool }) => (
       {tool.video && (
         <>
           <WindowBar title="Remix · Contract Verification" />
-          <div className="flex h-[calc(100%-2.5rem)] items-center justify-center bg-black/20 p-3">
+          <div className="bg-black">
             <video
               src={tool.video}
               autoPlay
@@ -215,7 +220,7 @@ const ToolCard = ({ tool }: { tool: Tool }) => (
               muted
               playsInline
               aria-label="The Contract Verification plugin in Remix verifies a contract on Sourcify"
-              className="max-h-full max-w-full rounded-md"
+              className="block aspect-[800/434] w-full"
             />
           </div>
         </>
@@ -299,18 +304,10 @@ export default function Tooling() {
       <motion.div {...fadeIn} className="mt-16 w-full max-w-5xl rounded-xl bg-white p-6 ring-1 ring-gray-200 md:mt-20 md:p-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="max-w-md">
-            <h3 className="text-2xl font-bold text-gray-800">Run your own Sourcify</h3>
+            <h3 className="text-2xl font-bold text-gray-800">Self Hosting</h3>
             <p className="mt-2 text-gray-600">
               Sourcify is open source, so you can run your own instance. These public instances are known to us:
             </p>
-            <a
-              href="https://docs.sourcify.dev/docs/running-server/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 inline-block font-medium text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline"
-            >
-              Self-hosting docs →
-            </a>
           </div>
           <div className="flex flex-col gap-3 md:items-end">
             <ul className="flex flex-wrap gap-2 md:justify-end">
