@@ -54,7 +54,6 @@ const SupportedChains = () => {
         ) : (
           <h2 className="text-4xl md:text-5xl text-gray-800 font-bold">Supported Chains</h2>
         )}
-        <p className="mt-3 text-base md:text-xl text-ceruleanBlue-500">Sourcify works on all EVM based chains.</p>
       </motion.div>
 
       {/* Chips like the Self Hosting block, but a bit larger: the chains are the main content here */}
@@ -81,7 +80,8 @@ const SupportedChains = () => {
         animate={isBottomInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        <div className="mt-8 flex flex-col md:mt-10 md:flex-row items-center justify-center gap-4">
+        <p className="mt-8 mb-4 md:mt-10 md:mb-6 text-base md:text-xl text-ceruleanBlue-500">Sourcify works on all EVM based chains.</p>
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4">
           {/* The same link style as "Verify a contract" in the hero */}
           <a
             href={`${DOCS_URL}/docs/chains`}
