@@ -3,7 +3,7 @@ import { useContext, useRef, useState, useEffect } from "react";
 import { Context } from "../../Context";
 import { DOCS_URL } from "../../constants";
 import chains from "./chains";
-import Button from "../../components/Button";
+import { FiArrowRight } from "react-icons/fi";
 import { motion, useInView } from "framer-motion";
 
 const SupportedChains = () => {
@@ -96,7 +96,13 @@ const SupportedChains = () => {
           <p>Sourcify works on all EVM based chains.</p>
         </div>
         <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-          <Button href={`${DOCS_URL}/docs/chains`}>{chainCount ? `See all ${chainCount} chains` : "See all chains"}</Button>
+          {/* The same link style as "Verify a contract" in the hero */}
+          <a
+            href={`${DOCS_URL}/docs/chains`}
+            className="inline-flex items-center gap-1 font-semibold text-ceruleanBlue-500 link-underline"
+          >
+            {chainCount ? `See all ${chainCount} chains` : "See all chains"} <FiArrowRight aria-hidden="true" />
+          </a>
         </div>
       </motion.div>
     </section>
