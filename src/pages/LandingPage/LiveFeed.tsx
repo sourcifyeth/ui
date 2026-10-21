@@ -182,7 +182,7 @@ const LiveFeed = ({ items, isLive, chainMap }: LiveFeedProps) => {
   ));
 
   return (
-    <div className="mt-6 w-full max-w-2xl mx-auto px-2 text-left">
+    <div className="mt-6 w-full max-w-3xl mx-auto px-2 text-left">
       <div className="flex items-center justify-between px-1 mb-2 text-xs md:text-sm text-gray-500">
         <span>Just verified</span>
         {isLive && (

@@ -1,13 +1,14 @@
 import { useContext, useEffect, useState, useRef } from "react";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { Context } from "../../Context";
-import { animate, motion, useInView, useReducedMotion } from "framer-motion";
+import { AnimatePresence, animate, motion, useInView, useReducedMotion } from "framer-motion";
 import Button from "../../components/Button";
 import { FaDownload } from "react-icons/fa";
 import { FiBarChart2, FiInfo } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import useLiveStats from "./useLiveStats";
 import LiveFeed from "./LiveFeed";
+import RollingNumber from "./RollingNumber";
 import { formatRelativeTime } from "./liveStats";
 import { IS_STAGING } from "../../constants";
 
@@ -45,13 +46,14 @@ function formatBytes(bytes: number): string {
 }
 
 /**
- * Animates the shown number towards `target`. The first value counts up from 0 (as before);
- * later values (live updates) use a short tween from the current shown value.
+ * The shown number for `target`. The first value counts up from 0 (as before). Later values (live updates)
+ * are set at once; the caller rolls the changed digits. `hasCounted` is true once the count-up is done.
  */
-function useAnimatedNumber(target: number | null, reduceMotion: boolean): number {
+function useCountUp(target: number | null, reduceMotion: boolean): { value: number; hasCounted: boolean } {
   const [display, setDisplay] = useState(0);
+  const [hasCounted, setHasCounted] = useState(false);
   const displayRef = useRef(0);
-  const hasAnimatedRef = useRef(false);
+  const hasStartedRef = useRef(false);
 
   useEffect(() => {
     if (target === null) return;
@@ -59,22 +61,52 @@ function useAnimatedNumber(target: number | null, reduceMotion: boolean): number
       displayRef.current = value;
       setDisplay(value);
     };
-    if (reduceMotion) {
+    if (reduceMotion || hasStartedRef.current) {
+      // A value that arrives during the count-up also lands here: it stops the count-up and shows the value
       set(target);
-      hasAnimatedRef.current = true;
+      hasStartedRef.current = true;
+      setHasCounted(true);
       return;
     }
-    const isFirst = !hasAnimatedRef.current;
-    hasAnimatedRef.current = true;
+    hasStartedRef.current = true;
     const controls = animate(displayRef.current, target, {
-      duration: isFirst ? 1 : 0.6,
-      ease: isFirst ? "linear" : "easeOut",
+      duration: 1,
+      ease: "linear",
       onUpdate: (value) => set(Math.round(value)),
+      onComplete: () => setHasCounted(true),
     });
     return () => controls.stop();
   }, [target, reduceMotion]);
 
-  return display;
+  return { value: display, hasCounted };
+}
+
+// How long "+N" stays after the last increase. Increases inside this time add up into one label.
+const INCREASE_LABEL_MS = 1800;
+
+/**
+ * "+N" for increases of the live total. The first live total only sets the base (it can differ a lot
+ * from the daily total shown before it), so only later live events count.
+ */
+function useLiveIncrease(liveTotal: number | null): { amount: number; key: number } | null {
+  const previousRef = useRef<number | null>(null);
+  const [label, setLabel] = useState<{ amount: number; key: number } | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => {
+    if (liveTotal === null) return;
+    const previous = previousRef.current;
+    previousRef.current = liveTotal;
+    if (previous === null || liveTotal <= previous) return;
+    const delta = liveTotal - previous;
+    // Each new label gets a new key, so it fades in again; increases that come close together add up
+    setLabel((current) => ({ amount: (current?.amount ?? 0) + delta, key: current?.key ?? Date.now() }));
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setLabel(null), INCREASE_LABEL_MS);
+  }, [liveTotal]);
+
+  useEffect(() => () => clearTimeout(timerRef.current), []);
+  return label;
 }
 
 const Chart = () => {
@@ -116,7 +148,8 @@ const Chart = () => {
     ? Object.values(stats).reduce((prev, curr) => prev + curr.full_match + curr.partial_match, 0)
     : null;
   const targetTotal = live.total ?? (isFallbackReady ? fallbackTotal : null);
-  const displayTotal = useAnimatedNumber(isSectionInView ? targetTotal : null, reduceMotion);
+  const displayTotal = useCountUp(isSectionInView ? targetTotal : null, reduceMotion);
+  const increase = useLiveIncrease(live.total);
 
   return (
     <section
@@ -137,7 +170,26 @@ const Chart = () => {
             transition={{ duration: 0.6 }}
             className="w-full"
           >
-            <h2 className="text-5xl md:text-8xl font-bold text-ceruleanBlue-500 tabular-nums">{displayTotal.toLocaleString()}</h2>
+            <h2 className="relative inline-block text-5xl md:text-8xl font-bold leading-none text-ceruleanBlue-500 tabular-nums">
+              <RollingNumber value={displayTotal.value} roll={displayTotal.hasCounted && !reduceMotion} />
+              {/* "+N" next to the number for live increases. It does not take space, so the number stays centered. */}
+              <AnimatePresence>
+                {increase && !reduceMotion && (
+                  <motion.span
+                    key={increase.key}
+                    data-testid="live-increase"
+                    className="absolute left-full top-0 ml-2 whitespace-nowrap text-lg font-semibold text-emerald-600/80 md:ml-4 md:text-3xl"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.3 }}
+                    aria-hidden="true"
+                  >
+                    +{increase.amount.toLocaleString()}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </h2>
             <h2 className="text-2xl md:text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
             {live.total !== null && live.items.length > 0 && (
               <LiveFeed items={live.items} isLive={live.isLive} chainMap={sourcifyChainMap} />
