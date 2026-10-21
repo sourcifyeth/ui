@@ -1,4 +1,3 @@
-import { Tooltip } from "react-tooltip";
 import { useContext, useRef, useState, useEffect } from "react";
 import { Context } from "../../Context";
 import { DOCS_URL } from "../../constants";
@@ -57,35 +56,24 @@ const SupportedChains = () => {
         )}
       </motion.div>
 
-      <Tooltip
-        className="!rounded-xl !text-lg !bg-ceruleanBlue-100 !text-ceruleanBlue-600 !opacity-100 !px-6 !py-4 !z-50"
-        id="supported-chains-tooltip"
-      />
-      <div className="flex flex-col items-center w-full md:mb-8 mt-10 md:mt-12" ref={chainsRef}>
-        <div className="flex flex-row justify-center md:w-[50rem] flex-wrap">
-          {chains.map((chain, index) => (
-            <motion.img
-              initial={{ opacity: 0 }}
-              animate={
-                areChainsInView
-                  ? {
-                    opacity: 1,
-                    y: [0, 0, -20],
-                    transition: { duration: 0.6, delay: (index + Math.ceil(chains.length / 2)) * 0.1 },
-                  }
-                  : { opacity: 0 }
-              }
-              whileHover={{ scale: 1.1, transition: { duration: 0.1, delay: 0 } }}
-              key={chain.name}
-              src={chain.logo}
-              data-tooltip-id="supported-chains-tooltip"
-              data-tooltip-content={chain.name}
-              className={`h-12 md:h-24 m-2 md:m-4 rounded-full`}
-              alt={`${chain.name} logo`}
-            />
-          ))}
-        </div>
-      </div>
+      {/* The same chips as the Self Hosting block in the Tooling section */}
+      <motion.ul
+        ref={chainsRef}
+        initial={{ opacity: 0, y: 16 }}
+        animate={areChainsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+        transition={{ duration: 0.5 }}
+        className="mx-auto mt-10 flex max-w-3xl flex-wrap justify-center gap-2 md:mt-12"
+      >
+        {chains.map((chain) => (
+          <li
+            key={chain.name}
+            className="flex items-center gap-2 rounded-full border border-gray-200 bg-white py-1 pl-1 pr-3 text-sm text-gray-700"
+          >
+            <img src={chain.logo} alt="" className="h-7 w-7 rounded-full bg-white object-contain" />
+            {chain.name}
+          </li>
+        ))}
+      </motion.ul>
       <motion.div
         ref={bottomRef}
         initial={{ opacity: 0, y: 20 }}
