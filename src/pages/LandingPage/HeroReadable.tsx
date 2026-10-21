@@ -610,9 +610,9 @@ const HeroReadable = () => {
 
   return (
     // Full screen height, like the original hero: -mt-20 pt-20 lets the section start under the header
-    <section className="min-h-screen -mt-20 pt-20 flex flex-col items-center justify-center px-4 pb-12 text-center">
+    <section className="min-h-screen -mt-20 pt-20 flex flex-col items-center justify-center px-4 md:px-8 pb-12 text-center">
       {/* 66rem: room for the lookup area on large screens; the headline and subline set their own widths */}
-      <div className="flex w-full max-w-[66rem] flex-col items-center">
+      <div className="flex w-full max-w-5xl flex-col items-center">
         <h1
           className="text-5xl md:text-7xl font-bold tracking-tight text-gray-800 opacity-0 animate-fade-up"
           style={{ animationDelay: "100ms" }}
@@ -629,7 +629,7 @@ const HeroReadable = () => {
 
         {/* relative z-20: the result overlay must show above the links, numbers and sections that follow */}
         <div
-          className="relative z-20 mt-8 w-full max-w-[50rem] lg:max-w-[66rem] opacity-0 animate-fade-up"
+          className="relative z-20 mt-8 w-full max-w-[50rem] lg:max-w-5xl opacity-0 animate-fade-up"
           style={{ animationDelay: "400ms" }}
         >
           {/* Lookup: one box for contracts, signatures and transactions. The result opens over the page below it. */}

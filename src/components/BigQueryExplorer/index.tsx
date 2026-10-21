@@ -111,8 +111,8 @@ const BigQueryExplorer = () => {
   };
 
   return (
-    <section className="px-4 bg-gray-100 py-12 md:py-20">
-      {/* The same content width as the Tooling section */}
+    <section className="px-4 md:px-8 bg-gray-100 py-12 md:py-20">
+      {/* The content width of every section (max-w-5xl) */}
       <div className="max-w-5xl mx-auto">
         <motion.h2
           ref={titleRef}

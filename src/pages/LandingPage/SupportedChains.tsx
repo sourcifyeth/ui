@@ -41,7 +41,7 @@ const SupportedChains = () => {
   }, [chainCount, isTitleInView]);
 
   return (
-    <section className="px-8 md:px-12 lg:px-24 bg-gray-100 py-12 md:py-20 text-center" id="supported-chains">
+    <section className="px-4 md:px-8 bg-gray-100 py-12 md:py-20 text-center" id="supported-chains">
       <motion.div
         ref={titleRef}
         initial={{ opacity: 0, y: 20 }}
@@ -96,14 +96,7 @@ const SupportedChains = () => {
           <p>Sourcify works on all EVM based chains.</p>
         </div>
         <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-          <a href={`${DOCS_URL}/docs/chains`}>
-            <Button className="font-semibold">{chainCount ? `See all ${chainCount} chains` : "See all chains"}</Button>
-          </a>
-          <a href={`${DOCS_URL}/docs/chain-support/`}>
-            <Button type="secondary" className="font-semibold">
-              Add a new chain
-            </Button>
-          </a>
+          <Button href={`${DOCS_URL}/docs/chains`}>{chainCount ? `See all ${chainCount} chains` : "See all chains"}</Button>
         </div>
       </motion.div>
     </section>

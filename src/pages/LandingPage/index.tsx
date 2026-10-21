@@ -51,7 +51,7 @@ const LandingPage = () => {
       <WhatWeSolve />
       {/* Verified contract stats */}
       <section
-        className="flex flex-col items-center px-8 md:px-12 lg:px-24 bg-gray-100 py-12 md:py-20"
+        className="flex flex-col items-center px-4 md:px-8 bg-gray-100 py-12 md:py-20"
         id="contract-stats"
       >
         <VerifiedContracts />
@@ -70,10 +70,10 @@ const LandingPage = () => {
 
       {/* Footer */}
       <footer
-        className="text-center md:text-left px-8 py-8 md:px-48 md:py-12 bg-ceruleanBlue-500 text-white text-lg"
+        className="text-center md:text-left px-4 py-8 md:px-8 md:py-12 bg-ceruleanBlue-500 text-white text-lg"
         id="footer"
       >
-        <nav className="font-vt323 flex flex-col flex-wrap gap-4 max-w-7xl mx-auto items-center">
+        <nav className="font-vt323 flex flex-col flex-wrap gap-4 max-w-5xl mx-auto items-center">
           <div className="flex flex-col items-center text-xl">
             <div className="text-ceruleanBlue-200 flex flex-col md:flex-row flex-wrap justify-center gap-x-8">
               <a href="https://docs.sourcify.dev" className="hover:text-ceruleanBlue-100 block">
@@ -134,8 +134,8 @@ const LandingPage = () => {
             className="inline-block mb-4"
           >
             <img
-              width={218}
-              height={54}
+              width={160}
+              height={40}
               src="https://drpc.org/images/external/powered-by-drpc-light.svg"
               alt="Powered by dRPC"
             />

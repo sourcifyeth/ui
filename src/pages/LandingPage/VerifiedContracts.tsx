@@ -191,18 +191,18 @@ const Chart = () => {
               </AnimatePresence>
             </h2>
             <h2 className="text-2xl md:text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
-            {live.total !== null && live.items.length > 0 && (
-              <LiveFeed items={live.items} isLive={live.isLive} chainMap={sourcifyChainMap} />
-            )}
             <a
               href="https://stats.sourcify.dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center gap-2 text-base md:text-lg text-ceruleanBlue-400 hover:text-ceruleanBlue-600 underline underline-offset-4"
+              className="mt-3 inline-flex items-center gap-2 text-base font-medium text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline"
             >
               <FiBarChart2 aria-hidden="true" />
               stats.sourcify.dev
             </a>
+            {live.total !== null && live.items.length > 0 && (
+              <LiveFeed items={live.items} isLive={live.isLive} chainMap={sourcifyChainMap} />
+            )}
           </motion.div>
 
           {datasetStats && (
@@ -313,19 +313,9 @@ const Chart = () => {
             </motion.div>
           )}
           <div className="flex flex-col items-center mt-8">
-            <Button type="">
-              <a
-                href="https://docs.sourcify.dev/docs/repository/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-col items-center text-center gap-1 px-2 md:px-4"
-              >
-                <div className="flex items-center gap-2">
-                  <FaDownload className="text-lg" />
-                  <span className="text-base md:text-xl font-semibold">Download</span>
-                </div>
-                <span className="text-xs md:text-sm">all verified contracts</span>
-              </a>
+            <Button href="https://docs.sourcify.dev/docs/repository/" external>
+              <FaDownload aria-hidden="true" />
+              Download all verified contracts
             </Button>
           </div>
         </>

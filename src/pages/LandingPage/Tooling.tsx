@@ -251,7 +251,7 @@ export default function Tooling() {
   const instances = [...selfHostedInstancesData].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <section className="w-full flex flex-col items-center text-gray-700 py-12 md:py-20 px-4" id="tooling" ref={sectionRef}>
+    <section className="w-full flex flex-col items-center text-gray-700 py-12 md:py-20 px-4 md:px-8" id="tooling" ref={sectionRef}>
       <motion.div {...fadeIn} className="mb-10 text-center md:mb-12">
         <h2 className="text-4xl md:text-5xl text-gray-800 font-bold">Tooling</h2>
         <p className="mt-3 text-base text-gray-600 md:text-lg">Verify from the tools you already use. No API key needed.</p>
