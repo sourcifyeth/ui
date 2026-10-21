@@ -6,19 +6,17 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <section
-      className={`flex flex-col w-full px-8 my-2 text-gray-700 bg-gray-50 rounded-lg shadow-lg transition-colors duration-500 ease-in-out`}
-    >
+    <div className="flex w-full flex-col px-5 text-gray-700 md:px-6">
       <button
-        className={`flex flex-row justify-between items-center text-left cursor-pointer py-6 ${
-          isOpen ? "font-semibold" : ""
+        className={`flex flex-row items-center justify-between gap-4 py-4 text-left cursor-pointer md:py-5 ${
+          isOpen ? "font-semibold text-gray-900" : "font-medium text-gray-800"
         }`}
         onClick={() => setIsOpen((currIsOpen) => !currIsOpen)}
         aria-expanded={isOpen}
         aria-controls={`faq-content-${question}`}
       >
-        <div className="text-xl">{question}</div>
-        <div className="">{isOpen ? <FaMinus /> : <FaPlus />}</div>
+        <div className="text-base md:text-lg">{question}</div>
+        <div className="shrink-0 text-sm text-gray-400">{isOpen ? <FaMinus /> : <FaPlus />}</div>
       </button>
       <AnimatePresence initial={false}>
         {
@@ -29,14 +27,14 @@ const FAQBox = ({ question, answer }: { question: string; answer: React.ReactNod
               open: { opacity: 1, height: "auto" },
               collapsed: { opacity: 0, height: 0 },
             }}
-            transition={{ duration: 0.8, ease: [0, 0.62, 0.23, 0.98] }}
+            transition={{ duration: 0.35, ease: [0, 0.62, 0.23, 0.98] }}
             className="overflow-hidden"
           >
-            <div className=" text-gray-700 pb-6">{answer}</div>
+            <div className="pb-5 text-gray-600 leading-relaxed">{answer}</div>
           </motion.div>
         }
       </AnimatePresence>
-    </section>
+    </div>
   );
 };
 
@@ -155,7 +153,7 @@ export default function FAQ() {
   ];
 
   return (
-    <section ref={faqRef} id="faq" className="w-full flex flex-col items-center py-12 md:py-20 bg-ceruleanBlue-100">
+    <section ref={faqRef} id="faq" className="w-full flex flex-col items-center px-4 md:px-8 py-12 md:py-20">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         animate={isFAQInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -164,7 +162,8 @@ export default function FAQ() {
       >
         F.A.Q.
       </motion.h2>
-      <div className="w-full max-w-[64rem] px-4">
+      {/* One white card with dividers, narrower than other sections so the answers are easy to read */}
+      <div className="w-full max-w-3xl divide-y divide-gray-100 rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
         {FAQItems.map((item, index) => (
           <FAQBox key={`faq-item-${index}`} question={item.q} answer={item.a} />
         ))}
