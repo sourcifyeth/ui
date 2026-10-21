@@ -54,22 +54,23 @@ const SupportedChains = () => {
         ) : (
           <h2 className="text-4xl md:text-5xl text-gray-800 font-bold">Supported Chains</h2>
         )}
+        <p className="mt-3 text-base md:text-xl text-ceruleanBlue-500">Sourcify works on all EVM based chains.</p>
       </motion.div>
 
-      {/* Chips like the Self Hosting block, but larger: the chains are the main content here */}
+      {/* Chips like the Self Hosting block, but a bit larger: the chains are the main content here */}
       <motion.ul
         ref={chainsRef}
         initial={{ opacity: 0, y: 16 }}
         animate={areChainsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
         transition={{ duration: 0.5 }}
-        className="mx-auto mt-10 flex max-w-4xl flex-wrap justify-center gap-2 md:mt-12 md:gap-4"
+        className="mx-auto mt-10 flex max-w-3xl flex-wrap justify-center gap-2 md:mt-12 md:gap-3"
       >
         {chains.map((chain) => (
           <li
             key={chain.name}
-            className="flex items-center gap-2 rounded-full border border-gray-200 bg-white py-1.5 pl-1.5 pr-4 text-sm font-medium text-gray-700 shadow-sm md:gap-3 md:py-2 md:pl-2 md:pr-5 md:text-lg"
+            className="flex items-center gap-2 rounded-full border border-gray-200 bg-white py-1 pl-1 pr-3.5 text-sm font-medium text-gray-700 shadow-sm md:gap-3 md:py-1.5 md:pl-1.5 md:pr-4 md:text-base"
           >
-            <img src={chain.logo} alt="" className="h-8 w-8 rounded-full bg-white object-contain md:h-12 md:w-12" />
+            <img src={chain.logo} alt="" className="h-7 w-7 rounded-full bg-white object-contain md:h-10 md:w-10" />
             {chain.name}
           </li>
         ))}
@@ -80,10 +81,7 @@ const SupportedChains = () => {
         animate={isBottomInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        <div className="mt-10 mb-4 md:mt-12 md:mb-6 text-base md:text-xl text-ceruleanBlue-500">
-          <p>Sourcify works on all EVM based chains.</p>
-        </div>
-        <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+        <div className="mt-8 flex flex-col md:mt-10 md:flex-row items-center justify-center gap-4">
           {/* The same link style as "Verify a contract" in the hero */}
           <a
             href={`${DOCS_URL}/docs/chains`}
