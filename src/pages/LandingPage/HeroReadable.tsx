@@ -11,6 +11,7 @@ import { getVerifiedContractAllChains } from "../../utils/api";
 import { VerifiedContractMinimal } from "../../types";
 import useLiveStats from "./useLiveStats";
 import { clearSign, fetchMainnetTransaction, MainnetTransaction } from "./clearSigning";
+import ReadableWord from "./ReadableWord";
 
 // The landing page hero: "Make Ethereum readable." with one lookup box for contracts, signatures and transactions.
 
@@ -617,7 +618,11 @@ const HeroReadable = () => {
           className="text-5xl md:text-7xl font-bold tracking-tight text-gray-800 opacity-0 animate-fade-up"
           style={{ animationDelay: "100ms" }}
         >
-          Make Ethereum <span className="text-ceruleanBlue-500">readable</span>.
+          Make Ethereum{" "}
+          <span className="text-ceruleanBlue-500">
+            <ReadableWord />
+          </span>
+          .
         </h1>
         <p
           className="mt-4 max-w-2xl text-lg md:text-xl text-gray-600 opacity-0 animate-fade-up"
