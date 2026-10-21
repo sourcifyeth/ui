@@ -56,20 +56,20 @@ const SupportedChains = () => {
         )}
       </motion.div>
 
-      {/* The same chips as the Self Hosting block in the Tooling section */}
+      {/* Chips like the Self Hosting block, but larger: the chains are the main content here */}
       <motion.ul
         ref={chainsRef}
         initial={{ opacity: 0, y: 16 }}
         animate={areChainsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
         transition={{ duration: 0.5 }}
-        className="mx-auto mt-10 flex max-w-3xl flex-wrap justify-center gap-2 md:mt-12"
+        className="mx-auto mt-10 flex max-w-4xl flex-wrap justify-center gap-2 md:mt-12 md:gap-4"
       >
         {chains.map((chain) => (
           <li
             key={chain.name}
-            className="flex items-center gap-2 rounded-full border border-gray-200 bg-white py-1 pl-1 pr-3 text-sm text-gray-700"
+            className="flex items-center gap-2 rounded-full border border-gray-200 bg-white py-1.5 pl-1.5 pr-4 text-sm font-medium text-gray-700 shadow-sm md:gap-3 md:py-2 md:pl-2 md:pr-5 md:text-lg"
           >
-            <img src={chain.logo} alt="" className="h-7 w-7 rounded-full bg-white object-contain" />
+            <img src={chain.logo} alt="" className="h-8 w-8 rounded-full bg-white object-contain md:h-12 md:w-12" />
             {chain.name}
           </li>
         ))}
@@ -80,7 +80,7 @@ const SupportedChains = () => {
         animate={isBottomInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        <div className="my-4 md:my-8 text-base md:text-xl text-ceruleanBlue-500">
+        <div className="mt-10 mb-4 md:mt-12 md:mb-6 text-base md:text-xl text-ceruleanBlue-500">
           <p>Sourcify works on all EVM based chains.</p>
         </div>
         <div className="flex flex-col md:flex-row items-center justify-center gap-4">
