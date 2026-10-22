@@ -64,7 +64,7 @@ const SqlEditor = ({ sql, setSql, onExecute, loading, generating }: Props) => {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={onExecute} className="uppercase" disabled={generating || loading}>
+          <Button onClick={onExecute} disabled={generating || loading}>
             {loading ? "Executing..." : "Execute"}
           </Button>
         </div>

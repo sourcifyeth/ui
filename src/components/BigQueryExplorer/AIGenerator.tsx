@@ -281,7 +281,7 @@ const AIGenerator = ({
         </div>
 
         <div className="mt-3 flex items-center gap-3">
-          <Button className="uppercase" disabled={generating || modelValid !== true} htmlType="submit">
+          <Button disabled={generating || modelValid !== true} htmlType="submit">
             {generating ? "Generating…" : "Generate SQL"}
           </Button>
         </div>

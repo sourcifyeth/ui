@@ -1,9 +1,8 @@
-import { Tooltip } from "react-tooltip";
 import { useContext, useRef, useState, useEffect } from "react";
 import { Context } from "../../Context";
 import { DOCS_URL } from "../../constants";
 import chains from "./chains";
-import Button from "../../components/Button";
+import { FiArrowRight } from "react-icons/fi";
 import { motion, useInView } from "framer-motion";
 
 const SupportedChains = () => {
@@ -41,7 +40,7 @@ const SupportedChains = () => {
   }, [chainCount, isTitleInView]);
 
   return (
-    <section className="px-8 md:px-12 lg:px-24 bg-gray-100 pt-8 pb-2 text-center" id="supported-chains">
+    <section className="px-4 md:px-8 bg-gray-100 py-12 md:py-20 text-center" id="supported-chains">
       <motion.div
         ref={titleRef}
         initial={{ opacity: 0, y: 20 }}
@@ -49,60 +48,46 @@ const SupportedChains = () => {
         transition={{ duration: 0.6 }}
       >
         {chainCount ? (
-          <h1 className="text-4xl md:text-5xl text-ceruleanBlue-500 font-light ">
+          <h2 className="text-4xl md:text-5xl text-ceruleanBlue-500 font-light ">
             <div className="text-8xl md:text-9xl font-bold">{displayCount}</div> Chains
-          </h1>
+          </h2>
         ) : (
-          <h1 className="text-3xl md:text-5xl text-ceruleanBlue-500 font-bold">Supported Chains</h1>
+          <h2 className="text-4xl md:text-5xl text-gray-800 font-bold">Supported Chains</h2>
         )}
       </motion.div>
 
-      <Tooltip
-        className="!rounded-xl !text-lg !bg-ceruleanBlue-100 !text-ceruleanBlue-600 !opacity-100 !px-6 !py-4 !z-50"
-        id="supported-chains-tooltip"
-      />
-      <div className="flex flex-col items-center w-full md:mb-8 mt-8 md:mt-16" ref={chainsRef}>
-        <div className="flex flex-row justify-center md:w-[50rem] flex-wrap">
-          {chains.map((chain, index) => (
-            <motion.img
-              initial={{ opacity: 0 }}
-              animate={
-                areChainsInView
-                  ? {
-                    opacity: 1,
-                    y: [0, 0, -20],
-                    transition: { duration: 0.6, delay: (index + Math.ceil(chains.length / 2)) * 0.1 },
-                  }
-                  : { opacity: 0 }
-              }
-              whileHover={{ scale: 1.1, transition: { duration: 0.1, delay: 0 } }}
-              key={chain.name}
-              src={chain.logo}
-              data-tooltip-id="supported-chains-tooltip"
-              data-tooltip-content={chain.name}
-              className={`h-12 md:h-24 m-2 md:m-4 rounded-full`}
-              alt={`${chain.name} logo`}
-            />
-          ))}
-        </div>
-      </div>
+      {/* Chips like the Self Hosting block, but a bit larger: the chains are the main content here */}
+      <motion.ul
+        ref={chainsRef}
+        initial={{ opacity: 0, y: 16 }}
+        animate={areChainsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+        transition={{ duration: 0.5 }}
+        className="mx-auto mt-10 flex max-w-3xl flex-wrap justify-center gap-2 md:mt-12 md:gap-3"
+      >
+        {chains.map((chain) => (
+          <li
+            key={chain.name}
+            className="flex items-center gap-2 rounded-full border border-gray-200 bg-white py-1 pl-1 pr-3.5 text-sm font-medium text-gray-700 shadow-sm md:gap-3 md:py-1.5 md:pl-1.5 md:pr-4 md:text-base"
+          >
+            <img src={chain.logo} alt="" className="h-7 w-7 rounded-full bg-white object-contain md:h-10 md:w-10" />
+            {chain.name}
+          </li>
+        ))}
+      </motion.ul>
       <motion.div
         ref={bottomRef}
         initial={{ opacity: 0, y: 20 }}
         animate={isBottomInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        <div className="my-4 md:my-8 text-base md:text-xl text-ceruleanBlue-500">
-          <p>Sourcify works on all EVM based chains.</p>
-        </div>
+        <p className="mt-8 mb-4 md:mt-10 md:mb-6 text-base md:text-xl text-ceruleanBlue-500">Sourcify works on all EVM based chains.</p>
         <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-          <a href={`${DOCS_URL}/docs/chains`}>
-            <Button className="font-semibold">{`See all ${chainCount.toString() || ""} chains`}</Button>
-          </a>
-          <a href={`${DOCS_URL}/docs/chain-support/`}>
-            <Button type="secondary" className="font-semibold">
-              Add a new chain
-            </Button>
+          {/* The same link style as "Verify a contract" in the hero */}
+          <a
+            href={`${DOCS_URL}/docs/chains`}
+            className="inline-flex items-center gap-1 font-semibold text-ceruleanBlue-500 link-underline"
+          >
+            {chainCount ? `See all ${chainCount} chains` : "See all chains"} <FiArrowRight aria-hidden="true" />
           </a>
         </div>
       </motion.div>

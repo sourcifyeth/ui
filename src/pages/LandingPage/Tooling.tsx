@@ -1,394 +1,341 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import bashLang from "react-syntax-highlighter/dist/esm/languages/prism/bash";
 import javascriptLang from "react-syntax-highlighter/dist/esm/languages/prism/javascript";
 import codeStyle from "react-syntax-highlighter/dist/esm/styles/prism/dracula";
-import { motion, useInView } from "framer-motion";
-import integrationsData from "../../data/integrations.json";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import { FiCheck, FiCopy, FiTerminal } from "react-icons/fi";
 import selfHostedInstancesData from "../../data/selfHostedInstances.json";
-import Button from "../../components/Button";
 
-// Register languages
 SyntaxHighlighter.registerLanguage("bash", bashLang);
 SyntaxHighlighter.registerLanguage("javascript", javascriptLang);
 
-export default function Tooling() {
-  const [activeTab, setActiveTab] = useState("foundry");
-  const integrationsRef = useRef(null);
-  const areIntegrationsInView = useInView(integrationsRef, { once: true });
-  const selfHostedRef = useRef(null);
-  const areSelfHostedInView = useInView(selfHostedRef, { once: true });
-  const [displayedCode, setDisplayedCode] = useState("");
-  const codeRef = useRef(null);
-  const isCodeInView = useInView(codeRef, { once: true });
-  const titleRef = useRef(null);
-  const tabsRef = useRef(null);
-  const isTitleInView = useInView(titleRef, { once: true });
-  const areTabsInView = useInView(tabsRef, { once: true });
+// One code block in the card. The title is the window title: "terminal" or a file name.
+type CodeBlock = { title: string; language: "bash" | "javascript"; code: string };
 
-  const tabs = ["foundry", "hardhat v2", "hardhat v3", "remix"];
-  const integrations = integrationsData;
-  const selfHostedInstances = selfHostedInstancesData;
+type Tool = {
+  id: string;
+  name: string;
+  /** How this tool verifies, in a few words */
+  how: string;
+  icon: ReactNode;
+  docs: { label: string; href: string };
+  blocks?: CodeBlock[];
+  video?: string;
+};
 
-  const foundryExample = `# Deploy and verify
-$ forge create --rpc-url <rpc-url> --private-key <private-key> src/MyContract.sol:MyContract --verify --verifier sourcify
+const logo = (src: string, alt: string) => <img src={src} alt={alt} className="h-7 w-7 object-contain" />;
 
-# Verify an already deployed contract
-$ forge verify-contract --verifier sourcify --chain <chain-id> 0xB4239c86440d6C39d518D6457038cB404451529b MyContract 
+// Long commands are split with "\" so they never wrap inside a word
+const TOOLS: Tool[] = [
+  {
+    id: "foundry",
+    name: "Foundry",
+    how: "forge verify-contract",
+    icon: logo("/foundry.png", ""),
+    docs: { label: "Foundry docs", href: "https://getfoundry.sh/reference/forge/verify-contract" },
+    blocks: [
+      {
+        title: "terminal",
+        language: "bash",
+        code: `# Verify an already deployed contract
+$ forge verify-contract --verifier sourcify \\
+    --chain <chain-id> 0xB4239c86440d6C39d518D6457038cB404451529b MyContract
 
-# Check if a verification job was successful
-$ forge verify-check 64f6f3bb-2b93-40ec-b6e8-b6e90510e6b0 --verifier sourcify
-  `;
+# Deploy and verify
+$ forge create src/MyContract.sol:MyContract \\
+    --rpc-url <rpc-url> --private-key <private-key> \\
+    --verify --verifier sourcify
 
-  const hardhatV2ExampleJS = `// Enable Sourcify in your hardhat.config.js
-module.exports = {
+# Check a verification job
+$ forge verify-check 64f6f3bb-2b93-40ec-b6e8-b6e90510e6b0 --verifier sourcify`,
+      },
+    ],
+  },
+  {
+    id: "hardhat-3",
+    name: "Hardhat 3",
+    how: "hardhat verify",
+    icon: logo("/hardhat.png", ""),
+    docs: { label: "Hardhat docs", href: "https://hardhat.org/docs/guides/smart-contract-verification" },
+    blocks: [
+      {
+        title: "terminal",
+        language: "bash",
+        code: `# Verify a contract
+$ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F984`,
+      },
+    ],
+  },
+  {
+    id: "hardhat-2",
+    name: "Hardhat 2",
+    how: "hardhat-verify plugin",
+    icon: logo("/hardhat.png", ""),
+    docs: {
+      label: "Hardhat 2 docs",
+      href: "https://v2.hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-verify#verifying-on-sourcify",
+    },
+    blocks: [
+      {
+        title: "hardhat.config.js",
+        language: "javascript",
+        code: `module.exports = {
   sourcify: {
-    // Doesn't need an API key
-    enabled: true
-  }
-};`;
+    // No API key needed
+    enabled: true,
+  },
+};`,
+      },
+      {
+        title: "terminal",
+        language: "bash",
+        code: `$ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F984`,
+      },
+    ],
+  },
+  {
+    id: "remix",
+    name: "Remix",
+    how: "Contract Verification plugin",
+    icon: logo("/remix.png", ""),
+    docs: { label: "Open the plugin in Remix", href: "https://remix.ethereum.org/?#activate=contract-verification" },
+    video: "/remix-plugin.mp4",
+  },
+  {
+    id: "api",
+    name: "API",
+    how: "Any language, over HTTP",
+    icon: <FiTerminal className="h-6 w-6 text-gray-700" aria-hidden="true" />,
+    docs: { label: "API docs", href: "https://docs.sourcify.dev/docs/api/" },
+    blocks: [
+      {
+        title: "terminal",
+        language: "bash",
+        code: `# Verify with the Standard JSON input of the compiler
+$ curl -X POST https://sourcify.dev/server/v2/verify/<chain-id>/<address> \\
+    -H "Content-Type: application/json" \\
+    -d '{
+      "stdJsonInput": { "language": "Solidity", "sources": { ... }, ... },
+      "compilerVersion": "0.8.28+commit.7893614a",
+      "contractIdentifier": "contracts/MyContract.sol:MyContract"
+    }'
 
-  const hardhatExampleBash = `# Verify a contract
-$ npx hardhat verify --network mainnet 0x1F98431c8aD98523631AE4a59f267346ea31F984
-`;
+# Check the verification job
+$ curl https://sourcify.dev/server/v2/verify/<verification-id>`,
+      },
+    ],
+  },
+];
 
-  const customStyle = {
-    ...codeStyle,
-    comment: {
-      color: "#4C6FC4",
-    },
-    operator: {
-      color: "#ff79c6",
-    },
+// Comments and the "$ " prompts are for reading, not for pasting into a terminal
+function copyText(block: CodeBlock): string {
+  if (block.language !== "bash") return block.code;
+  return block.code
+    .split("\n")
+    .filter((line) => !line.startsWith("#") && line.trim() !== "")
+    .map((line) => line.replace(/^\$ /, ""))
+    .join("\n");
+}
+
+const codeStyleWithComments = {
+  ...codeStyle,
+  comment: { color: "#7b8ab8" },
+  prolog: { color: "#7b8ab8" },
+};
+
+const CopyButton = ({ text }: { text: string }) => {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard
+      ?.writeText(text)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      })
+      .catch(() => {});
   };
-
-  // Add typing effect when code is in view
-  useEffect(() => {
-    if (isCodeInView) {
-      const codeToType =
-        activeTab === "foundry"
-          ? foundryExample
-          : activeTab === "hardhat v2"
-            ? hardhatV2ExampleJS + hardhatExampleBash // Combined JS and Bash examples. We'll split the string in the code component.
-            : activeTab === "hardhat v3"
-              ? hardhatExampleBash
-              : "";
-
-      let i = -1;
-      setDisplayedCode("");
-
-      const typingInterval = setInterval(() => {
-        if (i < codeToType.length) {
-          i++; // If i++ is not before the state update, it skips the second character.
-          setDisplayedCode((prev) => prev + codeToType.charAt(i));
-        } else {
-          clearInterval(typingInterval);
-        }
-      }, 3);
-
-      return () => clearInterval(typingInterval);
-    }
-  }, [
-    isCodeInView,
-    activeTab,
-    foundryExample,
-    hardhatV2ExampleJS,
-    hardhatExampleBash,
-  ]);
-
   return (
-    <section
-      className="w-full flex flex-col items-center text-gray-700 mt-8"
-      id="tooling"
+    <button
+      type="button"
+      onClick={copy}
+      className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-gray-400 hover:bg-white/10 hover:text-gray-100"
+      aria-label={copied ? "Copied" : "Copy code"}
     >
-      <motion.h1
-        ref={titleRef}
-        initial={{ opacity: 0, y: 20 }}
-        animate={isTitleInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-        transition={{ duration: 0.6 }}
-        className="text-6xl text-ceruleanBlue-500 font-bold text-center mb-10"
-      >
-        Tooling
-      </motion.h1>
+      {copied ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
+      {copied ? "Copied" : "Copy"}
+    </button>
+  );
+};
 
-      <motion.div
-        ref={tabsRef}
-        initial={{ opacity: 0, y: 20 }}
-        animate={areTabsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-        transition={{ duration: 0.6 }}
-        className="flex flex-col md:inline-flex md:flex-row rounded-full"
-      >
-        {tabs.map((tab, index) => (
-          <motion.button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0, scale: activeTab === tab ? 1.1 : 1 }}
-            transition={{ duration: 0.3 }}
-            className={`px-6 py-2 text-lg transition-colors flex items-center gap-2 relative
-              ${index === 0 ? "rounded-l-full" : ""}
-              ${index === tabs.length - 1 ? "rounded-r-full" : ""}
-              ${activeTab === tab
-                ? "font-bold transform -translate-y-0.5"
-                : "font-medium text-gray-500 hover:text-gray-700"
-              }`}
+// The window dots show only on the first bar of the card
+const WindowBar = ({ title, dots = true, children }: { title: string; dots?: boolean; children?: ReactNode }) => (
+  <div className="flex h-10 items-center justify-between border-b border-white/10 px-4">
+    <div className="flex items-center gap-3">
+      {dots && (
+        <div className="flex gap-1.5" aria-hidden="true">
+          <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+          <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+          <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+        </div>
+      )}
+      <span className="font-mono text-xs text-gray-400">{title}</span>
+    </div>
+    {children}
+  </div>
+);
+
+const ToolCard = ({ tool }: { tool: Tool }) => (
+  // The code cards share one fixed height, so the page does not move between them.
+  // The video card is as tall as the video at the full card width, so it stays readable.
+  <div
+    className={`flex flex-col overflow-hidden rounded-xl bg-[#111827] shadow-xl ring-1 ring-black/5 ${
+      tool.video ? "" : "h-[26rem] md:h-[24rem]"
+    }`}
+  >
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      {tool.blocks?.map((block, i) => (
+        <div key={block.title + i} className={i > 0 ? "border-t border-white/10" : ""}>
+          <WindowBar title={block.title} dots={i === 0}>
+            <CopyButton text={copyText(block)} />
+          </WindowBar>
+          <SyntaxHighlighter
+            language={block.language}
+            style={codeStyleWithComments}
+            customStyle={{ background: "transparent", margin: 0, padding: "1rem 1.25rem" }}
+            className="text-xs leading-relaxed md:text-sm"
           >
-            <motion.img
-              src={`/${tab.startsWith("hardhat") ? "hardhat" : tab}.png`}
-              alt={`${tab} logo`}
-              initial={{ scale: 0.8 }}
-              animate={{ scale: activeTab === tab ? 1 : 0.8 }}
-              transition={{ duration: 0.2 }}
-              className={`w-10 h-10 ${activeTab === tab ? "" : "opacity-50"}`}
-            />
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            {activeTab === tab && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute bottom-0 left-0 w-full h-0.5 bg-lightCoral-400"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.2 }}
-              />
-            )}
-          </motion.button>
-        ))}
-      </motion.div>
-
-      <motion.div
-        className="my-6 rounded-lg md:w-[60rem] px-4 max-w-full overflow-x-auto"
-        ref={codeRef}
-        initial={{ opacity: 0, y: 20 }}
-        animate={isCodeInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-        transition={{ duration: 0.6 }}
-      >
-        {activeTab === "foundry" && (
-          <>
-            <div className="mb-4 text-center">
-              <a
-                href="https://book.getfoundry.sh/reference/forge/forge-verify-contract"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
-              >
-                Foundry Documentation →
-              </a>
-            </div>
-            <SyntaxHighlighter
-              language="bash"
-              style={customStyle}
-              customStyle={{ background: "#111827" }}
-              className="text-xs lg:text-base min-h-80 max-w-full"
-              codeTagProps={{
-                className: "break-all sm:break-normal",
-              }}
-              wrapLongLines
-            >
-              {isCodeInView ? displayedCode : foundryExample}
-            </SyntaxHighlighter>
-          </>
-        )}
-        {activeTab === "hardhat v3" && (
-          <>
-            <div className="mb-4 text-center">
-              <a
-                href="https://hardhat.org/docs/guides/smart-contract-verification#verifying-a-contract"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
-              >
-                Hardhat Documentation →
-              </a>
-            </div>
-            <SyntaxHighlighter
-              language="bash"
-              style={codeStyle}
-              customStyle={{ background: "#111827" }}
-              className="text-xs lg:text-base w-full min-h-24"
-              codeTagProps={{
-                className: "break-all sm:break-normal",
-              }}
-            >
-              {isCodeInView
-                ? displayedCode
-                : hardhatExampleBash}
-            </SyntaxHighlighter>
-          </>
-        )}
-        {activeTab === "hardhat v2" && (
-          <>
-            <div className="mb-4 text-center">
-              <a
-                href="https://hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-verify#verifying-on-sourcify"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
-              >
-                Hardhat v2 Documentation →
-              </a>
-            </div>
-            <SyntaxHighlighter
-              language="javascript"
-              style={codeStyle}
-              customStyle={{ background: "#111827" }}
-              className="text-xs lg:text-base w-full min-h-48"
-              codeTagProps={{
-                className: "break-all sm:break-normal",
-              }}
-            >
-              {isCodeInView
-                ? displayedCode.slice(0, hardhatV2ExampleJS.length)
-                : hardhatV2ExampleJS}
-            </SyntaxHighlighter>
-            <SyntaxHighlighter
-              language="bash"
-              style={codeStyle}
-              customStyle={{ background: "#111827" }}
-              className="text-xs lg:text-base w-full min-h-24"
-              codeTagProps={{
-                className: "break-all sm:break-normal",
-              }}
-            >
-              {isCodeInView
-                ? displayedCode.slice(hardhatV2ExampleJS.length)
-                : hardhatExampleBash}
-            </SyntaxHighlighter>
-          </>
-        )}
-        {activeTab === "remix" && (
-          <div className="flex flex-col justify-center">
-            <div className="mb-4 text-center">
-              <a
-                href="https://remix.ethereum.org/?#activate=contract-verification"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-lg text-ceruleanBlue-500 hover:text-ceruleanBlue-600 link-underline font-medium"
-              >
-                Try it in Remix →
-              </a>
-            </div>
-            <div className="my-2 text-xl text-center">
-              Use the "Contract Verification" plugin to verify on Sourcify and
-              others.
-            </div>
+            {block.code}
+          </SyntaxHighlighter>
+        </div>
+      ))}
+      {tool.video && (
+        <>
+          <WindowBar title="Remix · Contract Verification" />
+          <div className="bg-black">
             <video
-              src="/remix-plugin.mp4"
+              src={tool.video}
               autoPlay
               loop
               muted
               playsInline
-              className=""
+              aria-label="The Contract Verification plugin in Remix verifies a contract on Sourcify"
+              className="block aspect-[800/434] w-full"
             />
           </div>
-        )}
+        </>
+      )}
+    </div>
+    <div className="flex h-11 shrink-0 items-center border-t border-white/10 px-4">
+      <a
+        href={tool.docs.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-sm font-medium text-ceruleanBlue-200 hover:text-white"
+      >
+        {tool.docs.label} →
+      </a>
+    </div>
+  </div>
+);
+
+export default function Tooling() {
+  const [activeId, setActiveId] = useState(TOOLS[0].id);
+  const active = TOOLS.find((t) => t.id === activeId) ?? TOOLS[0];
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
+  const reduceMotion = useReducedMotion();
+  const fadeIn = reduceMotion
+    ? {}
+    : { initial: { opacity: 0, y: 16 }, animate: isInView ? { opacity: 1, y: 0 } : {}, transition: { duration: 0.5 } };
+  const instances = [...selfHostedInstancesData].sort((a, b) => a.name.localeCompare(b.name));
+
+  return (
+    <section className="w-full flex flex-col items-center text-gray-700 py-12 md:py-20 px-4 md:px-8" id="tooling" ref={sectionRef}>
+      <motion.div {...fadeIn} className="mb-10 text-center md:mb-12">
+        <h2 className="text-4xl md:text-5xl text-gray-800 font-bold">Tooling</h2>
+        <p className="mt-3 text-base text-gray-600 md:text-lg">Verify from the tools you already use. No API key needed.</p>
       </motion.div>
 
-      <div className="my-24 text-center max-w-6xl">
-        <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500">
-          Who's using
-        </h2>
+      <motion.div {...fadeIn} className="grid w-full max-w-5xl grid-cols-1 gap-4 md:grid-cols-[15rem_1fr] md:gap-6">
+        {/* Tool list: a column on desktop, a row of pills that scrolls sideways on phones */}
         <div
-          className="flex flex-wrap justify-center gap-2 md:gap-8 mt-12 mx-2"
-          ref={integrationsRef}
+          role="tablist"
+          aria-label="Tools"
+          className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-col md:overflow-visible md:px-0 md:pb-0"
         >
-          {integrations
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((integration, index) => (
-              <motion.a
-                initial={{ opacity: 0 }}
-                animate={
-                  areIntegrationsInView
-                    ? {
-                      opacity: 1,
-                      y: [0, 0, -20],
-                      transition: { duration: 0.6, delay: index * 0.1 },
-                    }
-                    : { opacity: 0 }
-                }
-                whileHover={{
-                  scale: 1.1,
-                  transition: { duration: 0.1, delay: 0 },
+          {TOOLS.map((tool) => {
+            const isActive = tool.id === active.id;
+            return (
+              <button
+                key={tool.id}
+                type="button"
+                role="tab"
+                id={`tool-tab-${tool.id}`}
+                aria-selected={isActive}
+                aria-controls="tool-panel"
+                onClick={(e) => {
+                  setActiveId(tool.id);
+                  // On phones the pills scroll sideways: keep the chosen one in view
+                  e.currentTarget.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
                 }}
-                href={integration.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                key={integration.name}
-                className="w-16 flex flex-col items-center text-center"
+                className={`flex shrink-0 items-center gap-3 rounded-lg border px-3 py-2 text-left transition-colors md:py-3 ${
+                  isActive
+                    ? "border-ceruleanBlue-200 bg-white shadow-sm"
+                    : "border-transparent hover:bg-white/60"
+                }`}
               >
-                <img
-                  src={integration.logo}
-                  alt={integration.name}
-                  className={`w-10 md:w-14 ${integration.name !== "Blockscout" ? "rounded-full" : ""
-                    } ${integration.name === "Wake" ? "bg-[#0000ff] p-2" : ""}`}
-                />
-                <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">
-                  {integration.name}
-                </div>
-              </motion.a>
-            ))}
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center">{tool.icon}</span>
+                <span className="min-w-0">
+                  <span className={`block font-semibold ${isActive ? "text-gray-900" : "text-gray-700"}`}>{tool.name}</span>
+                  <span className="hidden font-mono text-xs text-gray-500 md:block">{tool.how}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
-      </div>
 
-      <div className="text-center mx-4">
-        <h2 className="text-4xl md:text-6xl font-bold text-ceruleanBlue-500 mb-4">
-          Self-hosting
-        </h2>
-        <p className="text-sm md:text-lg text-gray-600 mb-12">
-          Sourcify is open-source and for self-hosting. Here are some public
-          instances we are aware of:
-        </p>
-        <div
-          className="flex flex-wrap justify-center gap-2 md:gap-8 mt-12 mx-2"
-          ref={selfHostedRef}
-        >
-          {selfHostedInstances
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((instance, index) => (
-              <motion.a
-                initial={{ opacity: 0 }}
-                animate={
-                  areSelfHostedInView
-                    ? {
-                      opacity: 1,
-                      y: [0, 0, -20],
-                      transition: { duration: 0.6, delay: index * 0.1 },
-                    }
-                    : { opacity: 0 }
-                }
-                whileHover={{
-                  scale: 1.1,
-                  transition: { duration: 0.1, delay: 0 },
-                }}
-                href={instance.url + "/health"}
-                target="_blank"
-                rel="noopener noreferrer"
-                key={instance.name}
-                className="w-16 flex flex-col items-center text-center"
-              >
-                <img
-                  src={instance.logo}
-                  alt={instance.name}
-                  className="w-10 h-10 md:w-14 md:h-14 rounded-full object-contain"
-                />
-                <div className="text-gray-700 text-xs md:text-sm mt-1 text-wrap">
-                  {instance.name}
-                </div>
-              </motion.a>
-            ))}
+        <div role="tabpanel" id="tool-panel" aria-labelledby={`tool-tab-${active.id}`} className="min-w-0">
+          <ToolCard tool={active} />
         </div>
-        <div className="mb-8 mt-4">
-          <div className="text-gray-500 mb-2 text-sm">
-            Are you running a self-hosted instance?
+      </motion.div>
+
+      {/* Self-hosting */}
+      <motion.div {...fadeIn} className="mt-16 w-full max-w-5xl rounded-xl bg-white p-6 ring-1 ring-gray-200 md:mt-20 md:p-8">
+        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          <div className="max-w-md">
+            <h3 className="text-2xl font-bold text-gray-800">Self Hosting</h3>
+            <p className="mt-2 text-gray-600">
+              Sourcify is open source, so you can run your own instance. These public instances are known to us:
+            </p>
           </div>
-          <a
-            href="https://github.com/argotorg/sourcify/issues/new?template=self-hosted-instance.md"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button className="font-semibold">Add your instance</Button>
-          </a>
+          <div className="flex flex-col gap-3 md:items-end">
+            <ul className="flex flex-wrap gap-2 md:justify-end">
+              {instances.map((instance) => (
+                <li key={instance.name}>
+                  <a
+                    href={`${instance.url}/api-docs/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 py-1 pl-1 pr-3 text-sm text-gray-700 hover:border-ceruleanBlue-200 hover:bg-white"
+                  >
+                    <img src={instance.logo} alt="" className="h-7 w-7 rounded-full bg-white object-contain" />
+                    {instance.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a
+              href="https://github.com/argotorg/sourcify/issues/new?template=self-hosted-instance.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-gray-500 hover:text-gray-700 link-underline"
+            >
+              Running an instance? Add it to the list →
+            </a>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
