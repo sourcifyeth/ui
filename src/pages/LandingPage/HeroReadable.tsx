@@ -180,6 +180,32 @@ const MatchPill = ({ match }: { match: VerifiedContractMinimal["match"] }) => {
   );
 };
 
+// After this time, a lookup that searches the 4byte database shows a line that says it can be slow
+const SLOW_SEARCH_MS = 3000;
+// The kinds of input that query the 4byte database. A hash also queries it, for the event topic.
+const FOURBYTE_KINDS: Kind[] = ["selector", "hash", "signature", "name"];
+
+// The spinner while a lookup runs. Each lookup draws it again, so the timer starts from zero.
+const LoadingState = ({ query }: { query: string }) => {
+  const [isSlow, setIsSlow] = useState(false);
+  const kind = kindOf(query);
+  const searchesFourbyte = kind !== null && FOURBYTE_KINDS.includes(kind);
+  useEffect(() => {
+    if (!searchesFourbyte) return;
+    const timer = setTimeout(() => setIsSlow(true), SLOW_SEARCH_MS);
+    return () => clearTimeout(timer);
+  }, [searchesFourbyte]);
+  return (
+    <div className="text-sm text-gray-600">
+      <div className="flex items-center gap-2">
+        <span className="h-4 w-4 animate-spin rounded-full border-2 border-ceruleanBlue-300 border-t-ceruleanBlue-600" />
+        Looking up {short(query)}…
+      </div>
+      {isSlow && <p className="mt-1 pl-6 text-gray-500">Searching the 4byte database can take a few seconds.</p>}
+    </div>
+  );
+};
+
 // A box for "nothing found": a red cross, a bold line and one explaining line
 const EmptyState = ({ title, text }: { title: string; text: ReactNode }) => (
   <div className="rounded-md border border-gray-200 bg-white p-4 text-left">
@@ -601,12 +627,7 @@ const HeroReadable = () => {
   let resultBody: ReactNode = null;
   switch (result.status) {
     case "loading":
-      resultBody = (
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-ceruleanBlue-300 border-t-ceruleanBlue-600" />
-          Looking up {short(result.query)}…
-        </div>
-      );
+      resultBody = <LoadingState key={result.query} query={result.query} />;
       break;
     case "invalid":
       resultBody = (
