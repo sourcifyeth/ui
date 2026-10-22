@@ -6,6 +6,7 @@ import Button from "../../components/Button";
 import { FaDownload } from "react-icons/fa";
 import { FiArrowRight, FiInfo } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { Link } from "react-router-dom";
 import useLiveStats from "./useLiveStats";
 import LiveFeed from "./LiveFeed";
 import RollingNumber from "./RollingNumber";
@@ -313,11 +314,19 @@ const Chart = () => {
               />
             </motion.div>
           )}
-          <div className="flex flex-col items-center mt-8">
-            <Button href="https://docs.sourcify.dev/docs/repository/" external>
+          <div className="flex flex-col items-center gap-4 mt-8">
+            <Button href="https://docs.sourcify.dev/docs/repository/download-dataset/" external>
               <FaDownload aria-hidden="true" />
-              Download all verified contracts
+              Download all contracts
             </Button>
+            {/* The BigQuery AI Dataset Playground has its own page. Same "text →" style as the other links. */}
+            <Link
+              to="/dataset-playground"
+              className="inline-flex items-center gap-1 text-base font-semibold text-ceruleanBlue-500 link-underline"
+            >
+              Query live in playground
+              <FiArrowRight aria-hidden="true" />
+            </Link>
           </div>
         </>
       )}

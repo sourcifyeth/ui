@@ -3,22 +3,21 @@ import { FiArrowRight, FiSearch, FiX } from "react-icons/fi";
 import { FaArrowRight, FaFileSignature, FaHashtag } from "react-icons/fa";
 import { IoCheckmarkCircle, IoCheckmarkDoneCircle, IoChevronForward, IoCloseCircle } from "react-icons/io5";
 import { IconType } from "react-icons";
+import { LuMousePointerClick } from "react-icons/lu";
 import { id as keccakOfText } from "@ethersproject/hash";
 import type { DisplayField, DisplayFieldGroup, DisplayModel } from "@ethereum-sourcify/clear-signing";
 import { Context } from "../../Context";
-import { IS_STAGING, REPOSITORY_URL } from "../../constants";
+import { REPOSITORY_URL } from "../../constants";
 import { getVerifiedContractAllChains } from "../../utils/api";
 import { VerifiedContractMinimal } from "../../types";
-import useLiveStats from "./useLiveStats";
+import { FOURBYTE_API, FOURBYTE_HOST, formatCompact, formatSize, useLandingStats } from "./landingStats";
 import { clearSign, fetchMainnetTransaction, MainnetTransaction } from "./clearSigning";
+import { AccountKind, getMainnetAccountKind, isEnsName, resolveEnsName } from "./ens";
 import ReadableWord from "./ReadableWord";
 import HeroBackground from "./HeroBackground";
 
 // The landing page hero: "Make Ethereum readable." with one lookup box for contracts, signatures and transactions.
 
-// Staging builds, Netlify previews and the dev server read the staging 4byte database, like the other stats
-const FOURBYTE_HOST = IS_STAGING ? "4byte.staging.sourcify.dev" : "4byte.sourcify.dev";
-const FOURBYTE_API = `https://api.${FOURBYTE_HOST}/signature-database/v1`;
 const CLEAR_SIGNING_PLAYGROUND_URL = "https://clear-signing.sourcify.dev";
 const REGISTRY_URL = "https://github.com/ethereum/clear-signing-erc7730-registry";
 // Signatures shown in a 4byte result
@@ -26,7 +25,7 @@ const MAX_SIGNATURES = 8;
 // Calldata characters shown on the "blind signing" side
 const MAX_CALLDATA_CHARS = 2000; // enough to fill the column, which cuts it off and fades it out
 
-type Kind = "address" | "selector" | "hash" | "signature" | "name";
+type Kind = "address" | "ens" | "selector" | "hash" | "signature" | "name";
 
 type Signature = { name: string; hasVerifiedContract: boolean };
 type SignatureGroup = { hash: string; items: Signature[]; type: string };
@@ -37,7 +36,9 @@ type Result =
   | { status: "invalid"; query: string }
   | { status: "error"; query: string }
   | { status: "not-found"; query: string }
-  | { status: "contract"; query: string; contracts: VerifiedContractMinimal[] }
+  | { status: "ens-not-found"; query: string }
+  // ens: the ENS name and its address, when the query was a name
+  | { status: "contract"; query: string; contracts: VerifiedContractMinimal[]; ens?: EnsInfo }
   | { status: "signatures"; kind: Kind; query: string; signatures: SignatureGroup[] }
   | {
       status: "transaction";
@@ -54,12 +55,13 @@ const TRY_GROUPS: { title: string; icon: IconType; iconClassName: string; exampl
     title: "Verified Contracts",
     icon: IoCheckmarkDoneCircle,
     iconClassName: "bg-green-100 text-green-800 border border-green-200 text-base",
-    // Checked on 20 Oct 2026 with the all-chains API: Safe 1.4.1 singleton is verified on 222 chains (221 exact);
-    // the Ethereum Deposit Contract and DAI are exact matches on Ethereum mainnet.
+    // Checked on 22 Oct 2026: uniswap.eth resolves to the Uniswap governance Timelock (0x1a9C…35BC), verified on
+    // Ethereum mainnet. With the all-chains API on 20 Oct 2026: the Safe 1.4.1 singleton is verified on 222 chains
+    // (221 exact), and the Ethereum Deposit Contract is an exact match on Ethereum mainnet.
     examples: [
+      { prefix: "ENS", value: "uniswap.eth" }, // Uniswap governance Timelock
       { prefix: "Contract", value: "0x41675C099F32341bf84BFc5382aF534df5C7461a" }, // Safe 1.4.1 singleton
       { prefix: "Contract", value: "0x00000000219ab540356cBB839Cbe05303d7705Fa" }, // Ethereum Deposit Contract
-      { prefix: "Contract", value: "0x6B175474E89094C44Da98b954EedeAC495271d0F" }, // DAI
     ],
   },
   {
@@ -95,12 +97,17 @@ const kindOf = (query: string): Kind | null => {
   if (/^0x[0-9a-fA-F]{8}$/.test(query)) return "selector";
   if (/^0x[0-9a-fA-F]{64}$/.test(query)) return "hash";
   if (/^0x/i.test(query)) return null;
+  // A name with a dot, such as uniswap.eth. 4byte names and signatures never have a dot.
+  if (isEnsName(query)) return "ens";
   // A "*" anywhere makes it a 4byte text search, the same as on 4byte.sourcify.dev
   if (query.includes("*") && /^[A-Za-z0-9_$*(),[\] ]+$/.test(query)) return "name";
   if (/^[A-Za-z_$][A-Za-z0-9_$]*\(.*\)$/.test(query)) return "signature";
   if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(query)) return "name";
   return null;
 };
+
+// The shortest time that a lookup shows its loading state, in ms
+const MIN_LOADING_MS = 400;
 
 // Chips: long hex values keep their first CHIP_HASH_CHARS characters, so the start of the hash is easy to recognize
 const CHIP_HASH_CHARS = 18;
@@ -110,11 +117,6 @@ const chipValue = (value: string) =>
 // Results: shortens long hex values in the middle; names and signatures stay as they are
 const short = (value: string) => (/^0x/i.test(value) && value.length > 14 ? `${value.slice(0, 6)}…${value.slice(-4)}` : value);
 
-// Whole GB below 1 TB, then TB with one decimal (decimal units, the same as the stats section)
-const formatSize = (bytes: number) => (bytes >= 1e12 ? `${(bytes / 1e12).toFixed(1)} TB` : `${Math.round(bytes / 1e9)} GB`);
-
-const formatCompact = (n: number) =>
-  n >= 1e6 ? `${(n / 1e6).toFixed(1).replace(/\.0$/, "")}M` : n >= 1e3 ? `${Math.round(n / 1e3)}K` : String(n);
 
 
 async function lookUpSignatures(kind: Kind, query: string): Promise<SignatureGroup[]> {
@@ -235,11 +237,46 @@ const ChainRow = ({ contract, showAddress = false }: { contract: VerifiedContrac
 // Show the chain filter only when the list is long enough to need it
 const CHAIN_FILTER_THRESHOLD = 8;
 
-const ContractResult = ({ contracts }: { contracts: VerifiedContractMinimal[] }) => {
+// An ENS name, the address that it resolves to, and what that address is on Ethereum mainnet
+type EnsInfo = { name: string; address: string; accountKind?: AccountKind };
+
+// The ENS name and the address that it resolves to, above the result
+const EnsLine = ({ ens }: { ens: EnsInfo }) => (
+  <p className="mb-2 flex flex-wrap items-center gap-x-2 text-sm text-gray-700">
+    <span className="font-semibold text-gray-900">{ens.name}</span>
+    <FiArrowRight className="text-gray-400" aria-label="resolves to" />
+    <span className="break-all font-mono">{ens.address}</span>
+  </p>
+);
+
+const ContractResult = ({
+  contracts,
+  ens,
+}: {
+  contracts: VerifiedContractMinimal[];
+  ens?: EnsInfo;
+}) => {
   const { sourcifyChains, sourcifyChainMap } = useContext(Context);
   const [filter, setFilter] = useState("");
   if (contracts.length === 0) {
-    return <EmptyState title="Not verified" text="This address is not verified on Sourcify on any chain." />;
+    return (
+      <div>
+        {ens && <EnsLine ens={ens} />}
+        {ens?.accountKind === "account" ? (
+          <EmptyState
+            title="Not a contract"
+            text={`${ens.name} points to an account, not a contract. The address has no bytecode on Ethereum mainnet.`}
+          />
+        ) : ens?.accountKind === "delegated-account" ? (
+          <EmptyState
+            title="Not a contract"
+            text={`${ens.name} points to an account with an EIP-7702 delegation, not a contract. Its code only points to another contract.`}
+          />
+        ) : (
+          <EmptyState title="Not verified" text="This address is not verified on Sourcify on any chain." />
+        )}
+      </div>
+    );
   }
   // The order of Sourcify's /chains list (Ethereum first); chains missing from it go last
   const position = new Map(sourcifyChains.map((chain, index) => [String(chain.chainId), index]));
@@ -253,6 +290,7 @@ const ContractResult = ({ contracts }: { contracts: VerifiedContractMinimal[] })
     : sorted;
   return (
     <div>
+      {ens && <EnsLine ens={ens} />}
       <div className="mb-2 flex min-h-9 items-center justify-between gap-3">
         {contracts.length > CHAIN_FILTER_THRESHOLD && (
           <input
@@ -463,32 +501,10 @@ const TransactionResult = ({ result }: { result: Extract<Result, { status: "tran
 
 const HeroReadable = () => {
   const { sourcifyChains } = useContext(Context);
-  const live = useLiveStats(true);
-  const [signatureCount, setSignatureCount] = useState<number | null>(null);
-  // The daily stats.json total, used until the live total arrives (the same fallback as the stats section)
-  const [dailyTotal, setDailyTotal] = useState<number | null>(null);
-  // The live size of the public Postgres database, from the daily export stats (the same file as the stats section)
-  const [databaseBytes, setDatabaseBytes] = useState<number | null>(null);
+  // The numbers come from the landing page provider, which the "What we solve" cards also read
+  const { contractCount, signatureCount, databaseBytes } = useLandingStats();
   const [query, setQuery] = useState("");
   const [result, setResultState] = useState<Result>({ status: "idle" });
-
-  useEffect(() => {
-    fetch(`${FOURBYTE_API}/stats`)
-      .then((r) => r.json())
-      .then((json) => setSignatureCount(json.result?.count?.total ?? null))
-      .catch(() => setSignatureCount(null));
-    fetch(`https://${IS_STAGING ? "staging." : ""}sourcify.dev/static/stats.json`)
-      .then((r) => r.json())
-      .then((stats: Record<string, { full_match: number; partial_match: number }>) =>
-        setDailyTotal(Object.values(stats).reduce((sum, s) => sum + s.full_match + s.partial_match, 0)),
-      )
-      .catch(() => setDailyTotal(null));
-    fetch(`https://export.${IS_STAGING ? "staging." : ""}sourcify.dev/v2/stats.json`)
-      .then((r) => r.json())
-      .then((stats: { database?: { totalBytes?: number } }) => setDatabaseBytes(stats.database?.totalBytes ?? null))
-      .catch(() => setDatabaseBytes(null));
-  }, []);
-  const contractCount = live.total ?? dailyTotal;
 
   // The result overlay. Each lookup gets a number; an answer that arrives after a newer lookup or after the
   // overlay was closed is dropped, so a slow answer never opens the overlay again.
@@ -517,17 +533,37 @@ const HeroReadable = () => {
     const q = raw.trim();
     if (!q) return;
     const id = ++lookupIdRef.current;
-    const setResult = (next: Result) => id === lookupIdRef.current && setResultState(next);
     const kind = kindOf(q);
     if (!kind) {
-      setResult({ status: "invalid", query: q });
+      if (id === lookupIdRef.current) setResultState({ status: "invalid", query: q });
       return;
     }
-    setResult({ status: "loading", query: q });
+    // The loading state shows for at least MIN_LOADING_MS. An answer from the cache comes at once, so without
+    // this a second click on the button would show the same result again, and nothing would seem to happen.
+    const shownLongEnough = new Promise((resolve) => setTimeout(resolve, MIN_LOADING_MS));
+    const setResult = async (next: Result) => {
+      await shownLongEnough;
+      if (id === lookupIdRef.current) setResultState(next);
+    };
+    setResultState({ status: "loading", query: q });
     try {
       if (kind === "address") {
         const response = await getVerifiedContractAllChains(q);
         setResult({ status: "contract", query: q, contracts: response.results });
+      } else if (kind === "ens") {
+        // The name resolves on Ethereum mainnet. Then the usual lookup shows that address on every chain.
+        const address = await resolveEnsName(q);
+        if (!address) {
+          setResult({ status: "ens-not-found", query: q });
+          return;
+        }
+        // The bytecode lets the box say "not a contract" when the name points to an account.
+        // If that check fails, the result shows as for any other address.
+        const [response, accountKind] = await Promise.all([
+          getVerifiedContractAllChains(address),
+          getMainnetAccountKind(address).catch(() => undefined),
+        ]);
+        setResult({ status: "contract", query: q, contracts: response.results, ens: { name: q, address, accountKind } });
       } else if (kind === "hash") {
         // 32 bytes can be a transaction hash or an event topic: look up both at once
         const [tx, signatures] = await Promise.all([
@@ -576,7 +612,7 @@ const HeroReadable = () => {
       resultBody = (
         <p className="text-sm text-gray-700">
           Sourcify cannot read <span className="font-mono">{short(result.query)}</span>. Paste a contract address (0x and 40
-          hex characters), a transaction hash or event topic (0x and 64), a selector (0x and 8), a signature like{" "}
+          hex characters), an ENS name such as uniswap.eth, a transaction hash or event topic (0x and 64), a selector (0x and 8), a signature like{" "}
           <span className="font-mono">transfer(address,uint256)</span>, or a function name.
         </p>
       );
@@ -599,8 +635,16 @@ const HeroReadable = () => {
         />
       );
       break;
+    case "ens-not-found":
+      resultBody = (
+        <EmptyState
+          title="No address"
+          text={`${result.query} has no Ethereum address. Sourcify reads ENS names onchain on Ethereum mainnet. Wildcard and offchain names are not supported.`}
+        />
+      );
+      break;
     case "contract":
-      resultBody = <ContractResult key={result.query} contracts={result.contracts} />;
+      resultBody = <ContractResult key={result.query} contracts={result.contracts} ens={result.ens} />;
       break;
     case "signatures":
       resultBody = <SignatureResult kind={result.kind} query={result.query} signatures={result.signatures} />;
@@ -650,13 +694,13 @@ const HeroReadable = () => {
           >
             <FiSearch className="shrink-0 text-gray-400" aria-hidden="true" />
             <label htmlFor="hero-lookup" className="sr-only">
-              Contract address, transaction hash, selector, topic or signature
+              Contract address, ENS name, transaction hash, selector, topic or signature
             </label>
             <input
               id="hero-lookup"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Paste an address, transaction hash or selector"
+              placeholder="Paste an address, ENS name, transaction hash or selector"
               autoComplete="off"
               spellCheck={false}
               className="min-w-0 flex-1 bg-transparent py-2 font-mono text-sm md:text-base text-gray-900 placeholder:font-sans placeholder:text-gray-400 focus:outline-none"
@@ -681,7 +725,11 @@ const HeroReadable = () => {
               title="Look up"
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-ceruleanBlue-500 text-white hover:bg-ceruleanBlue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-300"
             >
-              <FiArrowRight className="h-5 w-5" aria-hidden="true" />
+              {result.status === "loading" ? (
+                <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+              ) : (
+                <FiArrowRight className="h-5 w-5" aria-hidden="true" />
+              )}
             </button>
           </form>
 
@@ -700,7 +748,11 @@ const HeroReadable = () => {
               The left part has a fixed width on large screens, so the examples line up across the rows. */}
           <div className="mt-4 overflow-hidden rounded-2xl bg-white/70 text-left ring-1 ring-gray-200 divide-y divide-gray-200">
             <div className="flex flex-wrap items-baseline gap-x-2 bg-ceruleanBlue-50/60 px-4 py-2">
-              <span className="text-sm font-semibold text-ceruleanBlue-600">Try it out</span>
+              {/* The click icon says that the examples below are buttons */}
+              <span className="inline-flex items-center gap-1.5 self-center text-sm font-semibold text-ceruleanBlue-600">
+                <LuMousePointerClick className="h-4 w-4" aria-hidden="true" />
+                Try it out
+              </span>
               <span className="text-sm text-gray-500">Pick an example, or paste your own above.</span>
             </div>
             {TRY_GROUPS.map(({ title, icon: Icon, iconClassName, examples }) => (

@@ -13,7 +13,7 @@ const RPC_TIMEOUT_MS = 8000;
 
 export type MainnetTransaction = { hash: string; to: string | null; data: string; value: bigint; from: string };
 
-async function rpc<T>(method: string, params: unknown[]): Promise<T> {
+export async function rpc<T>(method: string, params: unknown[]): Promise<T> {
   let lastError: unknown;
   for (const url of RPC_URLS) {
     const controller = new AbortController();

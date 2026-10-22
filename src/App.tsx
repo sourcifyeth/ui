@@ -6,6 +6,7 @@ import StagingBanner from "./components/StagingBanner";
 import LandingPage from "./pages/LandingPage";
 import Lookup from "./pages/Lookup";
 import VerifyRedirect from "./pages/VerifyRedirect";
+import DatasetPlayground from "./pages/DatasetPlayground";
 import { IS_STAGING } from "./constants";
 
 const LegacyLookupRedirect = () => {
@@ -33,7 +34,7 @@ function App() {
               <Route path="/lookup/:address" element={<LegacyLookupRedirect />} />
               <Route path="/address" element={<Lookup />} />
               <Route path="/address/:address" element={<Lookup />} />
-              <Route path="/dataset-playground" element={<LandingPage />} />
+              <Route path="/dataset-playground" element={<DatasetPlayground />} />
               <Route path="/" element={<LandingPage />} />
             </Routes>
           </BrowserRouter>

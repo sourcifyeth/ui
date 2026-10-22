@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { IoCheckmarkDoneCircle } from "react-icons/io5";
 import { FiArrowRight } from "react-icons/fi";
+import { formatAtLeast, useLandingStats } from "./landingStats";
 import { IconType } from "react-icons";
 import SourceBytecodeSlider from "./SourceBytecodeSlider";
 import ClearSigningExample from "./ClearSigningExample";
@@ -52,6 +53,28 @@ const Visual = ({ children, className = "" }: { children: ReactNode; className?:
   </div>
 );
 
+// The live numbers in the card text. Until a number arrives, its words do not show, so the sentence stays complete.
+const ContractCountSentence = () => {
+  const { contractCount } = useLandingStats();
+  if (contractCount === null) return null;
+  return (
+    <>
+      {" "}
+      <span className="font-semibold">{formatAtLeast(contractCount)}+</span> contracts verified.
+    </>
+  );
+};
+
+const SignatureCountClause = () => {
+  const { signatureCount } = useLandingStats();
+  if (signatureCount === null) return null;
+  return (
+    <>
+      , with more than <span className="font-semibold">{formatAtLeast(signatureCount)}</span> signatures
+    </>
+  );
+};
+
 type FooterItem = { name: string; logo: string; url: string };
 
 type Problem = {
@@ -61,7 +84,7 @@ type Problem = {
   // Size and colors of the icon box. The default is Sourcify blue.
   iconClassName?: string;
   // Two short paragraphs on every card
-  text: [string, string];
+  text: [ReactNode, ReactNode];
   links: { label: string; href: string }[];
   visual: ReactNode;
   // The footer row of every card: a label, then logos with names, or a status
@@ -76,12 +99,15 @@ const problems: Problem[] = [
     icon: IoCheckmarkDoneCircle,
     iconClassName: "bg-green-100 text-green-800 border border-green-200 text-2xl",
     text: [
-      "Sourcify's main service: we check that the source code of a contract matches its bytecode.",
+      <>
+        Sourcify's main service: we check that the source code of a contract matches its bytecode.
+        <ContractCountSentence />
+      </>,
       "Sourcify is 100% open source, publishes the whole database daily and shares data with other verifiers.",
     ],
     links: [
       { label: "GitHub", href: "https://github.com/argotorg/sourcify" },
-      { label: "Download the dataset", href: "https://docs.sourcify.dev/docs/repository/" },
+      { label: "Download the dataset", href: "https://docs.sourcify.dev/docs/repository/download-dataset/" },
       { label: "Verifier Alliance", href: "https://verifieralliance.org" },
     ],
     visual: <SourceBytecodeSlider />,
@@ -99,7 +125,10 @@ const problems: Problem[] = [
     title: "4byte Database",
     icon: FaHashtag,
     text: [
-      "Sourcify runs the largest EVM function/event/error signatures database.",
+      <>
+        Sourcify runs the largest EVM function/event/error signatures database
+        <SignatureCountClause />.
+      </>,
       "It combines signatures from verified contracts with imported collections.",
     ],
     links: [{ label: "4byte.sourcify.dev", href: "https://4byte.sourcify.dev" }],
@@ -238,8 +267,8 @@ const Card = ({ item, isFront }: { item: Problem; isFront: boolean }) => {
             </span>
             <h3 className="text-2xl md:text-3xl font-bold text-gray-800">{item.title}</h3>
           </div>
-          {item.text.map((paragraph) => (
-            <p key={paragraph} className="text-gray-700">
+          {item.text.map((paragraph, i) => (
+            <p key={i} className="text-gray-700">
               {paragraph}
             </p>
           ))}
@@ -253,26 +282,29 @@ const Card = ({ item, isFront }: { item: Problem; isFront: boolean }) => {
         </div>
         <div className="flex min-h-[19rem] items-center lg:h-80 lg:min-h-0">{item.visual}</div>
       </div>
-      <div className="flex min-h-[3.5rem] flex-wrap items-center gap-x-6 gap-y-2 border-t border-gray-100 bg-gray-50/60 px-6 py-3 text-sm text-gray-700 md:px-12">
-        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">{item.footer.label}</span>
-        {item.footer.items?.map(({ name, logo, url }) => (
-          <a
-            key={name}
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 hover:text-ceruleanBlue-500"
-          >
-            {/* Same box for every logo, so they show at the same size */}
-            <img src={logo} alt="" className="h-5 w-5 rounded object-contain" />
-            {name}
-          </a>
-        ))}
-        {item.footer.status && (
-          <span className="rounded-full bg-ceruleanBlue-100 px-3 py-0.5 text-xs font-semibold text-ceruleanBlue-600">
-            {item.footer.status}
-          </span>
-        )}
+      {/* On phones the label is on its own row and the items are on the row below it; from sm up they share one row */}
+      <div className="flex min-h-[3.5rem] flex-col gap-2 border-t border-gray-100 bg-gray-50/60 px-6 py-3 text-sm text-gray-700 sm:flex-row sm:items-center sm:gap-6 md:px-12">
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 sm:shrink-0">{item.footer.label}</span>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 sm:gap-x-6">
+          {item.footer.items?.map(({ name, logo, url }) => (
+            <a
+              key={name}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 hover:text-ceruleanBlue-500"
+            >
+              {/* Same box for every logo, so they show at the same size */}
+              <img src={logo} alt="" className="h-5 w-5 rounded object-contain" />
+              {name}
+            </a>
+          ))}
+          {item.footer.status && (
+            <span className="rounded-full bg-ceruleanBlue-100 px-3 py-0.5 text-xs font-semibold text-ceruleanBlue-600">
+              {item.footer.status}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
