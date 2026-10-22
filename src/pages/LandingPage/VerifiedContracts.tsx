@@ -1,18 +1,18 @@
 import { useContext, useEffect, useState, useRef } from "react";
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { Context } from "../../Context";
-import ChainSelect from "../../components/ChainSelect";
-import { animate, motion, useInView, useReducedMotion } from "framer-motion";
+import { AnimatePresence, animate, motion, useInView, useReducedMotion } from "framer-motion";
 import Button from "../../components/Button";
 import { FaDownload } from "react-icons/fa";
-import { FiInfo } from "react-icons/fi";
+import { FiArrowRight, FiInfo } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { Link } from "react-router-dom";
 import useLiveStats from "./useLiveStats";
 import LiveFeed from "./LiveFeed";
+import RollingNumber from "./RollingNumber";
 import { formatRelativeTime } from "./liveStats";
+import { IS_STAGING } from "../../constants";
 
-const NUMBER_OF_TOP_CHAINS = 10;
 // The live total usually arrives within a few hundred ms. Waiting avoids a count-up to the stats.json total and then a jump.
 const LIVE_TOTAL_WAIT_MS = 1000;
 
@@ -47,13 +47,14 @@ function formatBytes(bytes: number): string {
 }
 
 /**
- * Animates the shown number towards `target`. The first value counts up from 0 (as before);
- * later values (live updates) use a short tween from the current shown value.
+ * The shown number for `target`. The first value counts up from 0 (as before). Later values (live updates)
+ * are set at once; the caller rolls the changed digits. `hasCounted` is true once the count-up is done.
  */
-function useAnimatedNumber(target: number | null, reduceMotion: boolean): number {
+function useCountUp(target: number | null, reduceMotion: boolean): { value: number; hasCounted: boolean } {
   const [display, setDisplay] = useState(0);
+  const [hasCounted, setHasCounted] = useState(false);
   const displayRef = useRef(0);
-  const hasAnimatedRef = useRef(false);
+  const hasStartedRef = useRef(false);
 
   useEffect(() => {
     if (target === null) return;
@@ -61,27 +62,56 @@ function useAnimatedNumber(target: number | null, reduceMotion: boolean): number
       displayRef.current = value;
       setDisplay(value);
     };
-    if (reduceMotion) {
+    if (reduceMotion || hasStartedRef.current) {
+      // A value that arrives during the count-up also lands here: it stops the count-up and shows the value
       set(target);
-      hasAnimatedRef.current = true;
+      hasStartedRef.current = true;
+      setHasCounted(true);
       return;
     }
-    const isFirst = !hasAnimatedRef.current;
-    hasAnimatedRef.current = true;
+    hasStartedRef.current = true;
     const controls = animate(displayRef.current, target, {
-      duration: isFirst ? 1 : 0.6,
-      ease: isFirst ? "linear" : "easeOut",
+      duration: 1,
+      ease: "linear",
       onUpdate: (value) => set(Math.round(value)),
+      onComplete: () => setHasCounted(true),
     });
     return () => controls.stop();
   }, [target, reduceMotion]);
 
-  return display;
+  return { value: display, hasCounted };
+}
+
+// How long "+N" stays after the last increase. Increases inside this time add up into one label.
+const INCREASE_LABEL_MS = 1800;
+
+/**
+ * "+N" for increases of the live total. The first live total only sets the base (it can differ a lot
+ * from the daily total shown before it), so only later live events count.
+ */
+function useLiveIncrease(liveTotal: number | null): { amount: number; key: number } | null {
+  const previousRef = useRef<number | null>(null);
+  const [label, setLabel] = useState<{ amount: number; key: number } | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => {
+    if (liveTotal === null) return;
+    const previous = previousRef.current;
+    previousRef.current = liveTotal;
+    if (previous === null || liveTotal <= previous) return;
+    const delta = liveTotal - previous;
+    // Each new label gets a new key, so it fades in again; increases that come close together add up
+    setLabel((current) => ({ amount: (current?.amount ?? 0) + delta, key: current?.key ?? Date.now() }));
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setLabel(null), INCREASE_LABEL_MS);
+  }, [liveTotal]);
+
+  useEffect(() => () => clearTimeout(timerRef.current), []);
+  return label;
 }
 
 const Chart = () => {
-  const { sourcifyChainMap, sourcifyChains } = useContext(Context);
-  const [selectedChain, setSelectedChain] = useState<string>("1");
+  const { sourcifyChainMap } = useContext(Context);
   const sectionRef = useRef(null);
   const isSectionInView = useInView(sectionRef, { once: true });
   // Separate from the one above: the live stream is only open while the section is on screen.
@@ -92,29 +122,17 @@ const Chart = () => {
 
   const [datasetStats, setDatasetStats] = useState<DatasetStatsType | null>(null);
 
-  // Window width to make the chart responsive. We'll change the font sizes and tick width based on this
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   useEffect(() => {
     // We are temporarily putting the stats.json file in the static folder on GCP.
     // This assumes that the file is available.
-    fetch(`https://${process.env.REACT_APP_TAG === "staging" ? "staging." : ""}sourcify.dev/static/stats.json`)
+    fetch(`https://${IS_STAGING ? "staging." : ""}sourcify.dev/static/stats.json`)
       .then((res) => res.json())
       .then((json) => setStats(json))
       .catch(() => console.error("error fetching stats"));
   }, []);
 
   useEffect(() => {
-    fetch(`https://export.${process.env.REACT_APP_TAG === "staging" ? "staging." : ""}sourcify.dev/v2/stats.json`)
+    fetch(`https://export.${IS_STAGING ? "staging." : ""}sourcify.dev/v2/stats.json`)
       .then((res) => res.json())
       .then((json) => setDatasetStats(json))
       .catch(() => console.error("error fetching dataset stats"));
@@ -131,34 +149,8 @@ const Chart = () => {
     ? Object.values(stats).reduce((prev, curr) => prev + curr.full_match + curr.partial_match, 0)
     : null;
   const targetTotal = live.total ?? (isFallbackReady ? fallbackTotal : null);
-  const displayTotal = useAnimatedNumber(isSectionInView ? targetTotal : null, reduceMotion);
-
-  const getFormattedChainData = (key: string) => {
-    const keyInt = parseInt(key);
-    if (!stats) {
-      return {
-        name: "",
-        fullMatch: 0,
-        partialMatch: 0,
-        total: 0,
-      };
-    }
-    return {
-      name:
-        sourcifyChainMap?.[keyInt] &&
-        (sourcifyChainMap[keyInt]?.name || sourcifyChainMap[keyInt].title) + ` (${keyInt})`, // Shorter name takes precedence
-      fullMatch: stats[key]?.full_match ?? 0,
-      partialMatch: stats[key]?.partial_match ?? 0,
-      total: (stats[key]?.full_match ?? 0) + (stats[key]?.partial_match ?? 0),
-    };
-  };
-
-  const formattedData = Object.entries(stats || {})
-    .sort(([aKey, aStats], [bKey, bStats]) => {
-      return bStats.full_match + bStats.partial_match - (aStats.full_match + aStats.partial_match);
-    })
-    .slice(0, NUMBER_OF_TOP_CHAINS)
-    .map(([key, chainStats]) => getFormattedChainData(key));
+  const displayTotal = useCountUp(isSectionInView ? targetTotal : null, reduceMotion);
+  const increase = useLiveIncrease(live.total);
 
   return (
     <section
@@ -171,10 +163,6 @@ const Chart = () => {
         <div className="h-72 md:h-96 lg:h-[36rem] w-full relative">
           <LoadingOverlay message="Getting stats" />
         </div>
-      ) : !Object.keys(sourcifyChainMap).length ? (
-        <div className="h-72 md:h-96 lg:h-[36rem] w-full relative">
-          <LoadingOverlay message="Getting Sourcify chains" />
-        </div>
       ) : (
         <>
           <motion.div
@@ -183,19 +171,40 @@ const Chart = () => {
             transition={{ duration: 0.6 }}
             className="w-full"
           >
-            <h2 className="text-5xl md:text-8xl font-bold text-ceruleanBlue-500 tabular-nums">{displayTotal.toLocaleString()}</h2>
+            <h2 className="relative inline-block text-5xl md:text-8xl font-bold leading-none text-ceruleanBlue-500 tabular-nums">
+              <RollingNumber value={displayTotal.value} roll={displayTotal.hasCounted && !reduceMotion} />
+              {/* "+N" next to the number for live increases. It does not take space, so the number stays centered. */}
+              <AnimatePresence>
+                {increase && !reduceMotion && (
+                  <motion.span
+                    key={increase.key}
+                    data-testid="live-increase"
+                    className="absolute left-full top-0 ml-2 whitespace-nowrap text-lg font-semibold text-emerald-600/80 md:ml-4 md:text-3xl"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.3 }}
+                    aria-hidden="true"
+                  >
+                    +{increase.amount.toLocaleString()}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </h2>
             <h2 className="text-2xl md:text-5xl mt-3 text-ceruleanBlue-500 text-center">contracts verified</h2>
-            {live.total !== null && live.items.length > 0 && (
-              <LiveFeed items={live.items} isLive={live.isLive} chainMap={sourcifyChainMap} />
-            )}
             <a
               href="https://stats.sourcify.dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 inline-block text-base md:text-lg text-ceruleanBlue-400 hover:text-ceruleanBlue-600 underline underline-offset-4"
+              // The same "text →" link style as "Verify a contract" in the hero and "See all chains"
+              className="mt-3 inline-flex items-center gap-1 text-base font-semibold text-ceruleanBlue-500 link-underline"
             >
-              📊 stats.sourcify.dev
+              stats.sourcify.dev
+              <FiArrowRight aria-hidden="true" />
             </a>
+            {live.total !== null && live.items.length > 0 && (
+              <LiveFeed items={live.items} isLive={live.isLive} chainMap={sourcifyChainMap} />
+            )}
           </motion.div>
 
           {datasetStats && (
@@ -305,76 +314,19 @@ const Chart = () => {
               />
             </motion.div>
           )}
-          <div className="flex flex-col items-center my-8">
-            <Button type="">
-              <a
-                href="https://docs.sourcify.dev/docs/repository/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-col items-center text-center gap-1 px-2 md:px-4"
-              >
-                <div className="flex items-center gap-2">
-                  <FaDownload className="text-lg" />
-                  <span className="text-base md:text-xl font-semibold">Download</span>
-                </div>
-                <span className="text-xs md:text-sm">all verified contracts</span>
-              </a>
+          <div className="flex flex-col items-center gap-4 mt-8">
+            <Button href="https://docs.sourcify.dev/docs/repository/download-dataset/" external>
+              <FaDownload aria-hidden="true" />
+              Download all contracts
             </Button>
-          </div>
-          <div className="w-full flex flex-col items-center justify-center">
-            <div className="my-4 flex md:flex-row flex-col items-center text-gray-700">
-              <span className="text-nowrap ml-2">
-                {getFormattedChainData(selectedChain).total.toLocaleString()} contracts on
-              </span>
-              <ChainSelect
-                value={selectedChain}
-                handleChainIdChange={(newChainId) => setSelectedChain(newChainId.toString())}
-                availableChains={sourcifyChains.map((chain) => chain.chainId)}
-                className="font-medium"
-                transparent
-              />
-            </div>
-            <div className="h-[30rem] w-11/12 max-w-2xl mb-12 text-sm lg:text-base">
-              <ResponsiveContainer>
-                <BarChart
-                  data={formattedData}
-                  {...{
-                    overflow: "visible",
-                  }}
-                  layout="vertical"
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <Tooltip cursor={{ fill: "rgba(232, 239, 255, 0.4)" }} />
-                  <YAxis
-                    dataKey="name"
-                    type="category"
-                    tick={{
-                      fontSize: windowWidth < 768 ? 8 : 12,
-                      width: windowWidth < 768 ? 100 : 300,
-                    }}
-                  />
-                  <XAxis
-                    domain={[
-                      0,
-                      (dataMax: number) => {
-                        const digits = dataMax.toString().length - 1;
-                        const roundedMax = Math.ceil(dataMax / 10 ** digits) * 10 ** digits;
-                        return roundedMax;
-                      },
-                    ]}
-                    angle={windowWidth < 768 ? 45 : 0}
-                    textAnchor={windowWidth < 768 ? "start" : "middle"}
-                    dataKey="total"
-                    type="number"
-                    tickFormatter={(tick) => tick.toLocaleString()}
-                    tick={{ fontSize: windowWidth < 768 ? 8 : 12 }}
-                  />
-                  <Legend verticalAlign="top" align="center" height={36} />
-                  <Bar name="Exact Matches" dataKey="fullMatch" fill="#2B50AA" stackId="a" />
-                  <Bar name="Matches" dataKey="partialMatch" fill="#7693DA" stackId="a" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            {/* The BigQuery AI Dataset Playground has its own page. Same "text →" style as the other links. */}
+            <Link
+              to="/dataset-playground"
+              className="inline-flex items-center gap-1 text-base font-semibold text-ceruleanBlue-500 link-underline"
+            >
+              Query live in playground
+              <FiArrowRight aria-hidden="true" />
+            </Link>
           </div>
         </>
       )}
