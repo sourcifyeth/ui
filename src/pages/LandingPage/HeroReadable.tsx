@@ -617,12 +617,13 @@ const HeroReadable = () => {
   };
 
   const chainCount = sourcifyChains.filter((c) => c.supported).length;
+  // shortLabel: the label on phones, where the four numbers share one row
   const proof = [
-    contractCount !== null && { value: formatCompact(contractCount), label: "contracts verified" },
-    signatureCount !== null && { value: formatCompact(signatureCount), label: "signatures" },
-    chainCount > 0 && { value: String(chainCount), label: "chains" },
-    databaseBytes !== null && { value: formatSize(databaseBytes), label: "public database" },
-  ].filter(Boolean) as { value: string; label: string }[];
+    contractCount !== null && { value: formatCompact(contractCount), label: "contracts verified", shortLabel: "contracts" },
+    signatureCount !== null && { value: formatCompact(signatureCount), label: "signatures", shortLabel: "signatures" },
+    chainCount > 0 && { value: String(chainCount), label: "chains", shortLabel: "chains" },
+    databaseBytes !== null && { value: formatSize(databaseBytes), label: "public database", shortLabel: "database" },
+  ].filter(Boolean) as { value: string; label: string; shortLabel: string }[];
 
   let resultBody: ReactNode = null;
   switch (result.status) {
@@ -700,9 +701,10 @@ const HeroReadable = () => {
           <span className="mt-2 block font-semibold text-gray-700">Open source. Open data.</span>
         </p>
 
-        {/* relative z-20: the result overlay must show above the links, numbers and sections that follow */}
+        {/* relative z-20: the result overlay must show above the links, numbers and sections that follow.
+            On phones the numbers and the links come first (order-1, order-2), and the search box after them. */}
         <div
-          className="relative z-20 mt-8 w-full max-w-[50rem] lg:max-w-5xl opacity-0 animate-fade-up"
+          className="relative z-20 order-3 mt-8 w-full max-w-[50rem] md:order-none lg:max-w-5xl opacity-0 animate-fade-up"
           style={{ animationDelay: "400ms" }}
         >
           {/* Lookup: one box for contracts, signatures and transactions. The result opens over the page below it. */}
@@ -777,14 +779,16 @@ const HeroReadable = () => {
               <span className="text-sm text-gray-500">Pick an example, or paste your own above.</span>
             </div>
             {TRY_GROUPS.map(({ title, icon: Icon, iconClassName, examples }) => (
-              <div key={title} className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 lg:flex-nowrap">
+              <div key={title} className="flex flex-col gap-y-1.5 px-4 py-2 lg:flex-row lg:items-center lg:gap-x-3 lg:py-2.5">
                 <div className="flex min-w-0 items-center gap-2.5 lg:w-56 lg:shrink-0">
                   <span className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${iconClassName}`}>
                     <Icon aria-hidden="true" />
                   </span>
                   <p className="min-w-0 font-semibold text-gray-800 lg:whitespace-nowrap">{title}</p>
                 </div>
-                <div className="flex min-w-0 flex-wrap gap-1.5">
+                {/* Below lg: one line that you swipe sideways (no wrap, no scrollbar). The fade at the right edge
+                    shows that more chips follow. -mx-4 px-4: the line scrolls to the edges of the frame. */}
+                <div className="-mx-4 flex min-w-0 gap-1.5 overflow-x-auto px-4 py-0.5 [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_85%,transparent)] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0 lg:[mask-image:none]">
                   {examples.map(({ label, value, prefix }) => (
                     <button
                       key={value}
@@ -793,7 +797,7 @@ const HeroReadable = () => {
                         setQuery(value);
                         lookUp(value);
                       }}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 ring-1 ring-gray-200 hover:ring-ceruleanBlue-500"
+                      className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-3 py-1 ring-1 ring-gray-200 hover:ring-ceruleanBlue-500"
                       title={value}
                     >
                       {/* A short kind in front, then the value. Transactions also get a small label after the value. */}
@@ -809,23 +813,26 @@ const HeroReadable = () => {
         </div>
 
         {/* Proof row: live numbers, each shown only once it has loaded */}
+        {/* On phones: one row of columns, each number above its short label. From sm up: one line of
+            "number label" pairs. */}
         <dl
-          className="mt-6 md:mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3 opacity-0 animate-fade-up"
+          className="order-1 mt-6 flex w-full justify-around gap-x-2 sm:w-auto sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-3 md:order-none md:mt-8 opacity-0 animate-fade-up"
           style={{ animationDelay: "550ms" }}
         >
-          {proof.map(({ value, label }) => (
-            <div key={label} className="flex items-baseline gap-1.5">
+          {proof.map(({ value, label, shortLabel }) => (
+            <div key={label} className="flex flex-col items-center sm:flex-row sm:items-baseline sm:gap-1.5">
               <dt className="sr-only">{label}</dt>
-              <dd className="text-xl md:text-2xl font-bold tabular-nums text-gray-800">{value}</dd>
-              <span className="text-sm text-gray-500" aria-hidden="true">
-                {label}
+              <dd className="text-lg sm:text-xl md:text-2xl font-bold tabular-nums text-gray-800">{value}</dd>
+              <span className="text-xs sm:text-sm text-gray-500" aria-hidden="true">
+                <span className="sm:hidden">{shortLabel}</span>
+                <span className="hidden sm:inline">{label}</span>
               </span>
             </div>
           ))}
         </dl>
 
         <div
-          className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-base opacity-0 animate-fade-up"
+          className="order-2 mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-base md:order-none md:mt-6 opacity-0 animate-fade-up"
           style={{ animationDelay: "700ms" }}
         >
           <a

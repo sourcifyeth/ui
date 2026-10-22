@@ -1,6 +1,6 @@
 // AnimateOnScroll
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import VerifiedContracts from "./VerifiedContracts";
 import WhatWeSolve from "./WhatWeSolve";
@@ -18,8 +18,15 @@ import { LandingStatsProvider } from "./landingStats";
 
 const LandingPage = () => {
   const { pathname, hash, key } = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // The Dataset Playground was a section here (/#dataset-playground). index.html sends that link to the new page
+    // on a page load; this covers a hash change while the landing page is already open.
+    if (hash === "#dataset-playground") {
+      navigate("/dataset-playground", { replace: true });
+      return;
+    }
     if (hash !== "") {
       setTimeout(() => {
         const id = hash.replace("#", "");
@@ -31,7 +38,7 @@ const LandingPage = () => {
         }
       }, 100);
     }
-  }, [pathname, hash, key]);
+  }, [pathname, hash, key, navigate]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 w-full">
