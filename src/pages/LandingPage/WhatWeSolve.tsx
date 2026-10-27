@@ -16,7 +16,6 @@ import { formatAtLeast, useLandingStats } from "./landingStats";
 import { IconType } from "react-icons";
 import SourceBytecodeSlider from "./SourceBytecodeSlider";
 import ClearSigningExample from "./ClearSigningExample";
-import OnayDownload from "./OnayDownload";
 import solidityLogo from "../../assets/languages/solidity.svg";
 import vyperLogo from "../../assets/languages/vyper.svg";
 import feLogo from "../../assets/languages/fe.svg";
@@ -41,6 +40,22 @@ const CardLink = ({ href, children }: { href: string; children: ReactNode }) => 
     className="inline-flex items-center gap-1 whitespace-nowrap font-semibold text-ceruleanBlue-500 link-underline"
   >
     {children}
+    <FiArrowRight aria-hidden="true" />
+  </a>
+);
+
+// The download button of the Onay card: the latest release on GitHub, with every package
+const OnayDownload = () => (
+  <a
+    href="https://github.com/sourcifyeth/onay/releases/latest"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex items-center gap-2 rounded-full bg-ceruleanBlue-500 py-1.5 pl-4 pr-3 text-sm font-semibold text-white hover:bg-ceruleanBlue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-300"
+  >
+    Download
+    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-amber-800">
+      Alpha
+    </span>
     <FiArrowRight aria-hidden="true" />
   </a>
 );
