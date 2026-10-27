@@ -44,22 +44,6 @@ const CardLink = ({ href, children }: { href: string; children: ReactNode }) => 
   </a>
 );
 
-// The download button of the Onay card: the latest release on GitHub, with every package
-const OnayDownload = () => (
-  <a
-    href="https://github.com/sourcifyeth/onay/releases/latest"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="inline-flex items-center gap-2 rounded-full bg-ceruleanBlue-500 py-1.5 pl-4 pr-3 text-sm font-semibold text-white hover:bg-ceruleanBlue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ceruleanBlue-300"
-  >
-    Download
-    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-amber-800">
-      Alpha
-    </span>
-    <FiArrowRight aria-hidden="true" />
-  </a>
-);
-
 // Dark panel that shows the problem as raw data next to its readable form
 const Visual = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
   <div
@@ -101,9 +85,8 @@ type Problem = {
   iconClassName?: string;
   // Two short paragraphs on every card
   text: [ReactNode, ReactNode];
-  links: { label: string; href: string }[];
-  // A button before the links, such as a download
-  action?: ReactNode;
+  // A label can carry a pill, such as "Alpha"
+  links: { label: ReactNode; href: string }[];
   visual: ReactNode;
   // The footer row of every card: a label, then logos with names, or a status
   footer: { label: string; items?: FooterItem[]; status?: string };
@@ -228,10 +211,21 @@ const problems: Problem[] = [
       "Onay gets the same transaction as your wallet, checks it locally and shows what it does. It holds no keys.",
     ],
     links: [
+      {
+        label: (
+          <>
+            Download
+            <span className="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs uppercase tracking-wider text-amber-800">
+              Alpha
+            </span>
+          </>
+        ),
+        // The latest release lists every package
+        href: "https://github.com/sourcifyeth/onay/releases/latest",
+      },
       { label: "Read more", href: "https://docs.sourcify.dev/blog/onay-local-signing-companion/" },
       { label: "GitHub", href: "https://github.com/sourcifyeth/onay" },
     ],
-    action: <OnayDownload />,
     visual: (
       <Visual className="font-sans">
         <div className="grid grid-cols-2 gap-3 text-center">
@@ -291,8 +285,7 @@ const Card = ({ item, isFront }: { item: Problem; isFront: boolean }) => {
               {paragraph}
             </p>
           ))}
-          <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 pt-2 text-sm md:text-base">
-            {item.action}
+          <div className="mt-auto flex flex-wrap gap-x-5 gap-y-1 pt-2 text-sm md:text-base">
             {item.links.map((link) => (
               <CardLink key={link.href} href={link.href}>
                 {link.label}
