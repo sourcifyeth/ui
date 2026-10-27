@@ -16,6 +16,7 @@ import { formatAtLeast, useLandingStats } from "./landingStats";
 import { IconType } from "react-icons";
 import SourceBytecodeSlider from "./SourceBytecodeSlider";
 import ClearSigningExample from "./ClearSigningExample";
+import OnayDownload from "./OnayDownload";
 import solidityLogo from "../../assets/languages/solidity.svg";
 import vyperLogo from "../../assets/languages/vyper.svg";
 import feLogo from "../../assets/languages/fe.svg";
@@ -86,6 +87,8 @@ type Problem = {
   // Two short paragraphs on every card
   text: [ReactNode, ReactNode];
   links: { label: string; href: string }[];
+  // A button before the links, such as a download
+  action?: ReactNode;
   visual: ReactNode;
   // The footer row of every card: a label, then logos with names, or a status
   footer: { label: string; items?: FooterItem[]; status?: string };
@@ -213,6 +216,7 @@ const problems: Problem[] = [
       { label: "Read more", href: "https://docs.sourcify.dev/blog/onay-local-signing-companion/" },
       { label: "GitHub", href: "https://github.com/sourcifyeth/onay" },
     ],
+    action: <OnayDownload />,
     visual: (
       <Visual className="font-sans">
         <div className="grid grid-cols-2 gap-3 text-center">
@@ -272,7 +276,8 @@ const Card = ({ item, isFront }: { item: Problem; isFront: boolean }) => {
               {paragraph}
             </p>
           ))}
-          <div className="mt-auto flex flex-wrap gap-x-5 gap-y-1 pt-2 text-sm md:text-base">
+          <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 pt-2 text-sm md:text-base">
+            {item.action}
             {item.links.map((link) => (
               <CardLink key={link.href} href={link.href}>
                 {link.label}
