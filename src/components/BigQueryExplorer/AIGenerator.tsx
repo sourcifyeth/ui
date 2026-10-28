@@ -148,7 +148,7 @@ const AIGenerator = ({
           const ok = data && (Array.isArray(data) ? data.length > 0 : true);
           setModelValid(!!ok);
         }
-      } catch (e: any) {
+      } catch {
         if (!active) return;
         setModelValid(false);
       } finally {
@@ -159,7 +159,6 @@ const AIGenerator = ({
       active = false;
       clearTimeout(timer);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, model, usingBuiltInAppKey, freeModels]);
 
   return (

@@ -3,7 +3,7 @@ import Button from "../../components/Button";
 
 const VerifyRedirect: React.FC = () => {
   const handleRedirect = () => {
-    window.open(process.env.REACT_APP_VERIFY_URL, "_blank", "noopener,noreferrer");
+    window.open(import.meta.env.VITE_VERIFY_URL, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -18,7 +18,7 @@ const VerifyRedirect: React.FC = () => {
           <Button onClick={handleRedirect} className="text-lg">
             Go to New Verification UI
           </Button>
-          <p className="text-sm text-gray-400 mt-4">You will be redirected to {process.env.REACT_APP_VERIFY_URL}</p>
+          <p className="text-sm text-gray-400 mt-4">You will be redirected to {import.meta.env.VITE_VERIFY_URL}</p>
         </div>
       </div>
     </div>

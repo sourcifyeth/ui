@@ -836,7 +836,7 @@ const HeroReadable = () => {
           style={{ animationDelay: "700ms" }}
         >
           <a
-            href={process.env.REACT_APP_VERIFY_URL}
+            href={import.meta.env.VITE_VERIFY_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 font-semibold text-ceruleanBlue-500 link-underline"

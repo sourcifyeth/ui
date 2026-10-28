@@ -41,7 +41,9 @@ const BigQueryExplorer = () => {
     let fromStorage = "";
     try {
       fromStorage = window.localStorage.getItem("openrouter_api_key") || "";
-    } catch {}
+    } catch {
+      // The browser can block localStorage (for example in private mode). Then start with no key.
+    }
     const initial = (fromStorage || "").trim();
     if (initial) setApiKey(initial);
   }, []);
@@ -51,7 +53,9 @@ const BigQueryExplorer = () => {
     try {
       if (apiKey) window.localStorage.setItem("openrouter_api_key", apiKey);
       else window.localStorage.removeItem("openrouter_api_key");
-    } catch {}
+    } catch {
+      // The browser can block localStorage. Then the key is not saved, which is fine.
+    }
   }, [apiKey]);
 
   // Determine effective API key: prefer user key; fallback to app key from env
@@ -68,7 +72,7 @@ const BigQueryExplorer = () => {
     e?.preventDefault();
     if (!openrouter) {
       setGenError(
-        "OpenRouter key missing. Add your key to use any model, or configure REACT_APP_OPENROUTER_API_KEY for free models."
+        "OpenRouter key missing. Add your key to use any model, or configure VITE_OPENROUTER_API_KEY for free models."
       );
       return;
     }

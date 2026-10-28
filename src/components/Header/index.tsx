@@ -58,7 +58,7 @@ const Header = ({ className = "" }: { className?: string }) => {
           >
             <a
               className="link-underline mx-2 my-2 lg:mx-6 hover:text-ceruleanBlue-500"
-              href={process.env.REACT_APP_VERIFY_URL}
+              href={import.meta.env.VITE_VERIFY_URL}
               target="_blank"
               rel="noopener noreferrer"
             >
