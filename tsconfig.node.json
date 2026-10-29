@@ -1,0 +1,15 @@
+{
+  // Type-checks the files that run in Node.js: the config files and the Playwright tests. tsconfig.json checks the app code in src/.
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"], // DOM: code in page.evaluate() runs in the browser
+    "types": ["node"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "isolatedModules": true
+  },
+  "include": ["vite.config.mts", "playwright.config.ts", "e2e"]
+}

@@ -28,4 +28,11 @@ export default defineConfig([
       "react-hooks/purity": "warn",
     },
   },
+  {
+    files: ["playwright.config.ts", "e2e/**/*.ts"],
+    extends: [js.configs.recommended, tseslint.configs.recommended],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.browser },
+    },
+  },
 ]);

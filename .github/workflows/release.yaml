@@ -52,6 +52,9 @@ jobs:
       - name: Build
         env:
           # The GitHub secret keeps its old name. Vite reads only variables that start with VITE_.
+          # This key is public on purpose: Vite puts it into the bundle, so every visitor can read it.
+          # It is limited on the OpenRouter side. The app also allows only free models with it, but that
+          # check runs in the browser and does not protect the key.
           VITE_OPENROUTER_API_KEY: ${{ secrets.REACT_APP_OPENROUTER_API_KEY }}
         run: npm run build
 

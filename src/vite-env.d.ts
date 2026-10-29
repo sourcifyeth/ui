@@ -1,5 +1,4 @@
-/// <reference types="vite/client" />
-
+// The vite/client types come from "types" in tsconfig.json. This file adds the VITE_ variables that the app reads.
 interface ImportMetaEnv {
   readonly VITE_SERVER_URL?: string;
   readonly VITE_REPOSITORY_URL?: string;

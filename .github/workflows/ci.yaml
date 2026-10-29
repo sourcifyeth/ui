@@ -1,0 +1,53 @@
+name: CI
+
+# Checks every pull request. release.yaml deploys after a merge and only runs the build.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      # Build with the staging values, the same as a deploy to staging, but without the analytics id
+      # and without the OpenRouter key. Variables from the environment win over the ones in .env.
+      - name: Build
+        run: |
+          cp .env.build.staging .env
+          npm run build
+        env:
+          VITE_UMAMI_WEBSITE_ID: ""
+
+      - name: Install the Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Smoke tests
+        run: npm run test:e2e
+
+      - name: Upload the Playwright report
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-report
+          path: test-results/
+          retention-days: 7

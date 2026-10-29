@@ -4,7 +4,7 @@ The website at [sourcify.dev](https://sourcify.dev). It is a React app that [Vit
 
 ## Requirements
 
-Use the Node.js version in `.nvmrc`. Vite needs Node.js 20.19+ or 22.12+.
+Use the Node.js version in `.nvmrc`. The tools need Node.js 22.13 or newer.
 
 ## Environment variables
 
@@ -38,3 +38,6 @@ To serve the build on your computer, run `npm run preview`.
 
 - `npm run lint` checks the code with ESLint.
 - `npm test` runs the unit tests with Vitest.
+- `npm run test:e2e` runs the smoke tests with Playwright against the build in `build/`. Run `npm run build` first. The first time, install the browser with `npx playwright install chromium`.
+
+The CI workflow runs all of these on every pull request.
