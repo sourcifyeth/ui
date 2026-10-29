@@ -7,7 +7,7 @@ import { LuMousePointerClick } from "react-icons/lu";
 import { id as keccakOfText } from "@ethersproject/hash";
 import type { DisplayField, DisplayFieldGroup, DisplayModel } from "@ethereum-sourcify/clear-signing";
 import { Context } from "../../Context";
-import { REPOSITORY_URL } from "../../constants";
+import { REPOSITORY_URL, VERIFY_URL } from "../../constants";
 import { getVerifiedContractAllChains } from "../../utils/api";
 import { VerifiedContractMinimal } from "../../types";
 import { FOURBYTE_API, FOURBYTE_HOST, formatCompact, formatSize, useLandingStats } from "./landingStats";
@@ -836,7 +836,7 @@ const HeroReadable = () => {
           style={{ animationDelay: "700ms" }}
         >
           <a
-            href={process.env.REACT_APP_VERIFY_URL}
+            href={VERIFY_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 font-semibold text-ceruleanBlue-500 link-underline"

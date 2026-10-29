@@ -41,7 +41,7 @@ export const bigquery = async (sql: string): Promise<BigQueryResponse> => {
     try {
       jsonError = await response.json();
     } catch (e) {
-      throw new Error("Cannot parse the error message");
+      throw new Error("Cannot parse the error message", { cause: e });
     }
     throw new Error(jsonError.error || jsonError.message);
   }

@@ -1,4 +1,3 @@
-// import { ReactComponent as Logo } from "../../assets/logo-rounded.svg";
 import logo from "../../assets/logo-rounded.svg";
 
 type LoadingOverlayProps = {

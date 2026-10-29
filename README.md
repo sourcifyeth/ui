@@ -1,45 +1,43 @@
 # Sourcify UI
 
-Bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The website at [sourcify.dev](https://sourcify.dev). It is a React app that [Vite](https://vite.dev) builds.
 
-## Running
+## Requirements
 
-### Environment variables
+Use the Node.js version in `.nvmrc`. The tools need Node.js 22.13 or newer.
 
-Set the environment variables in `.env.development` depending on your settings.
+## Environment variables
 
-The variables `REACT_APP...` will get injected into the build and are available at runtime.
+The app reads its settings from environment variables that start with `VITE_`. In the code, they are in `import.meta.env`.
 
-### Run
+Vite puts the values into the JavaScript bundle at build time. Do not put secrets in them: every visitor can read them.
 
-Install with `npm install` and run the development server with `npm start`.
+- `npm run dev` reads `.env.development`. This file points to the staging backend.
+- `npm run build` reads `.env` and `.env.production`. The deploy workflow copies `.env.build.staging` or `.env.build.main` to `.env` before the build.
+
+## Run the development server
+
+```
+npm install
+npm run dev
+```
+
+The server runs at http://localhost:3000.
 
 ## Build
-
-Before build you need to provide the environment variables in `.env.production` or `.env`. Check out [CRA docs on env vars](https://create-react-app.dev/docs/adding-custom-environment-variables/).
-
-Build with
 
 ```
 npm run build
 ```
 
-Resulting static assets will be stored at `build/` and ready to be served.
+The build first checks the TypeScript types. Then it writes the static files to `build/`. Any static web server can serve this directory. The server must answer unknown paths with `index.html`, because the app handles the routes in the browser.
 
-## Building with Docker
+To serve the build on your computer, run `npm run preview`.
 
-The `Dockerfile` installs, builds and serves the project on a minimal nginx container.
+## Other commands
 
-Again, don't forget to provide the environment variables in `.env.production` or `.env` ([CRA docs on env vars](https://create-react-app.dev/docs/adding-custom-environment-variables/)).
+- `npm run lint` checks the code with ESLint.
+- `npm test` runs the unit tests with Vitest.
+- `npm run test:e2e` runs the smoke tests with Playwright against the build in `build/`. Run `npm run build` first. The first time, install the browser with `npx playwright install chromium`.
 
-Build with
-
-```
-docker build -t sourcify-ui .
-```
-
-Run with
-
-```
-docker run -p 80:80 sourcify-ui
-```
+The CI workflow runs all of these on every pull request.

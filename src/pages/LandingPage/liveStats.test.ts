@@ -1,6 +1,5 @@
-// Run with: npx react-scripts test --watchAll=false
-// Jest globals are imported explicitly because the repo has no @types/jest (the build type-checks this file).
-import { describe, expect, it } from "@jest/globals";
+// Run with: npm test
+import { describe, expect, it } from "vitest";
 import { LiveItem, formatRelativeTime, mergeLiveItems, parseLiveEvent, shortenAddress } from "./liveStats";
 
 const item = (matchId: string, overrides: Partial<LiveItem> = {}): LiveItem => ({
