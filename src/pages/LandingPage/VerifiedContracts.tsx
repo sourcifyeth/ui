@@ -6,12 +6,11 @@ import Button from "../../components/Button";
 import { FaDownload } from "react-icons/fa";
 import { FiArrowRight, FiInfo } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import { Link } from "react-router-dom";
 import useLiveStats from "./useLiveStats";
 import LiveFeed from "./LiveFeed";
 import RollingNumber from "./RollingNumber";
 import { formatRelativeTime } from "./liveStats";
-import { IS_STAGING } from "../../constants";
+import { DOCS_URL, IS_STAGING } from "../../constants";
 
 // The live total usually arrives within a few hundred ms. Waiting avoids a count-up to the stats.json total and then a jump.
 const LIVE_TOTAL_WAIT_MS = 1000;
@@ -319,14 +318,13 @@ const Chart = () => {
               <FaDownload aria-hidden="true" />
               Download all contracts
             </Button>
-            {/* The BigQuery AI Dataset Playground has its own page. Same "text →" style as the other links. */}
-            <Link
-              to="/dataset-playground"
+            <a
+              href={`${DOCS_URL}/docs/bigquery/`}
               className="inline-flex items-center gap-1 text-base font-semibold text-ceruleanBlue-500 link-underline"
             >
-              Query live in playground
+              Query the dataset in BigQuery
               <FiArrowRight aria-hidden="true" />
-            </Link>
+            </a>
           </div>
         </>
       )}

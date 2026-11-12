@@ -10,7 +10,7 @@
       // /lookup[/<rest>] → /address[/<rest>]; everything else: #/<rest> → /<rest>.
       (function () {
         var hash = window.location.hash;
-        // The Dataset Playground was a section of the landing page (/#dataset-playground). Now it is its own page.
+        // The Dataset Playground was a section of the landing page (/#dataset-playground). /dataset-playground redirects to the docs.
         if (hash === "#dataset-playground" && window.location.pathname === "/") {
           window.history.replaceState(null, "", "/dataset-playground" + window.location.search);
           return;

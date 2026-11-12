@@ -5,12 +5,18 @@ import { ContextProvider } from "./Context";
 import StagingBanner from "./components/StagingBanner";
 import LandingPage from "./pages/LandingPage";
 import VerifyRedirect from "./pages/VerifyRedirect";
-import { IS_STAGING } from "./constants";
+import { DOCS_URL, IS_STAGING } from "./constants";
 
-// These pages load only when a visitor opens them, so their code is not in the main bundle.
-// The Dataset Playground brings the AI SDK and the SQL editor; the lookup page brings its own components.
+// The lookup page loads only when a visitor opens it, so its code is not in the main bundle.
 const Lookup = lazy(() => import("./pages/Lookup"));
-const DatasetPlayground = lazy(() => import("./pages/DatasetPlayground"));
+
+// The Dataset Playground is removed. Old links go to the BigQuery page of the docs.
+const DatasetPlaygroundRedirect = () => {
+  useEffect(() => {
+    window.location.replace(`${DOCS_URL}/docs/bigquery/`);
+  }, []);
+  return null;
+};
 
 const LegacyLookupRedirect = () => {
   const { address } = useParams();
@@ -39,7 +45,7 @@ function App() {
                 <Route path="/lookup/:address" element={<LegacyLookupRedirect />} />
                 <Route path="/address" element={<Lookup />} />
                 <Route path="/address/:address" element={<Lookup />} />
-                <Route path="/dataset-playground" element={<DatasetPlayground />} />
+                <Route path="/dataset-playground" element={<DatasetPlaygroundRedirect />} />
                 <Route path="/" element={<LandingPage />} />
               </Routes>
             </Suspense>
