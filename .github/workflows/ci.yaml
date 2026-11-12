@@ -29,8 +29,8 @@ jobs:
       - name: Unit tests
         run: npm test
 
-      # Build with the staging values, the same as a deploy to staging, but without the analytics id
-      # and without the OpenRouter key. Variables from the environment win over the ones in .env.
+      # Build with the staging values, the same as a deploy to staging, but without the analytics id.
+      # Variables from the environment win over the ones in .env.
       - name: Build
         run: |
           cp .env.build.staging .env

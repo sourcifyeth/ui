@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { Link } from "react-router-dom";
 
 const LINK_CLASS = "hover:text-ceruleanBlue-100 block";
 
@@ -9,7 +8,7 @@ const FooterLink = ({ href, children }: { href: string; children: ReactNode }) =
   </a>
 );
 
-// The site footer: links, socials, the dRPC badge and the credits. The landing page and the Dataset Playground page use it.
+// The site footer: links, socials, the dRPC badge and the credits. The landing page uses it.
 const Footer = () => (
   <footer className="text-center md:text-left px-4 py-8 md:px-8 md:py-12 bg-ceruleanBlue-500 text-white text-lg" id="footer">
     <nav className="font-vt323 flex flex-col flex-wrap gap-4 max-w-5xl mx-auto items-center">
@@ -18,10 +17,7 @@ const Footer = () => (
           <FooterLink href="https://docs.sourcify.dev">Documentation</FooterLink>
           <FooterLink href="https://docs.sourcify.dev/blog/">Blog</FooterLink>
           <FooterLink href="https://docs.sourcify.dev/docs/repository/">Contract Repository</FooterLink>
-          {/* Same site: a router link, so the page does not load again */}
-          <Link to="/dataset-playground" className={LINK_CLASS}>
-            Dataset Playground
-          </Link>
+          <FooterLink href="https://docs.sourcify.dev/docs/bigquery/">BigQuery Dataset</FooterLink>
           <FooterLink href="https://playground.sourcify.dev">Metadata Playground</FooterLink>
           <FooterLink href="https://github.com/orgs/argotorg/projects/33">Project Board</FooterLink>
           <FooterLink href="https://github.com/orgs/argotorg/projects/33/views/3">Milestones</FooterLink>

@@ -29,8 +29,8 @@ test("the landing page renders, with no errors and with the fonts", async ({ pag
 
 test("a direct load of a client-side route renders the app", async ({ page }) => {
   const errors = trackPageErrors(page);
-  await page.goto("/dataset-playground");
-  await expect(page.getByText("Dataset Playground").first()).toBeVisible();
+  await page.goto("/address");
+  await expect(page.getByPlaceholder("0x…")).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -39,7 +39,4 @@ test("old hash URLs redirect to clean paths", async ({ page }) => {
 
   await page.goto(`/#/lookup/${address}`);
   await expect(page).toHaveURL(`/address/${address}`);
-
-  await page.goto("/#dataset-playground");
-  await expect(page).toHaveURL("/dataset-playground");
 });

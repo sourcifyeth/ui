@@ -9,8 +9,6 @@
   VITE_TAG = "staging"
   # Empty, so previews load no analytics script. See the umami plugin in vite.config.mts.
   VITE_UMAMI_WEBSITE_ID = ""
-  VITE_BIGQUERY_API_URL = "https://europe-west1-sourcify-project.cloudfunctions.net/bigquery-api-staging/bigquery"
-  VITE_BIGQUERY_DATASET_NAME = "sourcify_staging"
   # Netlify does not serve /live/stream, so read the live feed from staging (it allows cross-origin requests).
   VITE_LIVE_STATS_URL = "https://staging.sourcify.dev/live/stream"
 
@@ -21,7 +19,5 @@
   VITE_TAG = "staging"
   # Empty, so previews load no analytics script. See the umami plugin in vite.config.mts.
   VITE_UMAMI_WEBSITE_ID = ""
-  VITE_BIGQUERY_API_URL = "https://europe-west1-sourcify-project.cloudfunctions.net/bigquery-api-staging/bigquery"
-  VITE_BIGQUERY_DATASET_NAME = "sourcify_staging"
   # Netlify does not serve /live/stream, so read the live feed from staging (it allows cross-origin requests).
   VITE_LIVE_STATS_URL = "https://staging.sourcify.dev/live/stream"

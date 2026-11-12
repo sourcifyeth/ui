@@ -21,8 +21,8 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // The Dataset Playground was a section here (/#dataset-playground). index.html sends that link to the new page
-    // on a page load; this covers a hash change while the landing page is already open.
+    // The Dataset Playground was a section here (/#dataset-playground). /dataset-playground now redirects to the docs.
+    // index.html handles that link on a page load; this covers a hash change while the landing page is already open.
     if (hash === "#dataset-playground") {
       navigate("/dataset-playground", { replace: true });
       return;
