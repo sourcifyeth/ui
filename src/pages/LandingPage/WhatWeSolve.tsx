@@ -85,7 +85,8 @@ type Problem = {
   iconClassName?: string;
   // Two short paragraphs on every card
   text: [ReactNode, ReactNode];
-  links: { label: string; href: string }[];
+  // A label can carry a pill, such as "Alpha"
+  links: { label: ReactNode; href: string }[];
   visual: ReactNode;
   // The footer row of every card: a label, then logos with names, or a status
   footer: { label: string; items?: FooterItem[]; status?: string };
@@ -210,6 +211,18 @@ const problems: Problem[] = [
       "Onay gets the same transaction as your wallet, checks it locally and shows what it does. It holds no keys.",
     ],
     links: [
+      {
+        label: (
+          <>
+            Download
+            <span className="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs uppercase tracking-wider text-amber-800">
+              Alpha
+            </span>
+          </>
+        ),
+        // The latest release lists every package
+        href: "https://github.com/sourcifyeth/onay/releases/latest",
+      },
       { label: "Read more", href: "https://docs.sourcify.dev/blog/onay-local-signing-companion/" },
       { label: "GitHub", href: "https://github.com/sourcifyeth/onay" },
     ],
